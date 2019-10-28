@@ -1,0 +1,2 @@
+include ':app', ':drawableviewlibs'
+rootProject.name='DrawNSend'
