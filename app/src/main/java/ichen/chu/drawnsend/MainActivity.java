@@ -7,10 +7,10 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.Display;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -31,6 +31,9 @@ import java.util.Random;
 import androidx.appcompat.app.AppCompatActivity;
 import ichen.chu.drawableviewlibs.DrawableView;
 import ichen.chu.drawableviewlibs.DrawableViewConfig;
+import ichen.chu.drawnsend.HoverMenu.HoverMenuFactory;
+import io.mattcarroll.hover.HoverMenu;
+import io.mattcarroll.hover.HoverView;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
@@ -40,21 +43,24 @@ import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
 
-    private final static String TAG = "dns-";
-
     private DrawableView drawableView;
     private DrawableViewConfig config = new DrawableViewConfig();
 
     private int RC_SIGN_IN = 1001;
 
+    private HoverView mHoverView;
+
     private GoogleSignInClient mGoogleSignInClient;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(App.TAG, "* onCreate()");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initUi();
 
         initGoogleAPI();
+        initHover();
     }
 
     private void initGoogleAPI() {
@@ -187,6 +193,22 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void initHover() {
+        Log.d(App.TAG, "* initHover()");
+        try {
+            final ContextThemeWrapper contextThemeWrapper = new ContextThemeWrapper(this, R.style.AppTheme);
+            HoverMenu hoverMenu = new HoverMenuFactory().createDemoMenuFromCode(contextThemeWrapper, Bus.getInstance());
+
+            mHoverView = findViewById(R.id.hovermenu);
+            mHoverView.setMenu(hoverMenu);
+            mHoverView.collapse();
+        } catch (Exception e) {
+            Log.e(App.TAG, "Failed to create demo menu from file. e= " + e.getMessage());
+            e.printStackTrace();
+        }
+
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -205,15 +227,15 @@ public class MainActivity extends AppCompatActivity {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
 
             // Signed in successfully, show authenticated UI.
-            Log.d(TAG, "* Signed in successfully");
+            Log.d(App.TAG, "* Signed in successfully");
 //            Log.d(TAG, "- account= " + account);
-            Log.d(TAG, "- getDisplayName= " + account.getDisplayName());
-            Log.d(TAG, "- getEmail= " + account.getEmail());
+            Log.d(App.TAG, "- getDisplayName= " + account.getDisplayName());
+            Log.d(App.TAG, "- getEmail= " + account.getEmail());
 //            updateUI(account);
         } catch (ApiException e) {
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.
-            Log.w(TAG, "signInResult:failed code=" + e.getStatusCode());
+            Log.w(App.TAG, "signInResult:failed code=" + e.getStatusCode());
 //            updateUI(null);
         }
     }
@@ -222,28 +244,28 @@ public class MainActivity extends AppCompatActivity {
         try {
             try {
                 final MediaType MEDIA_TYPE_JPEG = MediaType.parse("image/jpeg");
-                Log.d(TAG, "B");
+                Log.d(App.TAG, "B");
                 RequestBody req = new MultipartBody.Builder()
                         .setType(MultipartBody.FORM)
                         .addFormDataPart("name", file.getName())
                         .addFormDataPart("file", file.getName(), RequestBody.create(MEDIA_TYPE_JPEG, file)).build();
-                Log.d(TAG, "C");
+                Log.d(App.TAG, "C");
 
                 Request request = new Request.Builder()
                         .url("http://172.20.10.3:3000/api/post_official_doc_upload_file")
                         .post(req)
                         .build();
-                Log.d(TAG, "D");
+                Log.d(App.TAG, "D");
 
                 OkHttpClient client = new OkHttpClient();
                 Response response = client.newCall(request).execute();
 
-                Log.d(TAG, "uploadImage: " + response.body().string());
+                Log.d(App.TAG, "uploadImage: " + response.body().string());
 
             } catch (UnknownHostException | UnsupportedEncodingException e) {
-                Log.e(TAG, "Error: " + e.getLocalizedMessage());
+                Log.e(App.TAG, "Error: " + e.getLocalizedMessage());
             } catch (Exception e) {
-                Log.e(TAG, "Other Error: " + e.getLocalizedMessage());
+                Log.e(App.TAG, "Other Error: " + e.getLocalizedMessage());
             }
         } catch (Exception e) {
             e.printStackTrace();
