@@ -28,16 +28,12 @@ import ichen.chu.drawnsend.App;
 import ichen.chu.drawnsend.BusEvent;
 import ichen.chu.drawnsend.HoverMenu.theme.HoverTheme;
 import ichen.chu.drawnsend.R;
-import ichen.chu.drawnsend.util.MLog;
 import io.mattcarroll.hover.Content;
 
 /**
  * {@link Content} that displays an introduction to Hover.
  */
 public class HoverIntroductionContent extends FrameLayout implements Content {
-
-    private static final MLog mLog = new MLog(true);
-    private final String TAG = getClass().getSimpleName() + "@" + Integer.toHexString(hashCode());
 
     private final EventBus mBus;
     private View mLogo;
@@ -47,7 +43,7 @@ public class HoverIntroductionContent extends FrameLayout implements Content {
 
     public HoverIntroductionContent(@NonNull Context context, @NonNull EventBus bus) {
         super(context);
-        mLog.d(TAG, " * HoverIntroductionContent");
+        Log.d(App.TAG, " * HoverIntroductionContent");
         mBus = bus;
         init();
     }
@@ -63,7 +59,7 @@ public class HoverIntroductionContent extends FrameLayout implements Content {
 
     @Override
     protected void onAttachedToWindow() {
-        mLog.d(TAG, " * onAttachedToWindow()");
+        Log.d(App.TAG, " * onAttachedToWindow()");
         super.onAttachedToWindow();
         mBus.registerSticky(this);
 
@@ -72,7 +68,7 @@ public class HoverIntroductionContent extends FrameLayout implements Content {
 
     @Override
     protected void onDetachedFromWindow() {
-        mLog.d(TAG, " * onDetachedFromWindow()");
+        Log.d(App.TAG, " * onDetachedFromWindow()");
         mBus.unregister(this);
         super.onDetachedFromWindow();
     }
@@ -80,25 +76,35 @@ public class HoverIntroductionContent extends FrameLayout implements Content {
     @NonNull
     @Override
     public View getView() {
+        Log.d(App.TAG, " * getView()");
         return this;
     }
 
     @Override
     public boolean isFullscreen() {
-        mLog.d(TAG, " * isFullscreen()");
-        mBus.post(new BusEvent("test"));
+        Log.d(App.TAG, " * isFullscreen()");
+
+
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                mBus.post(new BusEvent("test"));
+            }
+        }).start();
+
         return true;
     }
 
     @Override
     public void onShown() {
-        mLog.d(TAG, " * onShown()");
+        Log.d(App.TAG, " * onShown()");
         mHoverMotion.start(mLogo);
     }
 
     @Override
     public void onHidden() {
-        mLog.d(TAG, " * onHidden()");
+        Log.d(App.TAG, " * onHidden()");
         mHoverMotion.stop();
     }
 

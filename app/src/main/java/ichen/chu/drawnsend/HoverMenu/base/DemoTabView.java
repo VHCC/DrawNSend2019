@@ -121,4 +121,7 @@ public class DemoTabView extends View {
             mIconDrawable.draw(canvas);
         }
     }
+
+
+
 }
