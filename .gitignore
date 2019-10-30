@@ -14,7 +14,6 @@
 .cxx
 gradlew.bat
 gradlew
-gradle.properties
 .idea/
 drawableviewlibs/proguard-rules.pro
 drawableviewlibs/consumer-rules.pro
