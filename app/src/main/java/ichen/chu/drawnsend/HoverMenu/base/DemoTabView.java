@@ -20,16 +20,24 @@ import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import ichen.chu.drawnsend.App;
+import ichen.chu.drawnsend.Bus;
+import ichen.chu.drawnsend.BusEvent;
+import ichen.chu.drawnsend.HoverMenu.theme.HoverTheme;
 
 /**
  * Visual representation of a top-level tab in a Hover menu.
  */
 public class DemoTabView extends View {
+
+    public static final String TAG = "dns-DemoTabView";
 
     private int mBackgroundColor;
     private Integer mForegroundColor;
@@ -48,20 +56,31 @@ public class DemoTabView extends View {
     private void init() {
         int insetsDp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, getContext().getResources().getDisplayMetrics());
         mIconInsetLeft = mIconInsetTop = mIconInsetRight = mIconInsetBottom = insetsDp;
+        Bus.getInstance().registerSticky(this);
     }
 
     public void setTabBackgroundColor(@ColorInt int backgroundColor) {
+        Log.d(TAG, "* setTabBackgroundColor(), backgroundColor=" + backgroundColor);
         mBackgroundColor = backgroundColor;
         mCircleDrawable.setColorFilter(mBackgroundColor, PorterDuff.Mode.SRC_ATOP);
+        invalidate();
     }
 
     public void setTabForegroundColor(@ColorInt Integer foregroundColor) {
+        Log.d(TAG, "* setTabForegroundColor(), foregroundColor=" + foregroundColor);
         mForegroundColor = foregroundColor;
         if (null != mForegroundColor) {
             mIconDrawable.setColorFilter(mForegroundColor, PorterDuff.Mode.SRC_ATOP);
         } else {
             mIconDrawable.setColorFilter(null);
         }
+        invalidate();
+    }
+
+    public void onEventMainThread(@NonNull HoverTheme newTheme){
+//        mHoverView.collapse();
+        Log.d(TAG, "* onEventMainThread()");
+        setTabBackgroundColor(newTheme.getAccentColor());
     }
 
     public void setIcon(@Nullable Drawable icon) {
