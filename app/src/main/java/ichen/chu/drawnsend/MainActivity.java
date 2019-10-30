@@ -55,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(App.TAG, "* onCreate()");
+        Bus.getInstance().registerSticky(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initUi();
@@ -201,12 +202,30 @@ public class MainActivity extends AppCompatActivity {
 
             mHoverView = findViewById(R.id.hovermenu);
             mHoverView.setMenu(hoverMenu);
+            mHoverView.enableDebugMode(true);
             mHoverView.collapse();
         } catch (Exception e) {
             Log.e(App.TAG, "Failed to create demo menu from file. e= " + e.getMessage());
             e.printStackTrace();
         }
+    }
 
+    public void onEventBackgroundThread(BusEvent event) {
+        Log.d(App.TAG, "* CCC");
+        event.getMessage();
+//        mHoverView.collapse();
+    }
+
+    public void onEvent(BusEvent event){
+        Log.d(App.TAG, "* BBB");
+        event.getMessage();
+//        mHoverView.collapse();
+    }
+
+    public void onEventMainThread(BusEvent event){
+        Log.d(App.TAG, "* AAA");
+        event.getMessage();
+        mHoverView.collapse();
     }
 
     @Override
@@ -272,6 +291,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
 
+        Bus.getInstance().unregister(this);
+    }
 
 }

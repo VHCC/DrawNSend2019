@@ -16,6 +16,7 @@
 package ichen.chu.drawnsend.HoverMenu.demo;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -23,6 +24,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import de.greenrobot.event.EventBus;
+import ichen.chu.drawnsend.App;
+import ichen.chu.drawnsend.BusEvent;
 import ichen.chu.drawnsend.HoverMenu.theme.HoverTheme;
 import ichen.chu.drawnsend.R;
 import io.mattcarroll.hover.Content;
@@ -40,6 +43,7 @@ public class HoverIntroductionContent extends FrameLayout implements Content {
 
     public HoverIntroductionContent(@NonNull Context context, @NonNull EventBus bus) {
         super(context);
+        Log.d(App.TAG, " * HoverIntroductionContent");
         mBus = bus;
         init();
     }
@@ -55,12 +59,16 @@ public class HoverIntroductionContent extends FrameLayout implements Content {
 
     @Override
     protected void onAttachedToWindow() {
+        Log.d(App.TAG, " * onAttachedToWindow()");
         super.onAttachedToWindow();
         mBus.registerSticky(this);
+
+
     }
 
     @Override
     protected void onDetachedFromWindow() {
+        Log.d(App.TAG, " * onDetachedFromWindow()");
         mBus.unregister(this);
         super.onDetachedFromWindow();
     }
@@ -73,16 +81,20 @@ public class HoverIntroductionContent extends FrameLayout implements Content {
 
     @Override
     public boolean isFullscreen() {
+        Log.d(App.TAG, " * isFullscreen()");
+        mBus.post(new BusEvent("test"));
         return true;
     }
 
     @Override
     public void onShown() {
+        Log.d(App.TAG, " * onShown()");
         mHoverMotion.start(mLogo);
     }
 
     @Override
     public void onHidden() {
+        Log.d(App.TAG, " * onHidden()");
         mHoverMotion.stop();
     }
 
