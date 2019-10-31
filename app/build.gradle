@@ -21,10 +21,12 @@ android {
     }
     buildTypes {
         release {
+            aaptOptions.cruncherEnabled=false // here
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         debug {
+            aaptOptions.cruncherEnabled=false // here
             testCoverageEnabled true
         }
     }
