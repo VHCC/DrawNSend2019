@@ -1,12 +1,12 @@
 package ichen.chu.drawnsend;
 
+import android.Manifest;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.Display;
 import android.view.View;
@@ -26,8 +26,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.UnknownHostException;
+import java.util.List;
 import java.util.Random;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import ichen.chu.drawableviewlibs.DrawableView;
 import ichen.chu.drawableviewlibs.DrawableViewConfig;
@@ -41,8 +43,9 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import pub.devrel.easypermissions.EasyPermissions;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks {
 
     private static final MLog mLog = new MLog(true);
     private final String TAG = getClass().getSimpleName() + "@" + Integer.toHexString(hashCode());
@@ -51,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
     private DrawableViewConfig config = new DrawableViewConfig();
 
     private int RC_SIGN_IN = 1001;
+    private final int RC_PERMISSIONS = 9001;
 
     private HoverView mHoverView;
 
@@ -58,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "* onCreate()");
+        mLog.d(TAG, "* onCreate()");
         Bus.getInstance().registerSticky(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -66,7 +70,31 @@ public class MainActivity extends AppCompatActivity {
 
         initGoogleAPI();
         initHover();
+
+        checkPermission();
     }
+
+    private void checkPermission() {
+        String[] perms = {
+                Manifest.permission.CAMERA,
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.INTERNET,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+        };
+
+        if (EasyPermissions.hasPermissions(this, perms)) {
+            // Already have permission, do the thing
+            // ...
+        } else {
+            // Do not have permissions, request them now
+            EasyPermissions.requestPermissions(this, getString(R.string.app_name),
+                    RC_PERMISSIONS, perms);
+
+        }
+    }
+
+
 
     private void initGoogleAPI() {
         // Configure sign-in to request the user's ID, email address, and basic
@@ -196,6 +224,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(signInIntent, RC_SIGN_IN);
             }
         });
+
     }
 
     private void initHover() {
@@ -215,19 +244,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onEventBackgroundThread(BusEvent event) {
-        mLog.d(TAG, "* CCC");
+//        mLog.d(TAG, "* CCC");
         event.getMessage();
 //        mHoverView.collapse();
     }
 
     public void onEvent(BusEvent event){
-        mLog.d(TAG, "* BBB");
+//        mLog.d(TAG, "* BBB");
         event.getMessage();
 //        mHoverView.collapse();
     }
 
     public void onEventMainThread(BusEvent event){
-        mLog.d(TAG, "* AAA");
+//        mLog.d(TAG, "* AAA");
         event.getMessage();
         mHoverView.collapse();
     }
@@ -299,4 +328,22 @@ public class MainActivity extends AppCompatActivity {
         Bus.getInstance().unregister(this);
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        // Forward results to EasyPermissions
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+
+    @Override
+    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
+
+    }
+
+    @Override
+    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
+
+    }
 }

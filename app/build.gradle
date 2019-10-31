@@ -59,4 +59,6 @@ dependencies {
     implementation 'de.greenrobot:eventbus:2.4.0'
     implementation 'com.larswerkman:HoloColorPicker:1.5'
     implementation 'com.google.android.material:material:1.0.0'
+
+    implementation 'pub.devrel:easypermissions:3.0.0'
 }
