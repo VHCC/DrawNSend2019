@@ -64,4 +64,6 @@ dependencies {
     implementation 'com.jakewharton:butterknife:8.6.0'
     implementation 'com.blankj:utilcode:1.20.4'
     implementation 'com.github.jorgecastilloprz:fillableloaders:1.03@aar'
+
+    implementation 'com.getbase:floatingactionbutton:1.10.1'
 }

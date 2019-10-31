@@ -1,18 +1,15 @@
 package ichen.chu.drawnsend.pages.dashboard;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
 
-import com.blankj.utilcode.util.AppUtils;
+import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
@@ -33,6 +30,9 @@ public class DashboardMainFragment extends Fragment {
 
     // View
     private Button googleSignOutBtn;
+    private FloatingActionButton signOutFAB;
+    private FloatingActionButton joinRoomFAB;
+    private FloatingActionButton createRoomFAB;
 
     // Constants
 
@@ -93,6 +93,9 @@ public class DashboardMainFragment extends Fragment {
 
     private void initViewIDs(View rootView) {
         googleSignOutBtn = rootView.findViewById(R.id.googleSignOutBtn);
+        signOutFAB = rootView.findViewById(R.id.signOutFAB);
+        joinRoomFAB = rootView.findViewById(R.id.joinRoomFAB);
+        createRoomFAB = rootView.findViewById(R.id.createRoomFAB);
 
     }
 
@@ -114,6 +117,41 @@ public class DashboardMainFragment extends Fragment {
                                 mHomeFragmentListener.onLogOutSuccess();
                             }
                         });
+            }
+        });
+
+        signOutFAB.setIcon(R.drawable.sign_out_icon);
+        signOutFAB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                signOut();
+            }
+
+            private void signOut() {
+                mGoogleSignInClient.signOut()
+                        .addOnCompleteListener(getActivity(), new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                mLog.d(TAG, "signOut Complete");
+                                mHomeFragmentListener.onLogOutSuccess();
+                            }
+                        });
+            }
+        });
+
+        joinRoomFAB.setIcon(R.drawable.join_room);
+        joinRoomFAB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mLog.d(TAG, "click joinRoomFAB");
+            }
+        });
+
+        createRoomFAB.setIcon(R.drawable.create_room);
+        createRoomFAB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mLog.d(TAG, "click createRoomFAB");
             }
         });
     }
