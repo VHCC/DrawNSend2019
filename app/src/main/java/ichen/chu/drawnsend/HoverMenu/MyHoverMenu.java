@@ -18,6 +18,7 @@ import androidx.annotation.Nullable;
 import ichen.chu.drawnsend.HoverMenu.base.DemoTabView;
 import ichen.chu.drawnsend.HoverMenu.theme.HoverTheme;
 import ichen.chu.drawnsend.R;
+import ichen.chu.drawnsend.util.MLog;
 import io.mattcarroll.hover.Content;
 import io.mattcarroll.hover.HoverMenu;
 
@@ -25,6 +26,9 @@ import io.mattcarroll.hover.HoverMenu;
  * Created by IChen.Chu on 2019/10/29
  */
 public class MyHoverMenu extends HoverMenu {
+
+    private static final MLog mLog = new MLog(true);
+    private final String TAG = getClass().getSimpleName() + "@" + Integer.toHexString(hashCode());
 
     public static final String M_1 = "m_1";
     public static final String SELECT_COLOR_ID = "select_color";

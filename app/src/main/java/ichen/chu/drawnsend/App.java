@@ -24,13 +24,15 @@ import androidx.core.content.ContextCompat;
 import ichen.chu.drawnsend.HoverMenu.appstate.AppStateTracker;
 import ichen.chu.drawnsend.HoverMenu.theme.HoverTheme;
 import ichen.chu.drawnsend.HoverMenu.theme.HoverThemeManager;
+import ichen.chu.drawnsend.util.MLog;
 
 /**
  * Application class.
  */
 public class App extends Application {
 
-    public static final String TAG = "dns-";
+    private static final MLog mLog = new MLog(true);
+    private final String TAG = getClass().getSimpleName() + "@" + Integer.toHexString(hashCode());
 
     @Override
     public void onCreate() {
@@ -41,7 +43,7 @@ public class App extends Application {
     }
 
     private void setupTheme() {
-        Log.d(TAG, "setupTheme");
+        mLog.d(TAG, "setupTheme");
         HoverTheme defaultTheme = new HoverTheme(
                 ContextCompat.getColor(this, R.color.hover_accent),
                 ContextCompat.getColor(this, R.color.hover_base));

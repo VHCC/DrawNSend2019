@@ -19,8 +19,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import de.greenrobot.event.EventBus;
-
-import static ichen.chu.drawnsend.App.TAG;
+import ichen.chu.drawnsend.util.MLog;
 
 
 /**
@@ -28,12 +27,14 @@ import static ichen.chu.drawnsend.App.TAG;
  */
 public class HoverThemeManager implements HoverThemer {
 
+    private static final MLog mLog = new MLog(true);
+    private final String TAG = getClass().getSimpleName() + "@" + Integer.toHexString(hashCode());
+
     private static HoverThemeManager sInstance;
 
     public static synchronized void init(@NonNull EventBus bus, @NonNull HoverTheme theme) {
         if (null == sInstance) {
             sInstance = new HoverThemeManager(bus, theme);
-            Log.d(TAG, "init");
         }
     }
 

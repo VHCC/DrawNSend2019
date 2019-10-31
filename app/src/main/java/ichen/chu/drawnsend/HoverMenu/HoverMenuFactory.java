@@ -27,12 +27,16 @@ import ichen.chu.drawnsend.Bus;
 import ichen.chu.drawnsend.HoverMenu.colorselection.ColorSelectionContent;
 import ichen.chu.drawnsend.HoverMenu.demo.HoverIntroductionContent;
 import ichen.chu.drawnsend.HoverMenu.theme.HoverThemeManager;
+import ichen.chu.drawnsend.util.MLog;
 import io.mattcarroll.hover.Content;
 
 /**
  * Can create a Hover menu from code or from file.
  */
 public class HoverMenuFactory {
+
+    private static final MLog mLog = new MLog(true);
+    private final String TAG = getClass().getSimpleName() + "@" + Integer.toHexString(hashCode());
 
     /**
      * Example of how to create a menu in code.

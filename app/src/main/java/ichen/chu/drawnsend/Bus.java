@@ -16,11 +16,15 @@
 package ichen.chu.drawnsend;
 
 import de.greenrobot.event.EventBus;
+import ichen.chu.drawnsend.util.MLog;
 
 /**
  * Globally accessible EventBus.
  */
 public class Bus {
+
+    private static final MLog mLog = new MLog(true);
+    private final String TAG = getClass().getSimpleName() + "@" + Integer.toHexString(hashCode());
 
     private static EventBus sBus = new EventBus();
 
