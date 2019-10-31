@@ -1,71 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_content"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <Button
-            android:id="@+id/strokeWidthPlusButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="SW+" />
-
-        <Button
-            android:id="@+id/strokeWidthMinusButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="SW-" />
-
-        <Button
-            android:id="@+id/changeColorButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Color" />
-
-        <Button
-            android:id="@+id/undoButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Undo" />
-
-        <Button
-            android:id="@+id/clearButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Clear" />
-
-        <Button
-            android:id="@+id/getButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="send jpg" />
-
-        <com.google.android.gms.common.SignInButton
-            android:id="@+id/sign_in_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-
-
-    </LinearLayout>
-
-    <ichen.chu.drawableviewlibs.DrawableView
-        android:id="@+id/paintView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-    <io.mattcarroll.hover.HoverView
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:hover="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/hovermenu"
+    <ichen.chu.drawnsend.customview.SwipeableViewPager
+        android:id="@+id/mainContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        hover:dockSide="right"
-        hover:dockPosition="70%"
-        />
+        app:swipeable="false"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
 </FrameLayout>
-

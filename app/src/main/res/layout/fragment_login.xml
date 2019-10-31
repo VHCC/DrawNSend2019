@@ -1,0 +1,58 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/testText"
+        android:gravity="center_horizontal|center_vertical"
+        android:layout_width="match_parent"
+        android:layout_height="500dp"
+        android:text="DrawNSend"/>
+
+    <com.google.android.gms.common.SignInButton
+        android:layout_gravity="center_horizontal|center_vertical"
+        android:id="@+id/sign_in_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:layout_gravity="center_horizontal|center_vertical"
+        android:visibility="gone"
+        android:text="Sign Out"
+        android:id="@+id/googleSignOutBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <LinearLayout
+        android:gravity="bottom"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!-- App Edition -->
+        <TextView
+            android:id="@+id/appVersion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/common_edit_text_margin_left_right_double"
+            android:layout_marginLeft="@dimen/common_edit_text_margin_left_right_double"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="@dimen/common_edit_text_margin_left_right_double"
+            android:layout_marginRight="@dimen/common_edit_text_margin_left_right_double"
+            android:gravity="center_horizontal|center_vertical"
+            android:textColor="#bbc4d1" />
+
+        <!-- CopyRight-->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/common_edit_text_margin_bottom_top"
+            android:gravity="center_horizontal|center_vertical"
+            android:text="Author Vhcc. r99521320@gmail.com"
+            android:textColor="#bbc4d1" />
+
+    </LinearLayout>
+
+</LinearLayout>
