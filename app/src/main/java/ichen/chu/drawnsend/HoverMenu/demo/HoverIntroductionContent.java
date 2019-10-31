@@ -28,12 +28,17 @@ import ichen.chu.drawnsend.App;
 import ichen.chu.drawnsend.BusEvent;
 import ichen.chu.drawnsend.HoverMenu.theme.HoverTheme;
 import ichen.chu.drawnsend.R;
+import ichen.chu.drawnsend.util.MLog;
 import io.mattcarroll.hover.Content;
 
 /**
  * {@link Content} that displays an introduction to Hover.
  */
 public class HoverIntroductionContent extends FrameLayout implements Content {
+
+    private static final MLog mLog = new MLog(true);
+    private final String TAG = getClass().getSimpleName() + "@" + Integer.toHexString(hashCode());
+
 
     private final EventBus mBus;
     private View mLogo;
@@ -43,7 +48,7 @@ public class HoverIntroductionContent extends FrameLayout implements Content {
 
     public HoverIntroductionContent(@NonNull Context context, @NonNull EventBus bus) {
         super(context);
-        Log.d(App.TAG, " * HoverIntroductionContent");
+        mLog.d(TAG, " * HoverIntroductionContent");
         mBus = bus;
         init();
     }
@@ -59,7 +64,7 @@ public class HoverIntroductionContent extends FrameLayout implements Content {
 
     @Override
     protected void onAttachedToWindow() {
-        Log.d(App.TAG, " * onAttachedToWindow()");
+        mLog.d(TAG, " * onAttachedToWindow()");
         super.onAttachedToWindow();
         mBus.registerSticky(this);
 
@@ -68,7 +73,7 @@ public class HoverIntroductionContent extends FrameLayout implements Content {
 
     @Override
     protected void onDetachedFromWindow() {
-        Log.d(App.TAG, " * onDetachedFromWindow()");
+        mLog.d(TAG, " * onDetachedFromWindow()");
         mBus.unregister(this);
         super.onDetachedFromWindow();
     }
@@ -76,15 +81,13 @@ public class HoverIntroductionContent extends FrameLayout implements Content {
     @NonNull
     @Override
     public View getView() {
-        Log.d(App.TAG, " * getView()");
+        mLog.d(TAG, " * getView()");
         return this;
     }
 
     @Override
     public boolean isFullscreen() {
-        Log.d(App.TAG, " * isFullscreen()");
-
-
+        mLog.d(TAG, " * isFullscreen()");
 
         new Thread(new Runnable() {
             @Override
@@ -98,13 +101,13 @@ public class HoverIntroductionContent extends FrameLayout implements Content {
 
     @Override
     public void onShown() {
-        Log.d(App.TAG, " * onShown()");
+        mLog.d(TAG, " * onShown()");
         mHoverMotion.start(mLogo);
     }
 
     @Override
     public void onHidden() {
-        Log.d(App.TAG, " * onHidden()");
+        mLog.d(TAG, " * onHidden()");
         mHoverMotion.stop();
     }
 
