@@ -17,14 +17,32 @@ package ichen.chu.drawnsend;
 
 import android.app.ActivityManager;
 import android.app.Application;
+import android.content.Intent;
 import android.os.Build;
+import android.os.Message;
 import android.util.Log;
 
+import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.X509TrustManager;
+
 import androidx.core.content.ContextCompat;
+import androidx.core.util.LogWriter;
 import ichen.chu.drawnsend.HoverMenu.appstate.AppStateTracker;
 import ichen.chu.drawnsend.HoverMenu.theme.HoverTheme;
 import ichen.chu.drawnsend.HoverMenu.theme.HoverThemeManager;
 import ichen.chu.drawnsend.util.MLog;
+import ichen.chu.drawnsend.util.NullHostNameVerifier;
+import ichen.chu.drawnsend.util.NullX509TrustManager;
 
 /**
  * Application class.
@@ -37,6 +55,13 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        mLog.i(TAG, "========== app start ==========");
+
+        trustHost();
+
+        // Task Schedule handle thread
+        appThread = new Thread(appRunnable);
+        appThread.start();
 
         setupTheme();
         setupAppStateTracking();
@@ -61,4 +86,69 @@ public class App extends Application {
             }
         }
     }
+
+    @Override
+    public void onTerminate() {
+        mLog.i(TAG, "========== app ShutDown ==========");
+
+        if (appThread.isAlive()) {
+            appThread.interrupt();
+        }
+
+        super.onTerminate();
+    }
+
+    /**
+     * Trust all the https host.
+     * //TODO it might be dangerous.
+     */
+    private void trustHost() {
+        mLog.i(TAG, "trustHost()");
+        HttpsURLConnection.setDefaultHostnameVerifier(new NullHostNameVerifier());
+        SSLContext context = null;
+        try {
+            context = SSLContext.getInstance("TLS");
+            context.init(null, new X509TrustManager[]{new NullX509TrustManager()}, new SecureRandom());
+            HttpsURLConnection.setDefaultSSLSocketFactory(context.getSocketFactory());
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (KeyManagementException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Thread
+    private Thread appThread;
+    private Runnable appRunnable = new Runnable() {
+
+        private static final long task_minimum_tick_time_msec = 1000; // 1 second
+
+        @Override
+        public void run() {
+            long tick_count = 0;
+            mLog.d(TAG, "task_minimum_tick_time_msec= " + (task_minimum_tick_time_msec));
+
+            while (true) {
+                try {
+                    long start_time_tick = System.currentTimeMillis();
+                    // real-time task
+
+                    if (tick_count % 60 == 5) {
+                        mLog.d(TAG, "heartBeat");
+                    }
+
+                    long end_time_tick = System.currentTimeMillis();
+
+                    if (end_time_tick - start_time_tick > task_minimum_tick_time_msec) {
+                        mLog.w(TAG, "Over time process " + (end_time_tick - start_time_tick));
+                    } else {
+                        Thread.sleep(task_minimum_tick_time_msec);
+                    }
+                    tick_count++;
+                } catch (InterruptedException e) {
+                    mLog.d(TAG, "appRunnable interrupted");
+                }
+            }
+        }
+    };
 }

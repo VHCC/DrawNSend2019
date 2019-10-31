@@ -27,13 +27,16 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import de.greenrobot.event.EventBus;
+import ichen.chu.drawnsend.util.MLog;
 
 /**
  * Tracks Activity and Service state and makes that information available to clients.
  */
 public class AppStateTracker {
 
-    private static final String TAG = "AppStateTracker";
+    private static final MLog mLog = new MLog(true);
+    private final String TAG = getClass().getSimpleName() + "@" + Integer.toHexString(hashCode());
+
 
     private static AppStateTracker sInstance;
 
@@ -57,7 +60,7 @@ public class AppStateTracker {
     private final Application.ActivityLifecycleCallbacks mActivityLifecycleCallback = new Application.ActivityLifecycleCallbacks() {
         @Override
         public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
-            Log.d(TAG, "onActivityCreated: " + activity.getLocalClassName());
+            mLog.d(TAG, "onActivityCreated: " + activity.getLocalClassName());
             if (activity.getTaskId() == mTaskToTrack.id) {
                 if (null == savedInstanceState) {
                     // This must be a new Activity. Add it.
@@ -76,7 +79,7 @@ public class AppStateTracker {
 
         @Override
         public void onActivityStarted(Activity activity) {
-            Log.d(TAG, "onActivityStarted: " + activity.getLocalClassName());
+            mLog.d(TAG, "onActivityStarted: " + activity.getLocalClassName());
             if (activity.getTaskId() == mTaskToTrack.id) {
                 // Note: When using the Android setting to forcibly kill Activitys, they go straight from destroyed to started.
                 int correspondingBackstackIndex = findFirstInBackStack(activity.getLocalClassName(), ActivityState.State.CREATED, ActivityState.State.STOPPED, ActivityState.State.DESTROYED);
@@ -91,7 +94,7 @@ public class AppStateTracker {
 
         @Override
         public void onActivityResumed(Activity activity) {
-            Log.d(TAG, "onActivityResumed: " + activity.getLocalClassName());
+            mLog.d(TAG, "onActivityResumed: " + activity.getLocalClassName());
             if (activity.getTaskId() == mTaskToTrack.id) {
                 int correspondingBackstackIndex = findFirstInBackStack(activity.getLocalClassName(), ActivityState.State.STARTED, ActivityState.State.PAUSED);
                 if (correspondingBackstackIndex >= 0) {
@@ -105,7 +108,7 @@ public class AppStateTracker {
 
         @Override
         public void onActivityPaused(Activity activity) {
-            Log.d(TAG, "onActivityPaused: " + activity.getLocalClassName());
+            mLog.d(TAG, "onActivityPaused: " + activity.getLocalClassName());
             if (activity.getTaskId() == mTaskToTrack.id) {
                 int correspondingBackstackIndex = findLastInBackStack(activity.getLocalClassName(), ActivityState.State.RESUMED);
                 if (correspondingBackstackIndex >= 0) {
@@ -119,7 +122,7 @@ public class AppStateTracker {
 
         @Override
         public void onActivityStopped(Activity activity) {
-            Log.d(TAG, "onActivityStopped: " + activity.getLocalClassName());
+            mLog.d(TAG, "onActivityStopped: " + activity.getLocalClassName());
             if (activity.getTaskId() == mTaskToTrack.id) {
                 int correspondingBackstackIndex = findLastInBackStack(activity.getLocalClassName(), ActivityState.State.PAUSED, ActivityState.State.STARTED);
                 if (correspondingBackstackIndex >= 0) {
@@ -138,7 +141,7 @@ public class AppStateTracker {
 
         @Override
         public void onActivityDestroyed(Activity activity) {
-            Log.d(TAG, "onActivityDestroyed: " + activity.getLocalClassName());
+            mLog.d(TAG, "onActivityDestroyed: " + activity.getLocalClassName());
             if (activity.getTaskId() == mTaskToTrack.id) {
                 int correspondingBackstackIndex = findLastInBackStack(activity.getLocalClassName(), ActivityState.State.STOPPED);
                 if (correspondingBackstackIndex >= 0) {
@@ -162,8 +165,8 @@ public class AppStateTracker {
 
     public void trackTask(@NonNull ActivityManager.RecentTaskInfo taskToTrack) {
         mTaskToTrack = taskToTrack;
-        Log.d(TAG, "Task ID: " + taskToTrack.id);
-        Log.d(TAG, "Original activity: " + taskToTrack.origActivity);
+        mLog.d(TAG, "Task ID: " + taskToTrack.id);
+        mLog.d(TAG, "Original activity: " + taskToTrack.origActivity);
 
         if (null != mTaskToTrack.origActivity) {
             mActivityStates.add(new ActivityState(mTaskToTrack.origActivity.getClassName(), ActivityState.State.CREATED));
@@ -229,13 +232,13 @@ public class AppStateTracker {
     }
 
     private void logStack() {
-        Log.d(TAG, "Stack:");
+        mLog.d(TAG, "Stack:");
         ActivityState activityState;
         for (int i = mActivityStates.size() - 1; i >= 0; --i) {
             activityState = mActivityStates.get(i);
-            Log.d(TAG, " " + i + " - " + activityState.getActivityName() + ": " + activityState.getState());
+            mLog.d(TAG, " " + i + " - " + activityState.getActivityName() + ": " + activityState.getState());
         }
-        Log.d(TAG, " ");
+        mLog.d(TAG, " ");
     }
 
     public static class ActivityState {

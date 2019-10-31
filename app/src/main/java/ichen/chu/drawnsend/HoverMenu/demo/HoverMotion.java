@@ -22,13 +22,15 @@ import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import ichen.chu.drawnsend.util.MLog;
 
 /**
  * Moves and scales a View as if its hovering.
  */
 public class HoverMotion {
 
-    private static final String TAG = "HoverMotion";
+    private static final MLog mLog = new MLog(true);
+    private final String TAG = getClass().getSimpleName() + "@" + Integer.toHexString(hashCode());
 
     private static final int RENDER_CYCLE_IN_MILLIS = 16; // 60 FPS.
 
@@ -59,7 +61,7 @@ public class HoverMotion {
     };
 
     public void start(@NonNull View view) {
-        Log.d(TAG, "start()");
+        mLog.d(TAG, "start()");
         mView = view;
         mIsRunning = true;
         mTimeOfLastUpdate = SystemClock.elapsedRealtime();
@@ -67,7 +69,7 @@ public class HoverMotion {
     }
 
     public void stop() {
-        Log.d(TAG, "stop()");
+        mLog.d(TAG, "stop()");
         mIsRunning = false;
     }
 
