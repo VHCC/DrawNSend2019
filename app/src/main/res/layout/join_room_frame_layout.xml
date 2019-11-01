@@ -5,6 +5,7 @@
     android:layout_height="match_parent">
 
     <com.raycoarana.codeinputview.CodeInputView
+        android:layout_gravity="center"
         android:id="@+id/roomCodeInput"
         android:layout_marginTop="20dp"
         android:layout_width="wrap_content"

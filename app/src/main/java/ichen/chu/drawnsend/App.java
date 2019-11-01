@@ -17,42 +17,29 @@ package ichen.chu.drawnsend;
 
 import android.app.ActivityManager;
 import android.app.Application;
-import android.content.Intent;
 import android.os.Build;
-import android.os.Message;
-import android.util.Log;
 
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.UnknownHostException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.X509TrustManager;
 
 import androidx.core.content.ContextCompat;
-import androidx.core.util.LogWriter;
 import ichen.chu.drawnsend.HoverMenu.appstate.AppStateTracker;
 import ichen.chu.drawnsend.HoverMenu.theme.HoverTheme;
 import ichen.chu.drawnsend.HoverMenu.theme.HoverThemeManager;
 import ichen.chu.drawnsend.util.MLog;
-import ichen.chu.drawnsend.util.MessageTools;
 import ichen.chu.drawnsend.util.NullHostNameVerifier;
 import ichen.chu.drawnsend.util.NullX509TrustManager;
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.Response;
 
 /**
@@ -144,11 +131,11 @@ public class App extends Application {
                     long start_time_tick = System.currentTimeMillis();
                     // real-time task
 
-                    if (tick_count % 20 == 5) {
+                    if (tick_count % 60 == 5) {
                         mLog.d(TAG, "heartBeat");
                     }
 
-                    if (tick_count % 20 == 6) {
+                    if (tick_count % 60 == 6) {
                         getDNSServerStatus();
                     }
 
