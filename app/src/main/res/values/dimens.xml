@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <dimen name="message_tool_toast_padding">10dp</dimen>
+
     <dimen name="common_edit_text_margin_left_right_double">40dp</dimen>
     <dimen name="common_edit_text_margin_bottom_top">15dp</dimen>
 

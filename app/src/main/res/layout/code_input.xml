@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.raycoarana.codeinputview.CodeInputView
+        android:id="@+id/roomCodeInput"
+        android:layout_marginTop="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:animate_on_complete="false"
+        app:underline_color="#457ad1"
+        app:underline_selected_color="#9e1ace"
+        app:code_text_color="#b12eff"
+        app:error_color="#77ce9d"
+        app:input_type="numeric"
+        app:length_of_code="6"
+        />
+
+</FrameLayout>

@@ -22,7 +22,11 @@ import android.os.Build;
 import android.os.Message;
 import android.util.Log;
 
+import org.json.JSONObject;
+
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.UnknownHostException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -41,8 +45,15 @@ import ichen.chu.drawnsend.HoverMenu.appstate.AppStateTracker;
 import ichen.chu.drawnsend.HoverMenu.theme.HoverTheme;
 import ichen.chu.drawnsend.HoverMenu.theme.HoverThemeManager;
 import ichen.chu.drawnsend.util.MLog;
+import ichen.chu.drawnsend.util.MessageTools;
 import ichen.chu.drawnsend.util.NullHostNameVerifier;
 import ichen.chu.drawnsend.util.NullX509TrustManager;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 /**
  * Application class.
@@ -133,8 +144,12 @@ public class App extends Application {
                     long start_time_tick = System.currentTimeMillis();
                     // real-time task
 
-                    if (tick_count % 60 == 5) {
+                    if (tick_count % 20 == 5) {
                         mLog.d(TAG, "heartBeat");
+                    }
+
+                    if (tick_count % 20 == 6) {
+                        getDNSServerStatus();
                     }
 
                     long end_time_tick = System.currentTimeMillis();
@@ -151,4 +166,37 @@ public class App extends Application {
             }
         }
     };
+
+
+    private void getDNSServerStatus() {
+        try {
+            try {
+                Request request = new Request.Builder()
+                        .url("http://172.22.212.168:4009/api/get_dns_check_server_status")
+//                        .url("https://dns.ichenprocin.dsmynas.com/api/get_dns_check_server_status")
+//                        .post(req)
+                        .build();
+
+                OkHttpClient client = new OkHttpClient();
+                Response response = client.newCall(request).execute();
+
+//                mLog.d(TAG, "response= " + response.body().string());
+
+                JSONObject responseJ = new JSONObject(response.body().string());
+//                mLog.d(TAG, "response status= " + Integer.valueOf((Integer)responseJ.get("code")));
+                switch (Integer.valueOf((Integer)responseJ.get("code"))) {
+                    case 200:
+                        mLog.i(TAG, "server status: online");
+                        break;
+                }
+
+            } catch (UnknownHostException | UnsupportedEncodingException e) {
+                mLog.e(TAG, "Error: " + e.getLocalizedMessage());
+            } catch (Exception e) {
+                mLog.e(TAG, "Other Error: " + e.getLocalizedMessage());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

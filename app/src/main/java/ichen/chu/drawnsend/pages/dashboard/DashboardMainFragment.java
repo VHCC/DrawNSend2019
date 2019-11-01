@@ -5,6 +5,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -12,10 +15,13 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.raycoarana.codeinputview.CodeInputView;
+import com.raycoarana.codeinputview.OnCodeCompleteListener;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import ichen.chu.drawnsend.R;
 import ichen.chu.drawnsend.util.MLog;
 
@@ -144,6 +150,32 @@ public class DashboardMainFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 mLog.d(TAG, "click joinRoomFAB");
+
+                LayoutInflater inflater = LayoutInflater.from(getContext());
+                FrameLayout frameLayout = (FrameLayout) inflater.inflate(R.layout.code_input ,null);
+                final CodeInputView codeInputView = frameLayout.findViewById(R.id.roomCodeInput);
+
+                codeInputView.addOnCompleteListener(new OnCodeCompleteListener() {
+                    @Override
+                    public void onCompleted(String code) {
+                        mLog.d(TAG, "code= " + code);
+                    }
+                });
+
+
+                new SweetAlertDialog(getContext(), SweetAlertDialog.NORMAL_TYPE)
+                        .setTitleText("Join a Room")
+                        .setConfirmText("Join")
+                        .setCustomView(frameLayout)
+//                        .hideConfirmButton()
+                        .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                            @Override
+                            public void onClick(SweetAlertDialog sDialog) {
+                                mLog.d(TAG, "code= " + codeInputView.getCode());
+                                sDialog.dismissWithAnimation();
+                            }
+                        })
+                        .show();
             }
         });
 
@@ -151,7 +183,10 @@ public class DashboardMainFragment extends Fragment {
         createRoomFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mLog.d(TAG, "click createRoomFAB");
+                new SweetAlertDialog(getContext(), SweetAlertDialog.SUCCESS_TYPE)
+                        .setTitleText("Good job!")
+                        .setContentText("You clicked the button!")
+                        .show();
             }
         });
     }
