@@ -32,6 +32,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
+import de.greenrobot.event.EventBus;
 import ichen.chu.drawableviewlibs.DrawableView;
 import ichen.chu.drawableviewlibs.DrawableViewConfig;
 import ichen.chu.drawnsend.pages.dashboard.DashboardMainFragment;
@@ -266,19 +267,19 @@ public class MainActivity extends AppCompatActivity {
 
     public void onEventBackgroundThread(BusEvent event) {
 //        mLog.d(TAG, "* CCC");
-        event.getMessage();
+//        event.getMessage();
 //        mHoverView.collapse();
     }
 
     public void onEvent(BusEvent event){
 //        mLog.d(TAG, "* BBB");
-        event.getMessage();
+//        event.getMessage();
 //        mHoverView.collapse();
     }
 
     public void onEventMainThread(BusEvent event){
 //        mLog.d(TAG, "* AAA");
-        event.getMessage();
+//        event.getMessage();
         mHoverView.collapse();
     }
 
@@ -356,6 +357,7 @@ public class MainActivity extends AppCompatActivity {
                             GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
                             if (acct != null) {
                                 mViewPager.setCurrentItem(PAGE_DASHBOARD);
+                                Bus.getInstance().post(new BusEvent("login success", 1001));
                             } else {
                                 mViewPager.setCurrentItem(PAGE_LOGIN);
                             }
@@ -434,6 +436,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onLoginSuccess() {
                 mViewPager.setCurrentItem(SectionsPagerAdapter.PAGE_DASHBOARD);
+                Bus.getInstance().post(new BusEvent("login success", 1001));
 //                MessageTools.showToast(mContext, "Login Succeed!");
 //                MessageTools.showToast(mContext, "登入成功");
             }

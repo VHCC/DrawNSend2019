@@ -12,12 +12,56 @@
 
 
     <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="25dp"
         android:id="@+id/playTimeSettingBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:dsb_min="30"
         app:dsb_max="60"
         />
+
+    <TextView
+        android:layout_marginTop="60dp"
+        android:id="@+id/difficultyTV"
+        android:text="game difficulty:"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
+        android:layout_marginTop="85dp"
+        android:id="@+id/difficultySeekBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:dsb_min="0"
+        app:dsb_max="5"
+        app:dsb_value="-2"
+        />
+
+    <TextView
+        android:layout_marginTop="120dp"
+        android:id="@+id/isAdultTV"
+        android:text="game difficulty:"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <Switch
+        android:layout_marginTop="120dp"
+        android:id="@+id/isAdultSwitch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
+        android:visibility="gone"
+        android:layout_marginTop="40dp"
+        android:id="@+id/discrete2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:dsb_allowTrackClickToDrag="false"
+        app:dsb_indicatorTextAppearance="@style/CustomFloaterTextAppearance"
+        app:dsb_progressColor="@color/blue_btn_bg_pressed_color"
+        app:dsb_rippleColor="#FF7788FF"
+        app:dsb_indicatorColor="@color/colorAccent"
+        app:dsb_indicatorFormatter="\\o/ %d"/>
+
 
 </FrameLayout>

@@ -1,5 +1,8 @@
 package ichen.chu.drawnsend.pages.dashboard;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -8,7 +11,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
@@ -26,11 +32,15 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import cn.pedant.SweetAlert.SweetAlertDialog;
+import de.hdodenhof.circleimageview.CircleImageView;
+import ichen.chu.drawnsend.Bus;
+import ichen.chu.drawnsend.BusEvent;
 import ichen.chu.drawnsend.R;
 import ichen.chu.drawnsend.util.MLog;
 import okhttp3.Call;
@@ -51,6 +61,8 @@ public class DashboardMainFragment extends Fragment {
 
     // View
     private Button googleSignOutBtn;
+    private CircleImageView profile_image;
+    private TextView accountEmailTV;
     private FloatingActionButton signOutFAB;
     private FloatingActionButton joinRoomFAB;
     private FloatingActionButton createRoomFAB;
@@ -87,7 +99,15 @@ public class DashboardMainFragment extends Fragment {
         if (getArguments() != null) {
         }
 
+        Bus.getInstance().registerSticky(this);
+
         initGoogleAPI();
+    }
+
+    @Override
+    public void onDestroy() {
+        Bus.getInstance().unregister(this);
+        super.onDestroy();
     }
 
     private void initGoogleAPI() {
@@ -114,6 +134,8 @@ public class DashboardMainFragment extends Fragment {
 
     private void initViewIDs(View rootView) {
         googleSignOutBtn = rootView.findViewById(R.id.googleSignOutBtn);
+        profile_image = rootView.findViewById(R.id.profile_image);
+        accountEmailTV = rootView.findViewById(R.id.accountEmailTV);
         signOutFAB = rootView.findViewById(R.id.signOutFAB);
         joinRoomFAB = rootView.findViewById(R.id.joinRoomFAB);
         createRoomFAB = rootView.findViewById(R.id.createRoomFAB);
@@ -160,6 +182,7 @@ public class DashboardMainFragment extends Fragment {
             }
         });
 
+        // ******************** JOIN *************************
         joinRoomFAB.setIcon(R.drawable.join_room);
         joinRoomFAB.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -250,6 +273,8 @@ public class DashboardMainFragment extends Fragment {
             }
         });
 
+
+        // ******************** CREATE *************************
         createRoomFAB.setIcon(R.drawable.create_room);
         createRoomFAB.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -257,13 +282,14 @@ public class DashboardMainFragment extends Fragment {
 
                 LayoutInflater inflater = LayoutInflater.from(getContext());
                 FrameLayout frameLayout = (FrameLayout) inflater.inflate(R.layout.create_room_frame_layout,null);
-                final DiscreteSeekBar discreteSeekBar = frameLayout.findViewById(R.id.playTimeSettingBar);
+                final DiscreteSeekBar playTimeSeekBar = frameLayout.findViewById(R.id.playTimeSettingBar);
                 final TextView gameTimeTV = frameLayout.findViewById(R.id.gameTimeTV);
-                gameTimeTV.setText("game period: " + discreteSeekBar.getProgress() + " s");
-                discreteSeekBar.setOnProgressChangeListener(new DiscreteSeekBar.OnProgressChangeListener() {
+                gameTimeTV.setText("game period: " + playTimeSeekBar.getProgress() + " s");
+
+                playTimeSeekBar.setOnProgressChangeListener(new DiscreteSeekBar.OnProgressChangeListener() {
                     @Override
                     public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
-                        gameTimeTV.setText("game period: " + discreteSeekBar.getProgress() + " s");
+                        gameTimeTV.setText("game period: " + playTimeSeekBar.getProgress() + " s");
                     }
 
                     @Override
@@ -277,7 +303,37 @@ public class DashboardMainFragment extends Fragment {
                     }
                 });
 
+                final DiscreteSeekBar difficultySeekBar = frameLayout.findViewById(R.id.difficultySeekBar);
+                final TextView difficultyTV = frameLayout.findViewById(R.id.difficultyTV);
+                difficultyTV.setText("game level: " + difficultySeekBar.getProgress());
 
+                difficultySeekBar.setOnProgressChangeListener(new DiscreteSeekBar.OnProgressChangeListener() {
+                    @Override
+                    public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
+                        difficultyTV.setText("game level: " + difficultySeekBar.getProgress());
+                    }
+
+                    @Override
+                    public void onStartTrackingTouch(DiscreteSeekBar seekBar) {
+
+                    }
+
+                    @Override
+                    public void onStopTrackingTouch(DiscreteSeekBar seekBar) {
+
+                    }
+                });
+
+                final Switch isAdultSwitch = frameLayout.findViewById(R.id.isAdultSwitch);
+                final TextView isAdultTV = frameLayout.findViewById(R.id.isAdultTV);
+                isAdultTV.setText("isAdult: " + isAdultSwitch.isChecked());
+
+                isAdultSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        isAdultTV.setText("isAdult: " + isChecked);
+                    }
+                });
 
                 new SweetAlertDialog(getContext(), SweetAlertDialog.NORMAL_TYPE)
                         .setTitleText("Setting and ready to Game")
@@ -287,9 +343,9 @@ public class DashboardMainFragment extends Fragment {
 
                             @Override
                             public void onClick(final SweetAlertDialog sDialog) {
-                                mLog.d(TAG, "game time= " + discreteSeekBar.getProgress());
+                                mLog.d(TAG, "game time= " + playTimeSeekBar.getProgress());
 
-                                discreteSeekBar.setVisibility(View.INVISIBLE);
+                                playTimeSeekBar.setVisibility(View.INVISIBLE);
 
                                 final Handler SADHandler = new Handler(new Handler.Callback() {
                                     @Override
@@ -304,7 +360,7 @@ public class DashboardMainFragment extends Fragment {
                                     @Override
                                     public void run() {
                                         createPlayRoom(SADHandler,
-                                                discreteSeekBar.getProgress());
+                                                playTimeSeekBar.getProgress());
                                     }
                                 }).start();
 
@@ -364,7 +420,7 @@ public class DashboardMainFragment extends Fragment {
                 RequestBody requestBody = RequestBody.create(JSON, jsonObj.toString());
 
                 Request request = new Request.Builder()
-                        .url("http://172.22.212.168:4009/api/post_dns_join_game_room")
+                        .url("http://172.22.212.158:4009/api/post_dns_join_game_room")
 //                        .url("https://dns.ichenprocin.dsmynas.com/api/get_dns_check_server_status")
                         .post(requestBody)
                         .build();
@@ -434,7 +490,7 @@ public class DashboardMainFragment extends Fragment {
                 RequestBody requestBody = RequestBody.create(JSON, jsonObj.toString());
 
                 Request request = new Request.Builder()
-                        .url("http://172.22.212.168:4009/api/post_dns_quit_game_room")
+                        .url("http://172.22.212.158:4009/api/post_dns_quit_game_room")
 //                        .url("https://dns.ichenprocin.dsmynas.com/api/get_dns_check_server_status")
                         .post(requestBody)
                         .build();
@@ -483,7 +539,7 @@ public class DashboardMainFragment extends Fragment {
                 RequestBody requestBody = RequestBody.create(JSON, jsonObj.toString());
 
                 Request request = new Request.Builder()
-                        .url("http://172.22.212.168:4009/api/post_dns_create_game_room")
+                        .url("http://172.22.212.158:4009/api/post_dns_create_game_room")
 //                        .url("https://dns.ichenprocin.dsmynas.com/api/get_dns_check_server_status")
                         .post(requestBody)
                         .build();
@@ -512,6 +568,44 @@ public class DashboardMainFragment extends Fragment {
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+        ImageView bmImage;
+
+        public DownloadImageTask(ImageView bmImage) {
+            this.bmImage = bmImage;
+        }
+
+        protected Bitmap doInBackground(String... urls) {
+            String urldisplay = urls[0];
+            Bitmap mIcon11 = null;
+            try {
+                InputStream in = new java.net.URL(urldisplay).openStream();
+                mIcon11 = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return mIcon11;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            bmImage.setImageBitmap(result);
+        }
+    }
+
+    public void onEventMainThread(BusEvent event){
+//        event.getMessage();
+        mLog.d(TAG, "event= " + event.getMessage());
+
+        switch (event.getEventType()) {
+            case 1001:
+                GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getContext());
+                new DownloadImageTask(profile_image).execute(acct.getPhotoUrl().toString());
+                accountEmailTV.setText(acct.getEmail());
+                break;
         }
     }
 }

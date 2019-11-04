@@ -92,7 +92,7 @@ public class HoverIntroductionContent extends FrameLayout implements Content {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                mBus.post(new BusEvent("test"));
+                mBus.post(new BusEvent("test", 9999));
             }
         }).start();
 

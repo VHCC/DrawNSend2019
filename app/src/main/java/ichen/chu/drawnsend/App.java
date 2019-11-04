@@ -159,7 +159,7 @@ public class App extends Application {
         try {
             try {
                 Request request = new Request.Builder()
-                        .url("http://172.22.212.168:4009/api/get_dns_check_server_status")
+                        .url("http://172.22.212.158:4009/api/get_dns_check_server_status")
 //                        .url("https://dns.ichenprocin.dsmynas.com/api/get_dns_check_server_status")
 //                        .post(req)
                         .build();
