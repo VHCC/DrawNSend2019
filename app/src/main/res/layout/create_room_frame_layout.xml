@@ -50,18 +50,51 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
-    <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
+    <TextView
+        android:layout_marginTop="200dp"
+        android:visibility="invisible"
+        android:text="game difficulty:"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <com.raycoarana.codeinputview.CodeInputView
         android:visibility="gone"
-        android:layout_marginTop="40dp"
-        android:id="@+id/discrete2"
+        android:layout_gravity="center"
+        app:gravity="center"
+        android:id="@+id/roomNumber"
+        android:layout_marginTop="80dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:dsb_allowTrackClickToDrag="false"
-        app:dsb_indicatorTextAppearance="@style/CustomFloaterTextAppearance"
-        app:dsb_progressColor="@color/blue_btn_bg_pressed_color"
-        app:dsb_rippleColor="#FF7788FF"
-        app:dsb_indicatorColor="@color/colorAccent"
-        app:dsb_indicatorFormatter="\\o/ %d"/>
+        app:animate_on_complete="false"
+        app:underline_color="#457ad1"
+        app:underline_selected_color="#9e1ace"
+        app:code_text_color="#b12eff"
+        app:error_color="#77ce9d"
+        app:input_type="numeric"
+        app:length_of_code="6"
+        />
+
+    <LinearLayout
+        android:layout_marginTop="180dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Event List. -->
+        <androidx.recyclerview.widget.RecyclerView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/recycleViewPlayerListContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_marginTop="400dp"
+        android:visibility="invisible"
+        android:text="game difficulty:"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
 
 
 </FrameLayout>

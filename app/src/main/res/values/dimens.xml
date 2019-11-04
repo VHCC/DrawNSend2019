@@ -6,4 +6,12 @@
     <dimen name="common_edit_text_margin_left_right_double">40dp</dimen>
     <dimen name="common_edit_text_margin_bottom_top">15dp</dimen>
 
+    <!-- Divide Line -->
+    <dimen name="common_divide_line_size">1px</dimen>
+
+    <!-- Adapter Common -->
+    <dimen name="adapter_list_image_padding">15dp</dimen>
+    <dimen name="adapter_list_sensor_name_padding">2dp</dimen>
+    <dimen name="adapter_list_sensor_location_padding">2dp</dimen>
+
 </resources>

@@ -28,20 +28,27 @@ import com.raycoarana.codeinputview.CodeInputView;
 import com.raycoarana.codeinputview.OnCodeCompleteListener;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import de.hdodenhof.circleimageview.CircleImageView;
 import ichen.chu.drawnsend.Bus;
 import ichen.chu.drawnsend.BusEvent;
 import ichen.chu.drawnsend.R;
+import ichen.chu.drawnsend.model.PlayerItem;
+import ichen.chu.drawnsend.pages.dashboard.ListAdapter.PlayerItemAdapter;
 import ichen.chu.drawnsend.util.MLog;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -67,9 +74,21 @@ public class DashboardMainFragment extends Fragment {
     private FloatingActionButton joinRoomFAB;
     private FloatingActionButton createRoomFAB;
 
+    // RecycleView
+    private RecyclerView recycleViewPlayerListContainer;
+    private LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+
+    /*data Block*/
+    private PlayerItemAdapter playerItemAdapter;
+
     // Constants
 
     // Handler
+
+    /**
+     * storage the result of event search.
+     */
+    private final List<PlayerItem> playerItemsList = new ArrayList<>();
 
     // Listener
     private OnDashboardMainFragmentInteractionListener mHomeFragmentListener;
@@ -335,6 +354,18 @@ public class DashboardMainFragment extends Fragment {
                     }
                 });
 
+                // Join Number
+                final CodeInputView roomNumber = frameLayout.findViewById(R.id.roomNumber);
+
+
+                // Player Recycler View
+                recycleViewPlayerListContainer = frameLayout.findViewById(R.id.recycleViewPlayerListContainer);
+
+                final PlayerItemAdapter playerItemAdapter = new PlayerItemAdapter(getContext(), playerItemsList);
+                recycleViewPlayerListContainer.setAdapter(playerItemAdapter);
+                recycleViewPlayerListContainer.setLayoutManager(linearLayoutManager);
+                recycleViewPlayerListContainer.setNestedScrollingEnabled(false);
+
                 new SweetAlertDialog(getContext(), SweetAlertDialog.NORMAL_TYPE)
                         .setTitleText("Setting and ready to Game")
                         .setCustomView(frameLayout)
@@ -345,12 +376,42 @@ public class DashboardMainFragment extends Fragment {
                             public void onClick(final SweetAlertDialog sDialog) {
                                 mLog.d(TAG, "game time= " + playTimeSeekBar.getProgress());
 
-                                playTimeSeekBar.setVisibility(View.INVISIBLE);
+                                playTimeSeekBar.setVisibility(View.GONE);
+                                difficultySeekBar.setVisibility(View.GONE);
+                                isAdultSwitch.setVisibility(View.GONE);
+
 
                                 final Handler SADHandler = new Handler(new Handler.Callback() {
                                     @Override
                                     public boolean handleMessage(Message msg) {
                                         Log.d(TAG, "msg= " + msg);
+                                        try {
+                                            JSONObject responseJ = (JSONObject) msg.obj;
+
+                                            mLog.d(TAG, "responseJ= " + responseJ);
+                                            mLog.d(TAG, "Join Number= " + responseJ.get("joinNumber"));
+                                            roomNumber.setVisibility(View.VISIBLE);
+                                            roomNumber.setCode((String) responseJ.get("joinNumber"));
+                                            roomNumber.setEditable(false);
+
+                                            JSONArray jsonArray = (JSONArray) responseJ.get("roomOwner");
+
+                                            mLog.d(TAG, "roomOwner= " + jsonArray.get(0));
+
+                                            playerItemsList.clear();
+                                            PlayerItem item = new PlayerItem(
+                                                    PlayerItem.TYPE.OWNER,
+                                                    (JSONObject) jsonArray.get(0)
+                                            );
+                                            playerItemsList.add(item);
+                                            playerItemsList.add(item);
+                                            playerItemsList.add(item);
+
+                                            playerItemAdapter.clearAll();
+                                            playerItemAdapter.refreshList();
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
                                         sDialog.changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
                                         return false;
                                     }
@@ -360,11 +421,18 @@ public class DashboardMainFragment extends Fragment {
                                     @Override
                                     public void run() {
                                         createPlayRoom(SADHandler,
-                                                playTimeSeekBar.getProgress());
+                                                playTimeSeekBar.getProgress(),
+                                                difficultySeekBar.getProgress(),
+                                                isAdultSwitch.isChecked());
                                     }
                                 }).start();
 
                                 sDialog.hideConfirmButton();
+                            }
+
+                            public void onEventMainThread(BusEvent event){
+                                //        event.getMessage();
+                                mLog.d(TAG, "* createRoomFAB, event= " + event.getMessage());
                             }
                         })
                         .show();
@@ -524,7 +592,10 @@ public class DashboardMainFragment extends Fragment {
 
 
     private void createPlayRoom(final Handler SADHandler,
-                                 final int playTime) {
+                                 final int playTime,
+                                 final int difficulty,
+                                 final boolean isAdult
+                                ) {
         try {
             try {
 
@@ -532,9 +603,17 @@ public class DashboardMainFragment extends Fragment {
 
                 GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getContext());
 
+                JSONObject userObj = new JSONObject();
+                userObj.put("email", acct.getEmail());
+                userObj.put("displayName", acct.getDisplayName());
+                userObj.put("photoUrl", acct.getPhotoUrl());
+
+
                 JSONObject jsonObj = new JSONObject();
-                jsonObj.put("roomOwner", acct.getEmail());
+                jsonObj.put("roomOwner", userObj);
                 jsonObj.put("playTime", playTime);
+                jsonObj.put("difficulty", difficulty);
+                jsonObj.put("isAdult", isAdult);
 
                 RequestBody requestBody = RequestBody.create(JSON, jsonObj.toString());
 
@@ -554,8 +633,17 @@ public class DashboardMainFragment extends Fragment {
                     @Override
                     public void onResponse(Call call, okhttp3.Response response) throws IOException {
                         if (response.isSuccessful()) {
-                            mLog.d(TAG, "response= " + response.body().string());
-                            SADHandler.sendMessage(new Message());
+                            try {
+                                JSONObject responseJ = new JSONObject(response.body().string());
+                                mLog.d(TAG, "response= " + responseJ);
+                                mLog.d(TAG, "payload= " + responseJ.get("payload"));
+                                Message msg = new Message();
+                                msg.obj = responseJ.get("payload");
+                                SADHandler.sendMessage(msg);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
                         }
                     }
                 });
