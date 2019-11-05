@@ -50,6 +50,8 @@ public class App extends Application {
     private static final MLog mLog = new MLog(true);
     private final String TAG = getClass().getSimpleName() + "@" + Integer.toHexString(hashCode());
 
+    public static final String SERVER_SITE = "http://172.22.213.7:4009";
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -159,7 +161,7 @@ public class App extends Application {
         try {
             try {
                 Request request = new Request.Builder()
-                        .url("http://172.22.212.158:4009/api/get_dns_check_server_status")
+                        .url(SERVER_SITE + "/api/get_dns_check_server_status")
 //                        .url("https://dns.ichenprocin.dsmynas.com/api/get_dns_check_server_status")
 //                        .post(req)
                         .build();

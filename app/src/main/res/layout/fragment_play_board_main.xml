@@ -1,0 +1,68 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/strokeWidthPlusButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:text="SW+" />
+
+        <Button
+            android:id="@+id/strokeWidthMinusButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:text="SW-" />
+
+        <Button
+            android:id="@+id/changeColorButton"
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Color" />
+
+        <Button
+            android:id="@+id/undoButton"
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Undo" />
+
+        <Button
+            android:id="@+id/clearButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:text="Clear" />
+
+        <Button
+            android:id="@+id/getButton"
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="send jpg" />
+
+    </LinearLayout>
+
+    <ichen.chu.drawableviewlibs.DrawableView
+        android:id="@+id/paintView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <io.mattcarroll.hover.HoverView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:hover="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/hovermenu"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        hover:dockSide="right"
+        hover:dockPosition="70%"
+        />
+
+</FrameLayout>

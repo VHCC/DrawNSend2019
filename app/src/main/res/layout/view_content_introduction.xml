@@ -23,7 +23,7 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="16dp"
             android:scaleType="centerInside"
-            android:src="@drawable/hover_introduction_logo_no_shadow"
+            android:src="@drawable/dns_logo"
             android:background="@drawable/circle"
             />
         <TextView

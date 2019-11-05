@@ -39,6 +39,7 @@ import ichen.chu.drawnsend.pages.dashboard.DashboardMainFragment;
 import ichen.chu.drawnsend.pages.home.HomeFragment;
 import ichen.chu.drawnsend.pages.login.LoginFragment;
 import ichen.chu.drawnsend.pages.pagerAdapter.tranform.ScaleInOutTransformer;
+import ichen.chu.drawnsend.pages.playboard.PlayBoardMainFragment;
 import ichen.chu.drawnsend.pages.subPage.SubPageEmptyFragment;
 import ichen.chu.drawnsend.util.MLog;
 import io.mattcarroll.hover.HoverView;
@@ -55,18 +56,7 @@ public class MainActivity extends AppCompatActivity {
     private static final MLog mLog = new MLog(true);
     private final String TAG = getClass().getSimpleName() + "@" + Integer.toHexString(hashCode());
 
-    private DrawableView drawableView;
-    private DrawableViewConfig config = new DrawableViewConfig();
-
-    private int RC_SIGN_IN = 1001;
     private final int RC_PERMISSIONS = 9001;
-
-    private HoverView mHoverView;
-
-    private GoogleSignInClient mGoogleSignInClient;
-
-
-
 
     /**
      * The {@link ViewPager} will host the section contents.
@@ -90,13 +80,8 @@ public class MainActivity extends AppCompatActivity {
         Bus.getInstance().registerSticky(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-//        initUi();
-
-//        initHover();
 
         checkPermission();
-
-
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
@@ -129,141 +114,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
-//    private void initUi() {
-//        drawableView = (DrawableView) findViewById(R.id.paintView);
-//        Button strokeWidthMinusButton = (Button) findViewById(R.id.strokeWidthMinusButton);
-//        strokeWidthMinusButton.setVisibility(View.GONE);
-//        Button strokeWidthPlusButton = (Button) findViewById(R.id.strokeWidthPlusButton);
-//        strokeWidthPlusButton.setVisibility(View.GONE);
-//        final Button changeColorButton = (Button) findViewById(R.id.changeColorButton);
-//        Button undoButton = (Button) findViewById(R.id.undoButton);
-//        undoButton.setVisibility(View.GONE);
-//        Button clearButton = (Button) findViewById(R.id.clearButton);
-//        Button getButton = (Button) findViewById(R.id.getButton);
-//
-//        // Set the dimensions of the sign-in button.
-//        SignInButton signInButton = findViewById(R.id.sign_in_button);
-//        signInButton.setSize(SignInButton.SIZE_STANDARD);
-//
-//        Display display = getWindowManager().getDefaultDisplay();
-//        Point size = new Point();
-//        display.getSize(size);
-//        int width = size.x;
-//        int height = size.y;
-//
-//        config.setStrokeColor(getResources().getColor(android.R.color.black));
-//        config.setShowCanvasBounds(true);
-//        config.setStrokeWidth(20.0f);
-//        config.setMinZoom(1.0f);
-//        config.setMaxZoom(2.0f);
-//        config.setCanvasHeight(height);
-//        config.setCanvasWidth(width);
-//        drawableView.setConfig(config);
-//
-//        strokeWidthPlusButton.setOnClickListener(new View.OnClickListener() {
-//
-//            @Override
-//            public void onClick(View v) {
-//                config.setStrokeWidth(config.getStrokeWidth() + 10);
-//            }
-//        });
-//        strokeWidthMinusButton.setOnClickListener(new View.OnClickListener() {
-//
-//            @Override
-//            public void onClick(View v) {
-//                config.setStrokeWidth(config.getStrokeWidth() - 10);
-//            }
-//        });
-//        changeColorButton.setOnClickListener(new View.OnClickListener() {
-//
-//            @Override
-//            public void onClick(View v) {
-//                Random random = new Random();
-//                int color = Color.argb(255, random.nextInt(256), random.nextInt(256), random.nextInt(256));
-//                config.setStrokeColor(color);
-//                changeColorButton.setBackgroundColor(color);
-//            }
-//        });
-//        undoButton.setOnClickListener(new View.OnClickListener() {
-//
-//            @Override
-//            public void onClick(View v) {
-//                drawableView.undo();
-//            }
-//        });
-//
-//        clearButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                drawableView.clear();
-//            }
-//        });
-//
-//        getButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-//                new Thread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        Bitmap outB = drawableView.obtainBitmap().copy(Bitmap.Config.ARGB_8888, true);
-//                        Canvas canvas = new Canvas(outB);
-//                        canvas.drawColor(Color.WHITE);
-//                        canvas.drawBitmap(drawableView.obtainBitmap(), 0, 0, null);
-//
-////                        image.setImageBitmap(outB);
-//
-//                        String tmp = "/sdcard/test/" + System.currentTimeMillis() + ".jpeg";
-//                        File file = new File(tmp);
-//
-//                        try {
-//                            FileOutputStream out = new FileOutputStream(file);
-//                            if (outB.compress(Bitmap.CompressFormat.JPEG, 100, out)) {
-//                                out.flush();
-//                                out.close();
-//                            }
-//                            uploadFile(file);
-//                        } catch (FileNotFoundException e) {
-//                            e.printStackTrace();
-//                        } catch (IOException e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                }).start();
-//
-//            }
-//        });
-//
-//        signInButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                signIn();
-//            }
-//
-//            private void signIn() {
-//                Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-//                startActivityForResult(signInIntent, RC_SIGN_IN);
-//            }
-//        });
-//
-//    }
-
-//    private void initHover() {
-//        mLog.d(TAG, "* initHover()");
-//        try {
-//            final ContextThemeWrapper contextThemeWrapper = new ContextThemeWrapper(this, R.style.AppTheme);
-//            HoverMenu hoverMenu = new HoverMenuFactory().createDemoMenuFromCode(contextThemeWrapper, Bus.getInstance());
-//
-//            mHoverView = findViewById(R.id.hovermenu);
-//            mHoverView.setMenu(hoverMenu);
-//            mHoverView.enableDebugMode(true);
-//            mHoverView.collapse();
-//        } catch (Exception e) {
-//            mLog.e(TAG, "Failed to create demo menu from file. e= " + e.getMessage());
-//            e.printStackTrace();
-//        }
-//    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Bus.getInstance().unregister(this);
+    }
 
     public void onEventBackgroundThread(BusEvent event) {
 //        mLog.d(TAG, "* CCC");
@@ -280,60 +135,34 @@ public class MainActivity extends AppCompatActivity {
     public void onEventMainThread(BusEvent event){
 //        mLog.d(TAG, "* AAA");
 //        event.getMessage();
-        mHoverView.collapse();
     }
 
-    private void uploadFile(File file) {
-        try {
-            try {
-                final MediaType MEDIA_TYPE_JPEG = MediaType.parse("image/jpeg");
-                RequestBody req = new MultipartBody.Builder()
-                        .setType(MultipartBody.FORM)
-                        .addFormDataPart("name", file.getName())
-                        .addFormDataPart("file", file.getName(), RequestBody.create(MEDIA_TYPE_JPEG, file)).build();
-
-                Request request = new Request.Builder()
-                        .url("http://172.20.10.3:3000/api/post_official_doc_upload_file")
-                        .post(req)
-                        .build();
-
-                OkHttpClient client = new OkHttpClient();
-                Response response = client.newCall(request).execute();
-
-                mLog.d(TAG, "uploadImage: " + response.body().string());
-
-            } catch (UnknownHostException | UnsupportedEncodingException e) {
-                mLog.e(TAG, "Error: " + e.getLocalizedMessage());
-            } catch (Exception e) {
-                mLog.e(TAG, "Other Error: " + e.getLocalizedMessage());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Bus.getInstance().unregister(this);
-    }
 
     // ------------------------------------------------------------
 
     public class SectionsPagerAdapter extends FragmentPagerAdapter implements ViewPager.OnPageChangeListener {
 
         // Constants
-        static final int PAGE_HOME = 0;
-        static final int PAGE_LOGIN = 1;
-        static final int PAGE_DASHBOARD = 2;
-        static final int PAGE_SUB_PAGE = 3;
+        static final int PAGE_HOME = 500;
+        static final int PAGE_LOGIN = 100;
+        static final int PAGE_DASHBOARD = 200;
+        static final int PAGE_PLAY_BOARD = 0;
+        static final int PAGE_SUB_PAGE = 400;
 
         // Fields
         private final int[] PAGE_GROUP = new int[]{
-                PAGE_HOME, PAGE_LOGIN, PAGE_DASHBOARD, PAGE_SUB_PAGE
+                PAGE_HOME,
+                PAGE_LOGIN,
+                PAGE_DASHBOARD,
+                PAGE_PLAY_BOARD,
+                PAGE_SUB_PAGE
         };
         private final String[] PAGE_NAMES = new String[]{
-                "PAGE_HOME", "PAGE_LOGIN", "PAGE_DASHBOARD", "PAGE_SUB_PAGE"
+                "PAGE_HOME",
+                "PAGE_LOGIN",
+                "PAGE_DASHBOARD",
+                "PAGE_PLAY_BOARD",
+                "PAGE_SUB_PAGE"
         };
         private final Fragment[] fragments = new Fragment[PAGE_GROUP.length];
 
@@ -368,8 +197,6 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
                 case PAGE_LOGIN: {
-//                    ItemFragment itemFragment = ItemFragment.getInstance(1);
-//                    fragment = itemFragment;
                     LoginFragment loginFragment = LoginFragment.newInstance();
                     loginFragment.setOnFragmentInteractionListener(loginFragmentListener);
                     fragment = loginFragment;
@@ -383,11 +210,21 @@ public class MainActivity extends AppCompatActivity {
                 }
                 break;
 
+                case PAGE_PLAY_BOARD: {
+                    PlayBoardMainFragment playBoardMainFragment = PlayBoardMainFragment.newInstance();
+                    fragment = playBoardMainFragment;
+                }
+                break;
+
                 case PAGE_SUB_PAGE: {
                     SubPageEmptyFragment subPagesMainFragment = SubPageEmptyFragment.newInstance();
                     fragment = subPagesMainFragment;
                 }
                 break;
+                default:
+                    SubPageEmptyFragment subPagesMainFragment = SubPageEmptyFragment.newInstance();
+                    fragment = subPagesMainFragment;
+                    break;
             }
             mLog.v(TAG, "getItem(): " + fragment.toString());
             fragments[position] = fragment;
@@ -448,6 +285,11 @@ public class MainActivity extends AppCompatActivity {
             public void onLogOutSuccess() {
                 mViewPager.setCurrentItem(SectionsPagerAdapter.PAGE_LOGIN);
 //                MessageTools.showToast(mContext, "Logout Succeed!");
+            }
+
+            @Override
+            public void onStartToPlayGame() {
+                mViewPager.setCurrentItem(SectionsPagerAdapter.PAGE_PLAY_BOARD);
             }
 
         };

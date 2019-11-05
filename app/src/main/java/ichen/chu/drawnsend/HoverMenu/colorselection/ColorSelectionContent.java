@@ -65,7 +65,7 @@ public class ColorSelectionContent extends FrameLayout implements Content {
         mAttributionTextView = (TextView) findViewById(R.id.textview_attribution);
 
         mTabLayout.addTab(mTabLayout.newTab().setText("Accent Color"), true);
-        mTabLayout.addTab(mTabLayout.newTab().setText("Primary Color"));
+//        mTabLayout.addTab(mTabLayout.newTab().setText("Primary Color"));
         mTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {

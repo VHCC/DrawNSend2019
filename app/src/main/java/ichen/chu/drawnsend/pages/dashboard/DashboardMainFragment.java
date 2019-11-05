@@ -1,5 +1,6 @@
 package ichen.chu.drawnsend.pages.dashboard;
 
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -40,6 +41,7 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import cn.pedant.SweetAlert.SweetAlertDialog;
@@ -47,15 +49,19 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import ichen.chu.drawnsend.Bus;
 import ichen.chu.drawnsend.BusEvent;
 import ichen.chu.drawnsend.R;
+import ichen.chu.drawnsend.api.DnsServerAgent;
 import ichen.chu.drawnsend.model.PlayerItem;
 import ichen.chu.drawnsend.pages.dashboard.ListAdapter.PlayerItemAdapter;
 import ichen.chu.drawnsend.util.MLog;
+import info.hoang8f.widget.FButton;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
+
+import static ichen.chu.drawnsend.App.SERVER_SITE;
 
 /**
  * Created by IChen.Chu on 2018/9/25
@@ -77,6 +83,7 @@ public class DashboardMainFragment extends Fragment {
     // RecycleView
     private RecyclerView recycleViewPlayerListContainer;
     private LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+    private GridLayoutManager gridLayoutManager;
 
     /*data Block*/
     private PlayerItemAdapter playerItemAdapter;
@@ -92,6 +99,7 @@ public class DashboardMainFragment extends Fragment {
 
     // Listener
     private OnDashboardMainFragmentInteractionListener mHomeFragmentListener;
+
 
     // Fields
     private GoogleSignInClient mGoogleSignInClient;
@@ -203,243 +211,11 @@ public class DashboardMainFragment extends Fragment {
 
         // ******************** JOIN *************************
         joinRoomFAB.setIcon(R.drawable.join_room);
-        joinRoomFAB.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mLog.d(TAG, "click joinRoomFAB");
-
-                LayoutInflater inflater = LayoutInflater.from(getContext());
-                FrameLayout frameLayout = (FrameLayout) inflater.inflate(R.layout.join_room_frame_layout,null);
-                final CodeInputView codeInputView = frameLayout.findViewById(R.id.roomCodeInput);
-
-                codeInputView.addOnCompleteListener(new OnCodeCompleteListener() {
-                    @Override
-                    public void onCompleted(String code) {
-                        mLog.d(TAG, "code= " + code);
-                    }
-                });
-
-
-                SweetAlertDialog sad = new SweetAlertDialog(getContext(), SweetAlertDialog.NORMAL_TYPE);
-
-                sad.setCancelable(false);
-
-                sad.setTitleText("Join a Room")
-                    .setConfirmText("Join")
-                    .setCancelText("Quit")
-                    .setCustomView(frameLayout)
-//                        .hideConfirmButton()
-                    .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                        @Override
-                        public void onClick(final SweetAlertDialog sDialog) {
-                            mLog.d(TAG, "code= " + codeInputView.getCode());
-
-                            final Handler SADHandler = new Handler(new Handler.Callback() {
-                                @Override
-                                public boolean handleMessage(Message msg) {
-                                    Log.d(TAG, "msg.what= " + msg.what);
-
-                                    switch (msg.what) {
-                                        case 0:
-                                            sDialog.hideConfirmButton();
-                                            sDialog.changeAlertType(SweetAlertDialog.ERROR_TYPE);
-                                            break;
-                                        case 1:
-                                            sDialog.hideConfirmButton();
-                                            sDialog.changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
-                                            break;
-                                    }
-                                    return false;
-                                }
-                            });
-
-                            new Thread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    joinPlayRoom(SADHandler,
-                                            codeInputView.getCode());
-                                }
-                            }).start();
-                        }
-                    })
-                    .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                        @Override
-                        public void onClick(final SweetAlertDialog sDialog) {
-                            if (codeInputView.getCode().length() == 6) {
-
-                                final Handler SADHandler = new Handler(new Handler.Callback() {
-                                    @Override
-                                    public boolean handleMessage(Message msg) {
-                                        Log.d(TAG, "msg= " + msg);
-                                        sDialog.dismissWithAnimation();
-                                        return false;
-                                    }
-                                });
-
-                                new Thread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        quitPlayRoom(SADHandler, codeInputView.getCode());
-                                    }
-                                }).start();
-
-                            } else {
-                                sDialog.dismissWithAnimation();
-                            }
-                        }
-                    })
-                    .show();
-            }
-        });
-
+        joinRoomFAB.setOnClickListener(new JoinRoomClickListener());
 
         // ******************** CREATE *************************
         createRoomFAB.setIcon(R.drawable.create_room);
-        createRoomFAB.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                LayoutInflater inflater = LayoutInflater.from(getContext());
-                FrameLayout frameLayout = (FrameLayout) inflater.inflate(R.layout.create_room_frame_layout,null);
-                final DiscreteSeekBar playTimeSeekBar = frameLayout.findViewById(R.id.playTimeSettingBar);
-                final TextView gameTimeTV = frameLayout.findViewById(R.id.gameTimeTV);
-                gameTimeTV.setText("game period: " + playTimeSeekBar.getProgress() + " s");
-
-                playTimeSeekBar.setOnProgressChangeListener(new DiscreteSeekBar.OnProgressChangeListener() {
-                    @Override
-                    public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
-                        gameTimeTV.setText("game period: " + playTimeSeekBar.getProgress() + " s");
-                    }
-
-                    @Override
-                    public void onStartTrackingTouch(DiscreteSeekBar seekBar) {
-
-                    }
-
-                    @Override
-                    public void onStopTrackingTouch(DiscreteSeekBar seekBar) {
-
-                    }
-                });
-
-                final DiscreteSeekBar difficultySeekBar = frameLayout.findViewById(R.id.difficultySeekBar);
-                final TextView difficultyTV = frameLayout.findViewById(R.id.difficultyTV);
-                difficultyTV.setText("game level: " + difficultySeekBar.getProgress());
-
-                difficultySeekBar.setOnProgressChangeListener(new DiscreteSeekBar.OnProgressChangeListener() {
-                    @Override
-                    public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
-                        difficultyTV.setText("game level: " + difficultySeekBar.getProgress());
-                    }
-
-                    @Override
-                    public void onStartTrackingTouch(DiscreteSeekBar seekBar) {
-
-                    }
-
-                    @Override
-                    public void onStopTrackingTouch(DiscreteSeekBar seekBar) {
-
-                    }
-                });
-
-                final Switch isAdultSwitch = frameLayout.findViewById(R.id.isAdultSwitch);
-                final TextView isAdultTV = frameLayout.findViewById(R.id.isAdultTV);
-                isAdultTV.setText("isAdult: " + isAdultSwitch.isChecked());
-
-                isAdultSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        isAdultTV.setText("isAdult: " + isChecked);
-                    }
-                });
-
-                // Join Number
-                final CodeInputView roomNumber = frameLayout.findViewById(R.id.roomNumber);
-
-
-                // Player Recycler View
-                recycleViewPlayerListContainer = frameLayout.findViewById(R.id.recycleViewPlayerListContainer);
-
-                final PlayerItemAdapter playerItemAdapter = new PlayerItemAdapter(getContext(), playerItemsList);
-                recycleViewPlayerListContainer.setAdapter(playerItemAdapter);
-                recycleViewPlayerListContainer.setLayoutManager(linearLayoutManager);
-                recycleViewPlayerListContainer.setNestedScrollingEnabled(false);
-
-                new SweetAlertDialog(getContext(), SweetAlertDialog.NORMAL_TYPE)
-                        .setTitleText("Setting and ready to Game")
-                        .setCustomView(frameLayout)
-                        .setConfirmText("Create")
-                        .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-
-                            @Override
-                            public void onClick(final SweetAlertDialog sDialog) {
-                                mLog.d(TAG, "game time= " + playTimeSeekBar.getProgress());
-
-                                playTimeSeekBar.setVisibility(View.GONE);
-                                difficultySeekBar.setVisibility(View.GONE);
-                                isAdultSwitch.setVisibility(View.GONE);
-
-
-                                final Handler SADHandler = new Handler(new Handler.Callback() {
-                                    @Override
-                                    public boolean handleMessage(Message msg) {
-                                        Log.d(TAG, "msg= " + msg);
-                                        try {
-                                            JSONObject responseJ = (JSONObject) msg.obj;
-
-                                            mLog.d(TAG, "responseJ= " + responseJ);
-                                            mLog.d(TAG, "Join Number= " + responseJ.get("joinNumber"));
-                                            roomNumber.setVisibility(View.VISIBLE);
-                                            roomNumber.setCode((String) responseJ.get("joinNumber"));
-                                            roomNumber.setEditable(false);
-
-                                            JSONArray jsonArray = (JSONArray) responseJ.get("roomOwner");
-
-                                            mLog.d(TAG, "roomOwner= " + jsonArray.get(0));
-
-                                            playerItemsList.clear();
-                                            PlayerItem item = new PlayerItem(
-                                                    PlayerItem.TYPE.OWNER,
-                                                    (JSONObject) jsonArray.get(0)
-                                            );
-                                            playerItemsList.add(item);
-                                            playerItemsList.add(item);
-                                            playerItemsList.add(item);
-
-                                            playerItemAdapter.clearAll();
-                                            playerItemAdapter.refreshList();
-                                        } catch (JSONException e) {
-                                            e.printStackTrace();
-                                        }
-                                        sDialog.changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
-                                        return false;
-                                    }
-                                });
-
-                                new Thread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        createPlayRoom(SADHandler,
-                                                playTimeSeekBar.getProgress(),
-                                                difficultySeekBar.getProgress(),
-                                                isAdultSwitch.isChecked());
-                                    }
-                                }).start();
-
-                                sDialog.hideConfirmButton();
-                            }
-
-                            public void onEventMainThread(BusEvent event){
-                                //        event.getMessage();
-                                mLog.d(TAG, "* createRoomFAB, event= " + event.getMessage());
-                            }
-                        })
-                        .show();
-
-
-            }
-        });
+        createRoomFAB.setOnClickListener(new CreateRoomListener());
     }
 
     @Override
@@ -465,6 +241,8 @@ public class DashboardMainFragment extends Fragment {
     // -------------------------------------------
     public interface OnDashboardMainFragmentInteractionListener {
         void onLogOutSuccess();
+
+        void onStartToPlayGame();
     }
 
     public void setDashboardMainFragmentListener(OnDashboardMainFragmentInteractionListener listener) {
@@ -472,193 +250,6 @@ public class DashboardMainFragment extends Fragment {
     }
 
     // -------------------------------------------
-    private void joinPlayRoom(final Handler SADHandler,
-                                final String roomNumberCode) {
-        try {
-            try {
-
-                final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-
-                GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getContext());
-
-                JSONObject jsonObj = new JSONObject();
-                jsonObj.put("player", "qQQQQ");
-                jsonObj.put("joinNumber", roomNumberCode);
-
-                RequestBody requestBody = RequestBody.create(JSON, jsonObj.toString());
-
-                Request request = new Request.Builder()
-                        .url("http://172.22.212.158:4009/api/post_dns_join_game_room")
-//                        .url("https://dns.ichenprocin.dsmynas.com/api/get_dns_check_server_status")
-                        .post(requestBody)
-                        .build();
-
-                OkHttpClient client = new OkHttpClient();
-                client.newCall(request).enqueue(new Callback() {
-                    @Override
-                    public void onFailure(Call call, IOException e) {
-                        e.printStackTrace();
-                    }
-
-                    @Override
-                    public void onResponse(Call call, okhttp3.Response response) throws IOException {
-                        if (response.isSuccessful()) {
-                            try {
-                                JSONObject responseJ = new JSONObject(response.body().string());
-                                mLog.d(TAG, "response= " + responseJ);
-                                mLog.d(TAG, "payload= " + responseJ.get("payload"));
-                                JSONObject responsePayload = new JSONObject(String.valueOf(responseJ.get("payload")));
-                                mLog.d(TAG, "nModified= " + responsePayload.get("nModified"));
-
-                                int modifiedStatus = (int) responsePayload.get("nModified");
-                                Message msg;
-                                switch(modifiedStatus) {
-                                    case 0:
-                                        msg = new Message();
-                                        msg.what = 0;
-                                        SADHandler.sendMessage(msg);
-                                        break;
-                                    case 1:
-                                        msg = new Message();
-                                        msg.what = 1;
-                                        SADHandler.sendMessage(msg);
-                                        break;
-                                }
-
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-
-                        }
-                    }
-                });
-
-
-//            } catch (UnknownHostException | UnsupportedEncodingException e) {
-//                mLog.e(TAG, "Error: " + e.getLocalizedMessage());
-            } catch (Exception e) {
-                mLog.e(TAG, "Other Error: " + e.getLocalizedMessage());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void quitPlayRoom(final Handler SADHandler,
-                              final String roomNumberCode) {
-        try {
-            try {
-
-                final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-
-                JSONObject jsonObj = new JSONObject();
-                jsonObj.put("player", "qQQQQ");
-                jsonObj.put("joinNumber", roomNumberCode);
-
-                RequestBody requestBody = RequestBody.create(JSON, jsonObj.toString());
-
-                Request request = new Request.Builder()
-                        .url("http://172.22.212.158:4009/api/post_dns_quit_game_room")
-//                        .url("https://dns.ichenprocin.dsmynas.com/api/get_dns_check_server_status")
-                        .post(requestBody)
-                        .build();
-
-                OkHttpClient client = new OkHttpClient();
-                client.newCall(request).enqueue(new Callback() {
-                    @Override
-                    public void onFailure(Call call, IOException e) {
-                        e.printStackTrace();
-                    }
-
-                    @Override
-                    public void onResponse(Call call, okhttp3.Response response) throws IOException {
-                        if (response.isSuccessful()) {
-                            mLog.d(TAG, "response= " + response.body().string());
-                            SADHandler.sendMessage(new Message());
-                        }
-                    }
-                });
-
-
-//            } catch (UnknownHostException | UnsupportedEncodingException e) {
-//                mLog.e(TAG, "Error: " + e.getLocalizedMessage());
-            } catch (Exception e) {
-                mLog.e(TAG, "Other Error: " + e.getLocalizedMessage());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    private void createPlayRoom(final Handler SADHandler,
-                                 final int playTime,
-                                 final int difficulty,
-                                 final boolean isAdult
-                                ) {
-        try {
-            try {
-
-                final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-
-                GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getContext());
-
-                JSONObject userObj = new JSONObject();
-                userObj.put("email", acct.getEmail());
-                userObj.put("displayName", acct.getDisplayName());
-                userObj.put("photoUrl", acct.getPhotoUrl());
-
-
-                JSONObject jsonObj = new JSONObject();
-                jsonObj.put("roomOwner", userObj);
-                jsonObj.put("playTime", playTime);
-                jsonObj.put("difficulty", difficulty);
-                jsonObj.put("isAdult", isAdult);
-
-                RequestBody requestBody = RequestBody.create(JSON, jsonObj.toString());
-
-                Request request = new Request.Builder()
-                        .url("http://172.22.212.158:4009/api/post_dns_create_game_room")
-//                        .url("https://dns.ichenprocin.dsmynas.com/api/get_dns_check_server_status")
-                        .post(requestBody)
-                        .build();
-
-                OkHttpClient client = new OkHttpClient();
-                client.newCall(request).enqueue(new Callback() {
-                    @Override
-                    public void onFailure(Call call, IOException e) {
-                        e.printStackTrace();
-                    }
-
-                    @Override
-                    public void onResponse(Call call, okhttp3.Response response) throws IOException {
-                        if (response.isSuccessful()) {
-                            try {
-                                JSONObject responseJ = new JSONObject(response.body().string());
-                                mLog.d(TAG, "response= " + responseJ);
-                                mLog.d(TAG, "payload= " + responseJ.get("payload"));
-                                Message msg = new Message();
-                                msg.obj = responseJ.get("payload");
-                                SADHandler.sendMessage(msg);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-
-                        }
-                    }
-                });
-
-
-//            } catch (UnknownHostException | UnsupportedEncodingException e) {
-//                mLog.e(TAG, "Error: " + e.getLocalizedMessage());
-            } catch (Exception e) {
-                mLog.e(TAG, "Other Error: " + e.getLocalizedMessage());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         ImageView bmImage;
 
@@ -684,6 +275,7 @@ public class DashboardMainFragment extends Fragment {
         }
     }
 
+    // Event Bus
     public void onEventMainThread(BusEvent event){
 //        event.getMessage();
         mLog.d(TAG, "event= " + event.getMessage());
@@ -696,4 +288,482 @@ public class DashboardMainFragment extends Fragment {
                 break;
         }
     }
+
+    private class ThreadObject extends Object {
+
+        boolean isRunning = true;
+
+        public boolean isRunning() {
+            return isRunning;
+        }
+
+        public void setRunning(boolean running) {
+            isRunning = running;
+        }
+    }
+
+    private class JoinRoomClickListener implements View.OnClickListener {
+
+        @Override
+        public void onClick(View v) {
+            mLog.d(TAG, "click joinRoomFAB");
+
+            final ThreadObject threadObject = new ThreadObject();
+            threadObject.setRunning(false);
+
+            LayoutInflater inflater = LayoutInflater.from(getContext());
+            FrameLayout frameLayout = (FrameLayout) inflater.inflate(R.layout.join_room_frame_layout,null);
+            final CodeInputView codeInputView = frameLayout.findViewById(R.id.roomCodeInput);
+
+            codeInputView.addOnCompleteListener(new OnCodeCompleteListener() {
+                @Override
+                public void onCompleted(String code) {
+                    mLog.d(TAG, "code= " + code);
+                }
+            });
+
+            final TextView joinTV = frameLayout.findViewById(R.id.joinTV);
+
+            // Player Recycler View
+            recycleViewPlayerListContainer = frameLayout.findViewById(R.id.recycleViewPlayerListContainer);
+
+            final PlayerItemAdapter playerItemAdapter = new PlayerItemAdapter(getContext(), playerItemsList);
+            gridLayoutManager = new GridLayoutManager(getContext(), 5);
+            recycleViewPlayerListContainer.setAdapter(playerItemAdapter);
+            recycleViewPlayerListContainer.setLayoutManager(gridLayoutManager);
+            recycleViewPlayerListContainer.setNestedScrollingEnabled(false);
+
+            final Handler mySADHandler = new Handler(new Handler.Callback() {
+                @Override
+                public boolean handleMessage(Message msg) {
+//                        Log.d(TAG, "msg.obj= " + msg.obj);
+                    try {
+                        JSONObject responseJ = (JSONObject) ((JSONArray) msg.obj).get(0);
+
+                        int roomStatus = (int) responseJ.get("roomStatus");
+
+                        switch (roomStatus) {
+                            case 2:
+                                joinTV.setText("遊戲中");
+                                break;
+                            case 3:
+                                joinTV.setText("房間已經關閉");
+                                break;
+                        }
+
+                        JSONArray jsonArray = (JSONArray) responseJ.get("participants");
+
+                        mLog.d(TAG, "- participants= " + jsonArray.length());
+
+                        List<PlayerItem> playerItemsListTemp = new ArrayList<>();
+
+
+                        for (int index = 0; index < jsonArray.length(); index ++) {
+                            PlayerItem item = new PlayerItem(
+                                    PlayerItem.TYPE.PARTICIPANTS,
+                                    (JSONObject) jsonArray.get(index)
+                            );
+                            playerItemsListTemp.add(item);
+                        }
+
+//                        mLog.d(TAG, "playerItemsList.containsAll(playerItemsListTemp)= " + playerItemsList.contains(playerItemsListTemp));
+
+                        if (!playerItemsList.contains(playerItemsListTemp)) {
+                            playerItemsList.clear();
+
+                            for (int index = 0; index < jsonArray.length(); index ++) {
+                                PlayerItem item = new PlayerItem(
+                                        PlayerItem.TYPE.PARTICIPANTS,
+                                        (JSONObject) jsonArray.get(index)
+                                );
+                                playerItemsList.add(item);
+                            }
+
+                            playerItemAdapter.clearAll();
+                            playerItemAdapter.refreshList();
+                        }
+
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    return false;
+                }
+            });
+
+            final Thread checkRoomInfoThread = new Thread(new Runnable() {
+
+                private static final long task_minimum_tick_time_msec = 1000; // 1 second
+
+                @Override
+                public void run() {
+                    long tick_count = 0;
+                    mLog.d(TAG, "task_minimum_tick_time_msec= " + (task_minimum_tick_time_msec));
+                    mLog.d(TAG, "threadObject.isRunning()= " + threadObject.isRunning());
+
+                    while (threadObject.isRunning()) {
+                        try {
+
+                            long start_time_tick = System.currentTimeMillis();
+                            // real-time task
+
+                            if (tick_count % 5 == 1) {
+                                mLog.d(TAG, "* fetchPlayRoomInfo");
+                                DnsServerAgent.getInstance(getContext())
+                                        .fetchPlayRoomInfo(mySADHandler, codeInputView.getCode());
+                            }
+
+                            long end_time_tick = System.currentTimeMillis();
+
+                            if (end_time_tick - start_time_tick > task_minimum_tick_time_msec) {
+                                mLog.w(TAG, "Over time process " + (end_time_tick - start_time_tick));
+                            } else {
+                                Thread.sleep(task_minimum_tick_time_msec);
+                            }
+                            tick_count++;
+                        } catch (InterruptedException e) {
+                            mLog.d(TAG, "appRunnable interrupted");
+                        }
+                    }
+                }
+            });
+
+            SweetAlertDialog saDialog = new SweetAlertDialog(getContext(), SweetAlertDialog.NORMAL_TYPE);
+
+            saDialog.setCancelable(false);
+
+            saDialog.setTitleText("Join a Room")
+                    .setConfirmText("Join")
+                    .setCancelText("Quit")
+                    .setCustomView(frameLayout)
+//                        .hideConfirmButton()
+                    .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                        @Override
+                        public void onClick(final SweetAlertDialog sDialog) {
+                            mLog.d(TAG, "code= " + codeInputView.getCode());
+                            threadObject.setRunning(true);
+
+                            final Handler SADHandler = new Handler(new Handler.Callback() {
+                                @Override
+                                public boolean handleMessage(Message msg) {
+                                    Log.d(TAG, "msg.what= " + msg.what);
+
+                                    switch (msg.what) {
+                                        case 0:
+                                            sDialog.hideConfirmButton();
+                                            sDialog.changeAlertType(SweetAlertDialog.ERROR_TYPE);
+                                            break;
+                                        case 1:
+                                            checkRoomInfoThread.start();
+                                            sDialog.hideConfirmButton();
+                                            sDialog.changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
+                                            break;
+                                    }
+                                    return false;
+                                }
+                            });
+
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    DnsServerAgent.getInstance(getContext())
+                                            .joinPlayRoom(SADHandler, codeInputView.getCode());
+                                }
+                            }).start();
+                        }
+                    })
+                    .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                        @Override
+                        public void onClick(final SweetAlertDialog sDialog) {
+                            threadObject.setRunning(false);
+                            if (codeInputView.getCode().length() == 6) {
+
+                                final Handler SADHandler = new Handler(new Handler.Callback() {
+                                    @Override
+                                    public boolean handleMessage(Message msg) {
+                                        Log.d(TAG, "msg= " + msg);
+                                        sDialog.dismissWithAnimation();
+                                        return false;
+                                    }
+                                });
+
+                                new Thread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        DnsServerAgent.getInstance(getContext())
+                                                .quitPlayRoom(SADHandler, codeInputView.getCode());
+                                    }
+                                }).start();
+
+                            } else {
+                                sDialog.dismissWithAnimation();
+                            }
+                        }
+                    })
+                    .show();
+        }
+    }
+
+    private class CreateRoomListener implements View.OnClickListener {
+
+        @Override
+        public void onClick(View v) {
+            mLog.d(TAG, "click createRoomFAB");
+
+            final ThreadObject threadObject = new ThreadObject();
+            threadObject.setRunning(false);
+
+            // VIEW
+            LayoutInflater inflater = LayoutInflater.from(getContext());
+            FrameLayout frameLayout = (FrameLayout) inflater.inflate(R.layout.create_room_frame_layout,null);
+            final DiscreteSeekBar playTimeSeekBar = frameLayout.findViewById(R.id.playTimeSettingBar);
+            final TextView gameTimeTV = frameLayout.findViewById(R.id.gameTimeTV);
+            gameTimeTV.setText("game period: " + playTimeSeekBar.getProgress() + " s");
+
+            playTimeSeekBar.setOnProgressChangeListener(new DiscreteSeekBar.OnProgressChangeListener() {
+                @Override
+                public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
+                    gameTimeTV.setText("game period: " + playTimeSeekBar.getProgress() + " s");
+                }
+
+                @Override
+                public void onStartTrackingTouch(DiscreteSeekBar seekBar) {
+
+                }
+
+                @Override
+                public void onStopTrackingTouch(DiscreteSeekBar seekBar) {
+
+                }
+            });
+
+            final DiscreteSeekBar difficultySeekBar = frameLayout.findViewById(R.id.difficultySeekBar);
+            final TextView difficultyTV = frameLayout.findViewById(R.id.difficultyTV);
+            difficultyTV.setText("game level: " + difficultySeekBar.getProgress());
+
+            difficultySeekBar.setOnProgressChangeListener(new DiscreteSeekBar.OnProgressChangeListener() {
+                @Override
+                public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
+                    difficultyTV.setText("game level: " + difficultySeekBar.getProgress());
+                }
+
+                @Override
+                public void onStartTrackingTouch(DiscreteSeekBar seekBar) {
+
+                }
+
+                @Override
+                public void onStopTrackingTouch(DiscreteSeekBar seekBar) {
+
+                }
+            });
+
+            final Switch isAdultSwitch = frameLayout.findViewById(R.id.isAdultSwitch);
+            final TextView isAdultTV = frameLayout.findViewById(R.id.isAdultTV);
+            isAdultTV.setText("isAdult: " + isAdultSwitch.isChecked());
+
+            isAdultSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    isAdultTV.setText("isAdult: " + isChecked);
+                }
+            });
+
+            //FButton
+            final FButton playFBt = frameLayout.findViewById(R.id.playFBt);
+            playFBt.setButtonColor(getResources().getColor(R.color.fbutton_color_orange));
+            playFBt.setShadowColor(getResources().getColor(R.color.fbutton_color_carrot));
+            playFBt.setShadowEnabled(true);
+            playFBt.setShadowHeight(5);
+            playFBt.setCornerRadius(5);
+            playFBt.setVisibility(View.GONE);
+
+            // Join Number
+            final CodeInputView roomNumber = frameLayout.findViewById(R.id.roomNumber);
+
+            // Player Recycler View
+            recycleViewPlayerListContainer = frameLayout.findViewById(R.id.recycleViewPlayerListContainer);
+
+            final PlayerItemAdapter playerItemAdapter = new PlayerItemAdapter(getContext(), playerItemsList);
+            gridLayoutManager = new GridLayoutManager(getContext(), 5);
+            recycleViewPlayerListContainer.setAdapter(playerItemAdapter);
+            recycleViewPlayerListContainer.setLayoutManager(gridLayoutManager);
+            recycleViewPlayerListContainer.setNestedScrollingEnabled(false);
+
+            final Handler mySADHandler = new Handler(new Handler.Callback() {
+                @Override
+                public boolean handleMessage(Message msg) {
+//                        Log.d(TAG, "msg.obj= " + msg.obj);
+                    try {
+                        JSONObject responseJ = (JSONObject) ((JSONArray) msg.obj).get(0);
+
+                        JSONArray jsonArray = (JSONArray) responseJ.get("participants");
+
+                        mLog.d(TAG, "- participants= " + jsonArray.length());
+
+                        if (jsonArray.length() > 1) {
+                            playFBt.setEnabled(true);
+                        } else {
+                            playFBt.setEnabled(false);
+                        }
+
+                        List<PlayerItem> playerItemsListTemp = new ArrayList<>();
+
+                        for (int index = 0; index < jsonArray.length(); index ++) {
+                            PlayerItem item = new PlayerItem(
+                                    PlayerItem.TYPE.PARTICIPANTS,
+                                    (JSONObject) jsonArray.get(index)
+                            );
+                            playerItemsListTemp.add(item);
+                        }
+
+//                        mLog.d(TAG, "playerItemsList.containsAll(playerItemsListTemp)= " + playerItemsList.contains(playerItemsListTemp));;
+
+                        if (!playerItemsList.contains(playerItemsListTemp)) {
+                            playerItemsList.clear();
+
+                            for (int index = 0; index < jsonArray.length(); index ++) {
+                                PlayerItem item = new PlayerItem(
+                                        PlayerItem.TYPE.PARTICIPANTS,
+                                        (JSONObject) jsonArray.get(index)
+                                );
+                                playerItemsList.add(item);
+                            }
+                            playerItemAdapter.clearAll();
+                            playerItemAdapter.refreshList();
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    return false;
+                }
+            });
+
+            final Thread checkRoomInfoThread = new Thread(new Runnable() {
+
+                private static final long task_minimum_tick_time_msec = 1000; // 1 second
+
+                @Override
+                public void run() {
+                    long tick_count = 0;
+                    mLog.d(TAG, "task_minimum_tick_time_msec= " + (task_minimum_tick_time_msec));
+                    mLog.d(TAG, "threadObject.isRunning()= " + threadObject.isRunning());
+
+                    while (threadObject.isRunning()) {
+                        try {
+
+                            long start_time_tick = System.currentTimeMillis();
+                            // real-time task
+
+                            if (tick_count % 5 == 1) {
+                                mLog.d(TAG, "* fetchPlayRoomInfo");
+                                DnsServerAgent.getInstance(getContext())
+                                        .fetchPlayRoomInfo(mySADHandler, roomNumber.getCode());
+                            }
+
+                            long end_time_tick = System.currentTimeMillis();
+
+                            if (end_time_tick - start_time_tick > task_minimum_tick_time_msec) {
+                                mLog.w(TAG, "Over time process " + (end_time_tick - start_time_tick));
+                            } else {
+                                Thread.sleep(task_minimum_tick_time_msec);
+                            }
+                            tick_count++;
+                        } catch (InterruptedException e) {
+                            mLog.d(TAG, "appRunnable interrupted");
+                        }
+                    }
+                }
+            });
+
+            final SweetAlertDialog saDialog = new SweetAlertDialog(getContext(), SweetAlertDialog.NORMAL_TYPE);
+
+            saDialog.setTitleText("Setting and ready to Game")
+                    .setCustomView(frameLayout)
+                    .setConfirmText("Create")
+                    .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+
+                        @Override
+                        public void onClick(final SweetAlertDialog sDialog) {
+                            threadObject.setRunning(true);
+
+                            playTimeSeekBar.setVisibility(View.GONE);
+                            difficultySeekBar.setVisibility(View.GONE);
+                            isAdultSwitch.setVisibility(View.GONE);
+                            playFBt.setVisibility(View.VISIBLE);
+                            playFBt.setEnabled(false);
+
+                            final Handler dialogHandler = new Handler(new Handler.Callback() {
+                                @Override
+                                public boolean handleMessage(Message msg) {
+                                    Log.d(TAG, "msg= " + msg);
+                                    try {
+                                        JSONObject responseJ = (JSONObject) msg.obj;
+
+//                                            mLog.d(TAG, "responseJ= " + responseJ);
+                                        mLog.d(TAG, "Join Number= " + responseJ.get("joinNumber"));
+                                        roomNumber.setVisibility(View.VISIBLE);
+                                        roomNumber.setCode((String) responseJ.get("joinNumber"));
+                                        roomNumber.setEditable(false);
+
+                                        JSONArray jsonArray = (JSONArray) responseJ.get("roomOwner");
+
+                                        mLog.d(TAG, "roomOwner= " + jsonArray.get(0));
+
+                                        playerItemsList.clear();
+                                        PlayerItem item = new PlayerItem(
+                                                PlayerItem.TYPE.OWNER,
+                                                (JSONObject) jsonArray.get(0)
+                                        );
+                                        playerItemsList.add(item);
+
+                                        playerItemAdapter.clearAll();
+                                        playerItemAdapter.refreshList();
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                    checkRoomInfoThread.start();
+                                    sDialog.changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
+                                    return false;
+                                }
+                            });
+
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    DnsServerAgent.getInstance(getContext()).createPlayRoom(dialogHandler,
+                                            playTimeSeekBar.getProgress(),
+                                            difficultySeekBar.getProgress(),
+                                            isAdultSwitch.isChecked());
+                                }
+                            }).start();
+
+                            sDialog.hideConfirmButton();
+                        }
+
+                    })
+                    .show();
+
+            saDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                @Override
+                public void onDismiss(DialogInterface dialog) {
+                    mLog.d(TAG, "* onDismiss");
+                    threadObject.setRunning(false);
+                    DnsServerAgent.getInstance(getContext()).
+                            updatePlayRoomStatus(roomNumber.getCode(), 3);
+                }
+            });
+
+            playFBt.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mLog.d(TAG, "- onClick playFBt");
+                    threadObject.setRunning(false);
+                    mHomeFragmentListener.onStartToPlayGame();
+                    saDialog.dismissWithAnimation();
+                }
+            });
+        }
+    }
+
 }
