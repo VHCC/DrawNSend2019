@@ -1,92 +1,216 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/play_board_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ichen.chu.squareprogessbarlibs.SquareProgressBar
-        android:id="@+id/sProgressBar"
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:background="@color/white"
-        android:scaleType="centerCrop"
         android:layout_height="match_parent">
 
-    </ichen.chu.squareprogessbarlibs.SquareProgressBar>
+        <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_weight="9"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-    <LinearLayout
-        android:gravity="right"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+            <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-        <Button
-            android:id="@+id/strokeWidthPlusButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:text="SW+" />
+                <ichen.chu.squareprogessbarlibs.SquareProgressBar
+                    android:id="@+id/sProgressBar"
+                    android:layout_width="match_parent"
+                    android:background="@color/white"
+                    android:scaleType="centerCrop"
+                    android:layout_height="match_parent">
+                </ichen.chu.squareprogessbarlibs.SquareProgressBar>
 
-        <Button
-            android:id="@+id/strokeWidthMinusButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:text="SW-" />
+                <LinearLayout
+                    android:gravity="right"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
-        <Button
-            android:id="@+id/changeColorButton"
-            android:visibility="gone"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Color" />
+                    <Button
+                        android:id="@+id/strokeWidthPlusButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        android:text="SW+" />
 
-        <Button
-            android:id="@+id/undoButton"
-            android:visibility="gone"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Undo" />
+                    <Button
+                        android:id="@+id/strokeWidthMinusButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        android:text="SW-" />
 
-        <Button
-            android:id="@+id/clearButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:text="Clear" />
+                    <Button
+                        android:id="@+id/changeColorButton"
+                        android:visibility="gone"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Color" />
 
-        <Button
-            android:id="@+id/getButton"
-            android:visibility="gone"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="send jpg" />
+                    <Button
+                        android:id="@+id/undoButton"
+                        android:visibility="gone"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Undo" />
 
-        <cn.iwgang.countdownview.CountdownView
-            android:layout_margin="5dp"
-            android:id="@+id/countdownView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:isHideTimeBackground="true"
-            app:isShowDay="false"
-            app:isShowHour="false"
-            app:isShowMinute="false"
-            app:isShowSecond="true"
-            app:isShowMillisecond="true"
-            app:timeTextColor="#000000"
-            app:timeTextSize="22sp"
-            app:isTimeTextBold="true"
-            app:suffixGravity="center"
-            app:suffixTextColor="#000000"
-            app:suffixTextSize="12sp"
-            app:suffixSecond="s"
-            app:suffixMillisecond="ms" />
+                    <Button
+                        android:id="@+id/clearButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        android:text="Clear" />
+
+                    <Button
+                        android:id="@+id/getButton"
+                        android:visibility="gone"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="send jpg" />
+
+                    <cn.iwgang.countdownview.CountdownView
+                        android:layout_margin="5dp"
+                        android:id="@+id/countdownView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:isHideTimeBackground="true"
+                        app:isShowDay="false"
+                        app:isShowHour="false"
+                        app:isShowMinute="false"
+                        app:isShowSecond="true"
+                        app:isShowMillisecond="true"
+                        app:timeTextColor="#000000"
+                        app:timeTextSize="22sp"
+                        app:isTimeTextBold="true"
+                        app:suffixGravity="center"
+                        app:suffixTextColor="#000000"
+                        app:suffixTextSize="12sp"
+                        app:suffixSecond="s"
+                        app:suffixMillisecond="ms" />
+
+                </LinearLayout>
+
+                <com.romainpiel.shimmer.ShimmerTextView
+                    android:id="@+id/shimmerTV"
+                    android:visibility="invisible"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="30dp"
+                    android:fontFamily="cursive"
+                    android:text="test family"
+                    android:textColor="#C6AC5C5C"
+                    android:textSize="45sp"
+                    android:textStyle="bold" />
+
+                <ichen.chu.drawableviewlibs.DrawableView
+                    android:id="@+id/paintView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+            </FrameLayout>
+
+        </LinearLayout>
+
+        <!-- Spacer View -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/background_dark"
+            />
+
+        <FrameLayout
+            android:orientation="horizontal"
+            android:layout_gravity="center"
+            android:gravity="center_horizontal"
+            android:background="#E2DEDE"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_gravity="left|center_vertical"
+                android:layout_marginLeft="20dp"
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:layout_gravity="left|center_vertical"
+                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/playerAvatar_pre"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    app:civ_border_width="1dp"
+                    app:civ_border_color="#FF000000"/>
+
+                <TextView
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/hover_accent"
+                    android:text=" Pre "
+                    />
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_gravity="center"
+                android:id="@+id/stageCountTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="20dp"
+                android:gravity="center"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:textColor="@color/hover_accent"
+                android:text="Stage:"
+                />
+
+            <LinearLayout
+                android:layout_gravity="right|center_vertical"
+                android:layout_marginRight="20dp"
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/hover_accent"
+                    android:text=" Next "
+                    />
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:layout_gravity="left|center_vertical"
+                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/playerAvatar_next"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    app:civ_border_width="1dp"
+                    app:civ_border_color="#FF000000"/>
+
+            </LinearLayout>
+
+        </FrameLayout>
 
     </LinearLayout>
-
-    <ichen.chu.drawableviewlibs.DrawableView
-        android:id="@+id/paintView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
 
     <ichen.chu.hoverlibs.HoverView
         xmlns:android="http://schemas.android.com/apk/res/android"
@@ -99,3 +223,5 @@
         />
 
 </FrameLayout>
+
+

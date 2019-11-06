@@ -39,6 +39,9 @@ public class DrawableView extends View
 
     private final ArrayList<SerializablePath> paths = new ArrayList<>();
 
+    // flag
+    private boolean isDisabled = false;
+
     // Listener
     private DrawableViewListener mDrawableViewListener;
 
@@ -145,6 +148,10 @@ public class DrawableView extends View
 
     public Bitmap obtainBitmap(Bitmap createdBitmap) {
         return pathDrawer.obtainBitmap(createdBitmap, paths);
+    }
+
+    public void setDisabled(boolean flag) {
+        isDisabled = flag;
     }
 
     public Bitmap obtainBitmap() {
@@ -256,10 +263,12 @@ public class DrawableView extends View
         @Override
         public boolean onTouch(View v, MotionEvent event) {
 //            mLog.d(TAG, "onTouch");
-            scaleGestureDetector.onTouchEvent(event);
-            gestureDetector.onTouchEvent(event);
-            gestureCreator.onTouchEvent(event);
-            invalidate();
+            if (!isDisabled) {
+                scaleGestureDetector.onTouchEvent(event);
+                gestureDetector.onTouchEvent(event);
+                gestureCreator.onTouchEvent(event);
+                invalidate();
+            }
             return true;
         }
     }

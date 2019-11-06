@@ -80,5 +80,6 @@ dependencies {
     implementation 'com.github.iwgang:countdownview:2.1.6'
 //    implementation 'ch.halcyon:squareprogressbar:1.6.4'
     implementation 'com.github.DanielMartinus:Stepper-Touch:1.0.1'
+    implementation 'com.romainpiel.shimmer:library:1.4.0@aar'
 //    implementation 'in.championswimmer:SimpleFingerGestures_Android_Library:1.2'
 }
