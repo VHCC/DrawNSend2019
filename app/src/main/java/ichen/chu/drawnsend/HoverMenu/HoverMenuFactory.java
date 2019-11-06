@@ -28,7 +28,7 @@ import ichen.chu.drawnsend.HoverMenu.colorselection.ColorSelectionContent;
 import ichen.chu.drawnsend.HoverMenu.demo.HoverIntroductionContent;
 import ichen.chu.drawnsend.HoverMenu.theme.HoverThemeManager;
 import ichen.chu.drawnsend.util.MLog;
-import io.mattcarroll.hover.Content;
+import ichen.chu.hoverlibs.Content;
 
 /**
  * Can create a Hover menu from code or from file.

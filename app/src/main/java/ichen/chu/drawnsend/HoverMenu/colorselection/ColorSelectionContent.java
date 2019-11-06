@@ -31,7 +31,7 @@ import de.greenrobot.event.EventBus;
 import ichen.chu.drawnsend.HoverMenu.theme.HoverTheme;
 import ichen.chu.drawnsend.HoverMenu.theme.HoverThemer;
 import ichen.chu.drawnsend.R;
-import io.mattcarroll.hover.Content;
+import ichen.chu.hoverlibs.Content;
 
 /**
  * {@link Content} that displays a color chooser and applies the color selection to the

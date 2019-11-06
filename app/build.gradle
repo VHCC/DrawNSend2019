@@ -54,12 +54,13 @@ dependencies {
 
     implementation project(path: ':drawableviewlibs')
     implementation project(path: ':squareprogessbarlibs')
+    implementation project(path: ':hoverlibs')
 
     implementation 'com.squareup.okhttp3:okhttp:3.4.1'
     implementation 'com.google.android.gms:play-services-auth:17.0.0'
 
 
-    implementation 'io.mattcarroll.hover:hover:0.9.8'
+//    implementation 'io.mattcarroll.hover:hover:0.9.8'
     implementation 'de.greenrobot:eventbus:2.4.0'
     implementation 'com.larswerkman:HoloColorPicker:1.5'
     implementation 'com.google.android.material:material:1.0.0'

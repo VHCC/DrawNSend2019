@@ -35,10 +35,10 @@ import ichen.chu.drawnsend.HoverMenu.theme.HoverTheme;
 import ichen.chu.drawnsend.HoverMenu.theme.HoverThemeManager;
 import ichen.chu.drawnsend.R;
 import ichen.chu.drawnsend.util.MLog;
+import ichen.chu.hoverlibs.HoverMenu;
+import ichen.chu.hoverlibs.HoverView;
+import ichen.chu.hoverlibs.OnExitListener;
 import ichen.chu.squareprogessbarlibs.SquareProgressBar;
-import io.mattcarroll.hover.HoverMenu;
-import io.mattcarroll.hover.HoverView;
-import io.mattcarroll.hover.OnExitListener;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
@@ -126,6 +126,14 @@ public class PlayBoardMainFragment extends Fragment {
         config.setCanvasHeight(height);
         config.setCanvasWidth(width);
         drawableView.setConfig(config);
+
+        drawableView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                mLog.d(TAG, " * onLongClick");
+                return false;
+            }
+        });
 
         strokeWidthPlusButton.setOnClickListener(new View.OnClickListener() {
 

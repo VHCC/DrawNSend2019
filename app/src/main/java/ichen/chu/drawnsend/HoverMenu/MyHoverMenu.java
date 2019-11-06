@@ -19,8 +19,8 @@ import ichen.chu.drawnsend.HoverMenu.base.DemoTabView;
 import ichen.chu.drawnsend.HoverMenu.theme.HoverTheme;
 import ichen.chu.drawnsend.R;
 import ichen.chu.drawnsend.util.MLog;
-import io.mattcarroll.hover.Content;
-import io.mattcarroll.hover.HoverMenu;
+import ichen.chu.hoverlibs.Content;
+import ichen.chu.hoverlibs.HoverMenu;
 
 /**
  * Created by IChen.Chu on 2019/10/29

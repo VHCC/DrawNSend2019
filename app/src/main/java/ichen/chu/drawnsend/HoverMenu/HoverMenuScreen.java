@@ -21,7 +21,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import io.mattcarroll.hover.Content;
+import ichen.chu.hoverlibs.Content;
 
 /**
  * A screen that is displayed in our Hello World Hover Menu.

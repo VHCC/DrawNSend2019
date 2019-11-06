@@ -15,7 +15,6 @@
  */
 package ichen.chu.drawnsend.HoverMenu.theme;
 
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import de.greenrobot.event.EventBus;

@@ -61,7 +61,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <io.mattcarroll.hover.HoverView
+    <ichen.chu.hoverlibs.HoverView
         android:visibility="gone"
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:hover="http://schemas.android.com/apk/res-auto"

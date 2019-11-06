@@ -29,7 +29,7 @@ import ichen.chu.drawnsend.BusEvent;
 import ichen.chu.drawnsend.HoverMenu.theme.HoverTheme;
 import ichen.chu.drawnsend.R;
 import ichen.chu.drawnsend.util.MLog;
-import io.mattcarroll.hover.Content;
+import ichen.chu.hoverlibs.Content;
 
 /**
  * {@link Content} that displays an introduction to Hover.
