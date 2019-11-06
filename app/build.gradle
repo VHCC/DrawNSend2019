@@ -53,6 +53,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
 
     implementation project(path: ':drawableviewlibs')
+    implementation project(path: ':squareprogessbarlibs')
 
     implementation 'com.squareup.okhttp3:okhttp:3.4.1'
     implementation 'com.google.android.gms:play-services-auth:17.0.0'
@@ -74,4 +75,6 @@ dependencies {
     implementation 'org.adw.library:discrete-seekbar:1.0.1'
     implementation 'de.hdodenhof:circleimageview:3.0.1'
     implementation 'com.github.jd-alexander:android-flat-button:v1.1'
+    implementation 'com.github.iwgang:countdownview:2.1.6'
+//    implementation 'ch.halcyon:squareprogressbar:1.6.4'
 }

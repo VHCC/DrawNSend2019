@@ -1,6 +1,6 @@
 package ichen.chu.drawnsend.pages.playboard;
 
-import android.content.Intent;
+import android.animation.ValueAnimator;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -11,8 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-
-import com.google.android.gms.common.SignInButton;
+import android.widget.ImageView;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -26,6 +25,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.fragment.app.Fragment;
+import cn.iwgang.countdownview.CountdownView;
 import ichen.chu.drawableviewlibs.DrawableView;
 import ichen.chu.drawableviewlibs.DrawableViewConfig;
 import ichen.chu.drawnsend.Bus;
@@ -35,6 +35,7 @@ import ichen.chu.drawnsend.HoverMenu.theme.HoverTheme;
 import ichen.chu.drawnsend.HoverMenu.theme.HoverThemeManager;
 import ichen.chu.drawnsend.R;
 import ichen.chu.drawnsend.util.MLog;
+import ichen.chu.squareprogessbarlibs.SquareProgressBar;
 import io.mattcarroll.hover.HoverMenu;
 import io.mattcarroll.hover.HoverView;
 import io.mattcarroll.hover.OnExitListener;
@@ -54,10 +55,13 @@ public class PlayBoardMainFragment extends Fragment {
 
     private static final MLog mLog = new MLog(true);
     private final String TAG = getClass().getSimpleName() + "@" + Integer.toHexString(hashCode());
-
-    private DrawableView drawableView;
     private final DrawableViewConfig config = new DrawableViewConfig();
+    private DrawableView drawableView;
     private HoverView mHoverView;
+
+    // Constructor
+    public PlayBoardMainFragment() {
+    }
 
     /**
      * Use this factory method to create a new instance of
@@ -70,11 +74,6 @@ public class PlayBoardMainFragment extends Fragment {
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
-    }
-
-
-    // Constructor
-    public PlayBoardMainFragment() {
     }
 
     @Override
@@ -110,6 +109,8 @@ public class PlayBoardMainFragment extends Fragment {
         undoButton.setVisibility(View.GONE);
         Button clearButton = (Button) rootView.findViewById(R.id.clearButton);
         Button getButton = (Button) rootView.findViewById(R.id.getButton);
+        CountdownView countdownView = (CountdownView) rootView.findViewById(R.id.countdownView);
+        final SquareProgressBar sProgressBar = (SquareProgressBar) rootView.findViewById(R.id.sProgressBar);
 
         Display display = getActivity().getWindowManager().getDefaultDisplay();
         Point size = new Point();
@@ -199,6 +200,37 @@ public class PlayBoardMainFragment extends Fragment {
 
             }
         });
+
+        countdownView.start(10 * 1000); // Millisecond
+        countdownView.setOnCountdownEndListener(new CountdownView.OnCountdownEndListener() {
+            @Override
+            public void onEnd(CountdownView cv) {
+                mLog.d(TAG, "onEnd");
+            }
+        });
+        countdownView.setOnCountdownIntervalListener(10, new CountdownView.OnCountdownIntervalListener() {
+            @Override
+            public void onInterval(CountdownView cv, long remainTime) {
+                mLog.d(TAG, "remainTime= " + remainTime);
+            }
+        });
+
+
+        sProgressBar.setWidth(8);
+        sProgressBar.setOpacity(false, false);
+        sProgressBar.showProgress(false);
+        sProgressBar.setImageScaleType(ImageView.ScaleType.CENTER_CROP);
+        sProgressBar.setImage(R.drawable.bg_white);
+
+        ValueAnimator va = ValueAnimator.ofFloat(0f, 100f);
+        va.setDuration(10 * 1000);
+        va.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            public void onAnimationUpdate(ValueAnimator animation) {
+                sProgressBar.setProgress((float) animation.getAnimatedValue());
+            }
+        });
+        va.start();
+
 
     }
 
