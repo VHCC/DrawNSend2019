@@ -25,7 +25,7 @@ import androidx.annotation.NonNull;
 import de.greenrobot.event.EventBus;
 import ichen.chu.drawnsend.Bus;
 import ichen.chu.drawnsend.HoverMenu.colorselection.ColorSelectionContent;
-import ichen.chu.drawnsend.HoverMenu.demo.HoverIntroductionContent;
+import ichen.chu.drawnsend.HoverMenu.intro.HoverIntroductionContent;
 import ichen.chu.drawnsend.HoverMenu.theme.HoverThemeManager;
 import ichen.chu.drawnsend.util.MLog;
 import ichen.chu.hoverlibs.Content;

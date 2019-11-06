@@ -31,13 +31,19 @@ import de.greenrobot.event.EventBus;
 import ichen.chu.drawnsend.HoverMenu.theme.HoverTheme;
 import ichen.chu.drawnsend.HoverMenu.theme.HoverThemer;
 import ichen.chu.drawnsend.R;
+import ichen.chu.drawnsend.util.MLog;
 import ichen.chu.hoverlibs.Content;
+import nl.dionsegijn.steppertouch.OnStepCallback;
+import nl.dionsegijn.steppertouch.StepperTouch;
 
 /**
  * {@link Content} that displays a color chooser and applies the color selection to the
  * Hover menu UI.
  */
 public class ColorSelectionContent extends FrameLayout implements Content {
+
+    private static final MLog mLog = new MLog(true);
+    private final String TAG = getClass().getSimpleName() + "@" + Integer.toHexString(hashCode());
 
     private static final int MODE_ACCENT = 0;
     private static final int MODE_BASE = 1;
@@ -49,6 +55,7 @@ public class ColorSelectionContent extends FrameLayout implements Content {
     private TabLayout mTabLayout;
     private ColorPicker mColorPicker;
     private TextView mAttributionTextView;
+    private StepperTouch stepperTouch;
 
     public ColorSelectionContent(@NonNull Context context, @NonNull EventBus bus, @NonNull HoverThemer hoverThemer, @NonNull HoverTheme theme) {
         super(context);
@@ -63,6 +70,7 @@ public class ColorSelectionContent extends FrameLayout implements Content {
         mTabLayout = (TabLayout) findViewById(R.id.tablayout);
         mColorPicker = (ColorPicker) findViewById(R.id.colorpicker);
         mAttributionTextView = (TextView) findViewById(R.id.textview_attribution);
+        stepperTouch = (StepperTouch) findViewById(R.id.stepperTouch);
 
         mTabLayout.addTab(mTabLayout.newTab().setText("Accent Color"), true);
 //        mTabLayout.addTab(mTabLayout.newTab().setText("Primary Color"));
@@ -107,6 +115,13 @@ public class ColorSelectionContent extends FrameLayout implements Content {
                     theme = new HoverTheme(mTheme.getAccentColor(), color);
                 }
                 mHoverThemer.setTheme(theme);
+            }
+        });
+
+        stepperTouch.addStepCallback(new OnStepCallback() {
+            @Override
+            public void onStep(int i, boolean b) {
+                mLog.d(TAG, "onStep, i= " + i + ", b= " + b);
             }
         });
 

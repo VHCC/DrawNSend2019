@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ichen.chu.drawnsend.HoverMenu.demo;
+package ichen.chu.drawnsend.HoverMenu.intro;
 
 import android.graphics.PointF;
 import android.os.Build;
 import android.os.SystemClock;
-import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;

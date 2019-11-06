@@ -55,6 +55,7 @@ public class PlayBoardMainFragment extends Fragment {
 
     private static final MLog mLog = new MLog(true);
     private final String TAG = getClass().getSimpleName() + "@" + Integer.toHexString(hashCode());
+
     private final DrawableViewConfig config = new DrawableViewConfig();
     private DrawableView drawableView;
     private HoverView mHoverView;
@@ -219,7 +220,7 @@ public class PlayBoardMainFragment extends Fragment {
         countdownView.setOnCountdownIntervalListener(10, new CountdownView.OnCountdownIntervalListener() {
             @Override
             public void onInterval(CountdownView cv, long remainTime) {
-                mLog.d(TAG, "remainTime= " + remainTime);
+//                mLog.d(TAG, "remainTime= " + remainTime);
             }
         });
 

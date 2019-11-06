@@ -259,14 +259,15 @@ class HoverViewStateCollapsed extends BaseHoverViewState {
         boolean droppedOnExit = mHoverView.mScreen.getExitView().isInExitZone(mFloatingTab.getPosition());
         if (droppedOnExit) {
             Log.d(TAG, "User dropped floating tab on exit.");
-            closeMenu(new Runnable() {
-                @Override
-                public void run() {
-                    if (null != mHoverView.mOnExitListener) {
-                        mHoverView.mOnExitListener.onExit();
-                    }
-                }
-            });
+            // 20191106
+//            closeMenu(new Runnable() {
+//                @Override
+//                public void run() {
+//                    if (null != mHoverView.mOnExitListener) {
+//                        mHoverView.mOnExitListener.onExit();
+//                    }
+//                }
+//            });
         } else {
             int tabSize = mHoverView.getResources().getDimensionPixelSize(R.dimen.hover_tab_size);
             Point screenSize = new Point(mHoverView.mScreen.getWidth(), mHoverView.mScreen.getHeight());

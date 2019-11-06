@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ichen.chu.drawnsend.HoverMenu.demo;
+package ichen.chu.drawnsend.HoverMenu.intro;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -24,7 +23,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import de.greenrobot.event.EventBus;
-import ichen.chu.drawnsend.App;
 import ichen.chu.drawnsend.BusEvent;
 import ichen.chu.drawnsend.HoverMenu.theme.HoverTheme;
 import ichen.chu.drawnsend.R;
