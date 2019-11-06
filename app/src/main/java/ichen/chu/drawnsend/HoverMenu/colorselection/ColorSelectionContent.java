@@ -28,6 +28,8 @@ import com.larswerkman.holocolorpicker.ValueBar;
 
 import androidx.annotation.NonNull;
 import de.greenrobot.event.EventBus;
+import ichen.chu.drawnsend.Bus;
+import ichen.chu.drawnsend.BusEvent;
 import ichen.chu.drawnsend.HoverMenu.theme.HoverTheme;
 import ichen.chu.drawnsend.HoverMenu.theme.HoverThemer;
 import ichen.chu.drawnsend.R;
@@ -117,11 +119,32 @@ public class ColorSelectionContent extends FrameLayout implements Content {
                 mHoverThemer.setTheme(theme);
             }
         });
-
+        stepperTouch.setCount(1);
+        stepperTouch.setMinValue(1);
+        stepperTouch.setMaxValue(5);
+        stepperTouch.setSideTapEnabled(true);
         stepperTouch.addStepCallback(new OnStepCallback() {
             @Override
             public void onStep(int i, boolean b) {
                 mLog.d(TAG, "onStep, i= " + i + ", b= " + b);
+                switch (i) {
+                    case 1:
+                        Bus.getInstance().post(new BusEvent("change stroke size", 4001));
+                        break;
+                    case 2:
+                        Bus.getInstance().post(new BusEvent("change stroke size", 4002));
+                        break;
+                    case 3:
+                        Bus.getInstance().post(new BusEvent("change stroke size", 4003));
+                        break;
+                    case 4:
+                        Bus.getInstance().post(new BusEvent("change stroke size", 4004));
+                        break;
+                    case 5:
+                        Bus.getInstance().post(new BusEvent("change stroke size", 4005));
+                        break;
+                }
+
             }
         });
 

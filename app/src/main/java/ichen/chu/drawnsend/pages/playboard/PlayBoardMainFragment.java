@@ -8,9 +8,11 @@ import android.graphics.Point;
 import android.os.Bundle;
 import android.view.Display;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import java.io.File;
@@ -60,6 +62,9 @@ public class PlayBoardMainFragment extends Fragment {
     private DrawableView drawableView;
     private HoverView mHoverView;
 
+    // Listener
+    private MainDrawableViewListener mainDrawableViewListener = new MainDrawableViewListener();
+
     // Constructor
     public PlayBoardMainFragment() {
     }
@@ -100,6 +105,7 @@ public class PlayBoardMainFragment extends Fragment {
     }
 
     private void initUi(View rootView) {
+        FrameLayout play_board_container = (FrameLayout) rootView.findViewById(R.id.play_board_container);
         drawableView = (DrawableView) rootView.findViewById(R.id.paintView);
         Button strokeWidthMinusButton = (Button) rootView.findViewById(R.id.strokeWidthMinusButton);
         strokeWidthMinusButton.setVisibility(View.GONE);
@@ -121,7 +127,7 @@ public class PlayBoardMainFragment extends Fragment {
 
         config.setStrokeColor(HoverThemeManager.getInstance().getTheme().getAccentColor());
         config.setShowCanvasBounds(true);
-        config.setStrokeWidth(20.0f);
+        config.setStrokeWidth(10.0f);
         config.setMinZoom(1.0f);
         config.setMaxZoom(2.0f);
         config.setCanvasHeight(height);
@@ -135,6 +141,8 @@ public class PlayBoardMainFragment extends Fragment {
                 return false;
             }
         });
+
+        drawableView.setSimpleFingerGesturesListener(mainDrawableViewListener);
 
         strokeWidthPlusButton.setOnClickListener(new View.OnClickListener() {
 
@@ -240,7 +248,6 @@ public class PlayBoardMainFragment extends Fragment {
         });
         va.start();
 
-
     }
 
     private void initHover(View rootView) {
@@ -303,6 +310,74 @@ public class PlayBoardMainFragment extends Fragment {
         switch (event.getEventType()) {
             case 5001:
                 break;
+            case 4001:
+                config.setStrokeWidth(10);
+                break;
+            case 4002:
+                config.setStrokeWidth(20);
+                break;
+            case 4003:
+                config.setStrokeWidth(30);
+                break;
+            case 4004:
+                config.setStrokeWidth(40);
+                break;
+            case 4005:
+                config.setStrokeWidth(50);
+                break;
         }
     }
+
+    private class MainDrawableViewListener implements DrawableView.DrawableViewListener {
+
+        @Override
+        public boolean onSwipeUp(int fingers, long gestureDuration, double gestureDistance) {
+            mLog.d(TAG, "swiped " + fingers + " up");
+            return false;
+        }
+
+        @Override
+        public boolean onSwipeDown(int fingers, long gestureDuration, double gestureDistance) {
+            mLog.d(TAG, "swiped " + fingers + " down");
+            return false;
+        }
+
+        @Override
+        public boolean onSwipeLeft(int fingers, long gestureDuration, double gestureDistance) {
+            mLog.d(TAG, "swiped " + fingers + " left");
+            return false;
+        }
+
+        @Override
+        public boolean onSwipeRight(int fingers, long gestureDuration, double gestureDistance) {
+            mLog.d(TAG, "swiped " + fingers + " right");
+            return false;
+        }
+
+        @Override
+        public boolean onPinch(int fingers, long gestureDuration, double gestureDistance) {
+            mLog.d(TAG, "pinch");
+            return false;
+        }
+
+        @Override
+        public boolean onUnpinch(int fingers, long gestureDuration, double gestureDistance) {
+            mLog.d(TAG, "unpinch");
+            return false;
+        }
+
+        @Override
+        public boolean onDoubleTap(int fingers) {
+            mLog.d(TAG, "onDoubleTap");
+            return false;
+        }
+
+
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+//            mLog.d(TAG, "onTouch");
+            return true;
+        }
+    }
+
 }

@@ -27,6 +27,7 @@ import android.view.View;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import ichen.chu.drawableviewlibs.MLog;
 import ichen.chu.drawnsend.App;
 import ichen.chu.drawnsend.Bus;
 import ichen.chu.drawnsend.BusEvent;
@@ -37,7 +38,8 @@ import ichen.chu.drawnsend.HoverMenu.theme.HoverTheme;
  */
 public class DemoTabView extends View {
 
-    public static final String TAG = "dns-DemoTabView";
+    private static final MLog mLog = new MLog(true);
+    private final String TAG = getClass().getSimpleName() + "@" + Integer.toHexString(hashCode());
 
     private int mBackgroundColor;
     private Integer mForegroundColor;

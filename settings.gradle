@@ -1,2 +1,2 @@
-include ':app', ':drawableviewlibs', ':squareprogessbarlibs', ':hoverlibs'
+include ':app', ':drawableviewlibs', ':squareprogessbarlibs', ':hoverlibs', ':simplefingergesturelibs'
 rootProject.name='DrawNSend'
