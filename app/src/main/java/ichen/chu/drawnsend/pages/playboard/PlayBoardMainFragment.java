@@ -158,6 +158,15 @@ public class PlayBoardMainFragment extends Fragment {
         config.setCanvasWidth(width);
         drawableView.setConfig(config);
 
+        drawableView.post(new Runnable() {
+            @Override
+            public void run() {
+                config.setCanvasHeight(drawableView.getHeight());
+                config.setCanvasWidth(drawableView.getWidth());
+                drawableView.setConfig(config);
+            }
+        });
+
         drawableView.setSimpleFingerGesturesListener(mainDrawableViewListener);
 
         countdownView.start(playTimeMs); // Millisecond
@@ -226,7 +235,7 @@ public class PlayBoardMainFragment extends Fragment {
                         .addFormDataPart("file", file.getName(), RequestBody.create(MEDIA_TYPE_JPEG, file)).build();
 
                 Request request = new Request.Builder()
-                        .url(SERVER_SITE + "/api/post_dns_upload_file")
+                        .url(SERVER_SITE + "/api/post_dns_google_drive_upload_file")
                         .post(req)
                         .build();
 
