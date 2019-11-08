@@ -38,6 +38,8 @@ import ichen.chu.hoverlibs.Content;
 import nl.dionsegijn.steppertouch.OnStepCallback;
 import nl.dionsegijn.steppertouch.StepperTouch;
 
+import static ichen.chu.drawnsend.Bus.*;
+
 /**
  * {@link Content} that displays a color chooser and applies the color selection to the
  * Hover menu UI.
@@ -129,19 +131,19 @@ public class ColorSelectionContent extends FrameLayout implements Content {
                 mLog.d(TAG, "onStep, i= " + i + ", b= " + b);
                 switch (i) {
                     case 1:
-                        Bus.getInstance().post(new BusEvent("change stroke size", 4001));
+                        Bus.getInstance().post(new BusEvent(EVENT_MAP.get(EVENT_DRAWABLE_CHANGE_STROKE_SIZE_1), EVENT_DRAWABLE_CHANGE_STROKE_SIZE_1));
                         break;
                     case 2:
-                        Bus.getInstance().post(new BusEvent("change stroke size", 4002));
+                        Bus.getInstance().post(new BusEvent(EVENT_MAP.get(EVENT_DRAWABLE_CHANGE_STROKE_SIZE_2), EVENT_DRAWABLE_CHANGE_STROKE_SIZE_2));
                         break;
                     case 3:
-                        Bus.getInstance().post(new BusEvent("change stroke size", 4003));
+                        Bus.getInstance().post(new BusEvent(EVENT_MAP.get(EVENT_DRAWABLE_CHANGE_STROKE_SIZE_3), EVENT_DRAWABLE_CHANGE_STROKE_SIZE_3));
                         break;
                     case 4:
-                        Bus.getInstance().post(new BusEvent("change stroke size", 4004));
+                        Bus.getInstance().post(new BusEvent(EVENT_MAP.get(EVENT_DRAWABLE_CHANGE_STROKE_SIZE_4), EVENT_DRAWABLE_CHANGE_STROKE_SIZE_4));
                         break;
                     case 5:
-                        Bus.getInstance().post(new BusEvent("change stroke size", 4005));
+                        Bus.getInstance().post(new BusEvent(EVENT_MAP.get(EVENT_DRAWABLE_CHANGE_STROKE_SIZE_5), EVENT_DRAWABLE_CHANGE_STROKE_SIZE_5));
                         break;
                 }
 

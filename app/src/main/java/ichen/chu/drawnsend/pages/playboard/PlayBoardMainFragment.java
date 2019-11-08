@@ -63,6 +63,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 import static ichen.chu.drawnsend.App.SERVER_SITE;
+import static ichen.chu.drawnsend.Bus.*;
 
 /**
  * Created by IChen.Chu on 2018/9/26
@@ -140,6 +141,11 @@ public class PlayBoardMainFragment extends Fragment {
         playerAvatar_pre.setOnClickListener(mAvatarClickListener);
 
         GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getContext());
+        mLog.d(TAG, "acct= " + acct);
+        mLog.d(TAG, "acct.getEmail= " + acct.getEmail());
+        mLog.d(TAG, "acct.getDisplayName= " + acct.getDisplayName());
+        mLog.d(TAG, "acct.getPhotoUrl= " + acct.getPhotoUrl());
+
         new DownloadImageTask(playerAvatar_pre).execute(acct.getPhotoUrl().toString());
         new DownloadImageTask(playerAvatar_next).execute(acct.getPhotoUrl().toString());
 
@@ -298,19 +304,19 @@ public class PlayBoardMainFragment extends Fragment {
         switch (event.getEventType()) {
             case 5001:
                 break;
-            case 4001:
+            case EVENT_DRAWABLE_CHANGE_STROKE_SIZE_1:
                 config.setStrokeWidth(10);
                 break;
-            case 4002:
+            case EVENT_DRAWABLE_CHANGE_STROKE_SIZE_2:
                 config.setStrokeWidth(20);
                 break;
-            case 4003:
+            case EVENT_DRAWABLE_CHANGE_STROKE_SIZE_3:
                 config.setStrokeWidth(30);
                 break;
-            case 4004:
+            case EVENT_DRAWABLE_CHANGE_STROKE_SIZE_4:
                 config.setStrokeWidth(40);
                 break;
-            case 4005:
+            case EVENT_DRAWABLE_CHANGE_STROKE_SIZE_5:
                 config.setStrokeWidth(50);
                 break;
             case 9002:

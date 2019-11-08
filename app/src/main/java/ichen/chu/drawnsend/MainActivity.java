@@ -51,6 +51,9 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import pub.devrel.easypermissions.EasyPermissions;
 
+import static ichen.chu.drawnsend.Bus.EVENT_LOGIN_SUCCESS;
+import static ichen.chu.drawnsend.Bus.EVENT_MAP;
+
 public class MainActivity extends AppCompatActivity {
 
     private static final MLog mLog = new MLog(true);
@@ -143,19 +146,19 @@ public class MainActivity extends AppCompatActivity {
     public class SectionsPagerAdapter extends FragmentPagerAdapter implements ViewPager.OnPageChangeListener {
 
         // Constants
-        static final int PAGE_HOME = 500;
-        static final int PAGE_LOGIN = 100;
-        static final int PAGE_DASHBOARD = 200;
-        static final int PAGE_PLAY_BOARD = 600;
-        static final int PAGE_RESULTS = 0;
-        static final int PAGE_SUB_PAGE = 400;
+//        static final int PAGE_HOME = 500;
+//        static final int PAGE_LOGIN = 100;
+//        static final int PAGE_DASHBOARD = 200;
+//        static final int PAGE_PLAY_BOARD = 600;
+//        static final int PAGE_RESULTS = 0;
+//        static final int PAGE_SUB_PAGE = 400;
 
-//        static final int PAGE_HOME = 0;
-//        static final int PAGE_LOGIN = 1;
-//        static final int PAGE_DASHBOARD = 2;
-//        static final int PAGE_PLAY_BOARD = 3;
-//        static final int PAGE_RESULTS = 4;
-//        static final int PAGE_SUB_PAGE = 5;
+        static final int PAGE_HOME = 0;
+        static final int PAGE_LOGIN = 1;
+        static final int PAGE_DASHBOARD = 2;
+        static final int PAGE_PLAY_BOARD = 3;
+        static final int PAGE_RESULTS = 4;
+        static final int PAGE_SUB_PAGE = 5;
 
         // Fields
         private final int[] PAGE_GROUP = new int[]{
@@ -196,7 +199,7 @@ public class MainActivity extends AppCompatActivity {
                             GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
                             if (acct != null) {
                                 mViewPager.setCurrentItem(PAGE_DASHBOARD);
-                                Bus.getInstance().post(new BusEvent("login success", 1001));
+                                Bus.getInstance().post(new BusEvent(EVENT_MAP.get(EVENT_LOGIN_SUCCESS), EVENT_LOGIN_SUCCESS));
                             } else {
                                 mViewPager.setCurrentItem(PAGE_LOGIN);
                             }
@@ -289,7 +292,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onLoginSuccess() {
                 mViewPager.setCurrentItem(SectionsPagerAdapter.PAGE_DASHBOARD);
-                Bus.getInstance().post(new BusEvent("login success", 1001));
+                Bus.getInstance().post(new BusEvent(EVENT_MAP.get(EVENT_LOGIN_SUCCESS), EVENT_LOGIN_SUCCESS));
 //                MessageTools.showToast(mContext, "Login Succeed!");
 //                MessageTools.showToast(mContext, "登入成功");
             }

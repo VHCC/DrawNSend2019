@@ -15,6 +15,8 @@
  */
 package ichen.chu.drawnsend;
 
+import java.util.HashMap;
+
 import de.greenrobot.event.EventBus;
 import ichen.chu.drawnsend.util.MLog;
 
@@ -22,6 +24,31 @@ import ichen.chu.drawnsend.util.MLog;
  * Globally accessible EventBus.
  */
 public class Bus {
+
+    static public final int EVENT_LOGIN_SUCCESS = 1001;
+
+    static public final int EVENT_DRAWABLE_CHANGE_STROKE_SIZE_1 = 4001;
+    static public final int EVENT_DRAWABLE_CHANGE_STROKE_SIZE_2 = 4002;
+    static public final int EVENT_DRAWABLE_CHANGE_STROKE_SIZE_3 = 4003;
+    static public final int EVENT_DRAWABLE_CHANGE_STROKE_SIZE_4 = 4004;
+    static public final int EVENT_DRAWABLE_CHANGE_STROKE_SIZE_5 = 4005;
+
+
+
+    static public final int EVENT_DASHBOARD_GET_PLAYER_ORDER = 5001;
+
+
+    static public final HashMap<Integer, String> EVENT_MAP = new HashMap<>();
+
+    static {
+        EVENT_MAP.put(EVENT_LOGIN_SUCCESS, "login success");
+        EVENT_MAP.put(EVENT_DRAWABLE_CHANGE_STROKE_SIZE_1, "change stroke size");
+        EVENT_MAP.put(EVENT_DRAWABLE_CHANGE_STROKE_SIZE_2, "change stroke size");
+        EVENT_MAP.put(EVENT_DRAWABLE_CHANGE_STROKE_SIZE_3, "change stroke size");
+        EVENT_MAP.put(EVENT_DRAWABLE_CHANGE_STROKE_SIZE_4, "change stroke size");
+        EVENT_MAP.put(EVENT_DRAWABLE_CHANGE_STROKE_SIZE_5, "change stroke size");
+        EVENT_MAP.put(EVENT_DASHBOARD_GET_PLAYER_ORDER, "api - get player order");
+    }
 
     private static final MLog mLog = new MLog(true);
     private final String TAG = getClass().getSimpleName() + "@" + Integer.toHexString(hashCode());

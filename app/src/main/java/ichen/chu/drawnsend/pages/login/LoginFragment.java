@@ -163,13 +163,28 @@ public class LoginFragment extends Fragment {
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
 
+
+
             // Signed in successfully, show authenticated UI.
             mLog.d(TAG, "* Signed in successfully");
 //            Log.d(TAG, "- account= " + account);
             mLog.d(TAG, "- getDisplayName= " + account.getDisplayName());
             mLog.d(TAG, "- getEmail= " + account.getEmail());
             mLog.d(TAG, "- getPhotoUrl= " + account.getPhotoUrl());
-            onFragmentInteractionListener.onLoginSuccess();
+
+            if (null == account.getPhotoUrl()) {
+                mGoogleSignInClient.signOut()
+                        .addOnCompleteListener(getActivity(), new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                mLog.d(TAG, "signOut Complete");
+                            }
+                        });
+            } else {
+                onFragmentInteractionListener.onLoginSuccess();
+            }
+
+
 //            signInButton.setEnabled(false);
 //            updateUI(account);
         } catch (ApiException e) {

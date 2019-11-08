@@ -3,6 +3,8 @@ package ichen.chu.drawnsend.pages.dashboard;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -33,6 +35,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -62,6 +67,11 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 
 import static ichen.chu.drawnsend.App.SERVER_SITE;
+import static ichen.chu.drawnsend.Bus.EVENT_DASHBOARD_GET_PLAYER_ORDER;
+import static ichen.chu.drawnsend.Bus.EVENT_DRAWABLE_CHANGE_STROKE_SIZE_1;
+import static ichen.chu.drawnsend.Bus.EVENT_LOGIN_SUCCESS;
+import static ichen.chu.drawnsend.Bus.EVENT_MAP;
+import static ichen.chu.drawnsend.api.APICode.*;
 
 /**
  * Created by IChen.Chu on 2018/9/25
@@ -281,13 +291,14 @@ public class DashboardMainFragment extends Fragment {
         mLog.d(TAG, "event= " + event.getMessage());
 
         switch (event.getEventType()) {
-            case 1001:
+            case EVENT_LOGIN_SUCCESS:
                 GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getContext());
                 new DownloadImageTask(profile_image).execute(acct.getPhotoUrl().toString());
                 accountEmailTV.setText(acct.getEmail());
                 break;
         }
     }
+
 
     private class ThreadObject extends Object {
 
@@ -506,9 +517,13 @@ public class DashboardMainFragment extends Fragment {
 
     private class CreateRoomListener implements View.OnClickListener {
 
+        String roomJoinNumber;
+        Handler mySADHandler;
+
         @Override
-        public void onClick(View v) {
+        public void onClick(final View v) {
             mLog.d(TAG, "click createRoomFAB");
+
 
             final ThreadObject threadObject = new ThreadObject();
             threadObject.setRunning(false);
@@ -590,48 +605,100 @@ public class DashboardMainFragment extends Fragment {
             recycleViewPlayerListContainer.setLayoutManager(gridLayoutManager);
             recycleViewPlayerListContainer.setNestedScrollingEnabled(false);
 
-            final Handler mySADHandler = new Handler(new Handler.Callback() {
+            mySADHandler = new Handler(new Handler.Callback() {
+
+                JSONArray jsonArray;
+                List<PlayerItem> playerItemsListTemp;
+
                 @Override
                 public boolean handleMessage(Message msg) {
-                        Log.d(TAG, "msg.obj= " + msg.obj);
+                        mLog.d(TAG, "msg.obj= " + msg.obj);
                     try {
-                        JSONObject responseJ = (JSONObject) ((JSONArray) msg.obj).get(0);
 
-                        JSONArray jsonArray = (JSONArray) responseJ.get("participants");
+                        switch (msg.arg1) {
+                            case API_GET_FOLDER_ID:
 
-//                        mLog.d(TAG, "- participants= " + jsonArray.length());
+                                String gameRoomFolderID = (String) msg.obj;
+                                mLog.d(TAG, "gameRoomFolderID= " + gameRoomFolderID);
+                                DnsServerAgent.getInstance(getContext())
+                                        .getRandomPlayers(mySADHandler, roomJoinNumber);
 
-                        if (jsonArray.length() > 1) {
-                            playFBt.setEnabled(true);
-                        } else {
-                            playFBt.setEnabled(true);
-                        }
 
-                        List<PlayerItem> playerItemsListTemp = new ArrayList<>();
+                                break;
 
-                        for (int index = 0; index < jsonArray.length(); index ++) {
-                            PlayerItem item = new PlayerItem(
-                                    PlayerItem.TYPE.PARTICIPANTS,
-                                    (JSONObject) jsonArray.get(index)
-                            );
-                            playerItemsListTemp.add(item);
-                        }
+                            case API_GET_PLAYER_ORDERS:
+                                jsonArray = (JSONArray) msg.obj;
+                                mLog.d(TAG, "- participants= " + jsonArray.length());
+                                playerItemsListTemp = new ArrayList<>();
+
+                                for (int index = 0; index < jsonArray.length(); index ++) {
+                                    PlayerItem item = new PlayerItem(
+                                            PlayerItem.TYPE.PARTICIPANTS,
+                                            (JSONObject) jsonArray.get(index)
+                                    );
+                                    playerItemsListTemp.add(item);
+                                }
 
 //                        mLog.d(TAG, "playerItemsList.containsAll(playerItemsListTemp)= " + playerItemsList.contains(playerItemsListTemp));;
 
-                        if (!playerItemsList.contains(playerItemsListTemp)) {
-                            playerItemsList.clear();
+                                if (!playerItemsList.contains(playerItemsListTemp)) {
+                                    playerItemsList.clear();
 
-                            for (int index = 0; index < jsonArray.length(); index ++) {
-                                PlayerItem item = new PlayerItem(
-                                        PlayerItem.TYPE.PARTICIPANTS,
-                                        (JSONObject) jsonArray.get(index)
-                                );
-                                playerItemsList.add(item);
-                            }
-                            playerItemAdapter.clearAll();
-                            playerItemAdapter.refreshList();
+                                    for (int index = 0; index < jsonArray.length(); index ++) {
+                                        PlayerItem item = new PlayerItem(
+                                                PlayerItem.TYPE.PARTICIPANTS,
+                                                (JSONObject) jsonArray.get(index)
+                                        );
+                                        playerItemsList.add(item);
+                                    }
+                                    playerItemAdapter.clearAll();
+                                    playerItemAdapter.refreshList();
+                                }
+
+                                break;
+                            case API_FETCH_ROOM_INFO:
+                                JSONObject responseJ = (JSONObject) ((JSONArray) msg.obj).get(0);
+
+                                roomJoinNumber = responseJ.getString("joinNumber");
+                                jsonArray = (JSONArray) responseJ.get("participants");
+                                mLog.d(TAG, "Join Number= " + roomJoinNumber);
+
+//                        mLog.d(TAG, "- participants= " + jsonArray.length());
+
+                                if (jsonArray.length() > 1) {
+                                    playFBt.setEnabled(true);
+                                } else {
+                                    playFBt.setEnabled(false);
+                                }
+
+                                playerItemsListTemp = new ArrayList<>();
+
+                                for (int index = 0; index < jsonArray.length(); index ++) {
+                                    PlayerItem item = new PlayerItem(
+                                            PlayerItem.TYPE.PARTICIPANTS,
+                                            (JSONObject) jsonArray.get(index)
+                                    );
+                                    playerItemsListTemp.add(item);
+                                }
+
+//                        mLog.d(TAG, "playerItemsList.containsAll(playerItemsListTemp)= " + playerItemsList.contains(playerItemsListTemp));;
+
+                                if (!playerItemsList.contains(playerItemsListTemp)) {
+                                    playerItemsList.clear();
+
+                                    for (int index = 0; index < jsonArray.length(); index ++) {
+                                        PlayerItem item = new PlayerItem(
+                                                PlayerItem.TYPE.PARTICIPANTS,
+                                                (JSONObject) jsonArray.get(index)
+                                        );
+                                        playerItemsList.add(item);
+                                    }
+                                    playerItemAdapter.clearAll();
+                                    playerItemAdapter.refreshList();
+                                }
+                                break;
                         }
+
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -760,13 +827,16 @@ public class DashboardMainFragment extends Fragment {
                     mLog.d(TAG, "- onClick playFBt");
                     threadObject.setRunning(false);
 
-                    DnsServerAgent.getInstance(getContext());
+                    DnsServerAgent.getInstance(getContext())
+                            .getGameChainFolderID(mySADHandler, roomJoinNumber);
 
 //                    mHomeFragmentListener.onStartToPlayGame();
 //                    saDialog.dismissWithAnimation();
                 }
             });
+
         }
+
     }
 
 }
