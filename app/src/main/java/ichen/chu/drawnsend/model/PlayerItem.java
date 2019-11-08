@@ -8,7 +8,8 @@ import org.json.JSONObject;
 public class PlayerItem {
 
     public enum TYPE {
-        OWNER, PARTICIPANTS
+        OWNER, PARTICIPANTS,
+        OWNER_RESULTS, PARTICIPANTS_RESULTS,
     }
 
     TYPE playerType;
@@ -38,6 +39,6 @@ public class PlayerItem {
     public String toString() {
 
         return "TYPE= " + playerType +
-                ", time= " + userInfo;
+                ", userJson= " + userInfo;
     }
 }

@@ -40,6 +40,7 @@ import ichen.chu.drawnsend.pages.home.HomeFragment;
 import ichen.chu.drawnsend.pages.login.LoginFragment;
 import ichen.chu.drawnsend.pages.pagerAdapter.tranform.ScaleInOutTransformer;
 import ichen.chu.drawnsend.pages.playboard.PlayBoardMainFragment;
+import ichen.chu.drawnsend.pages.results.ResultsFragment;
 import ichen.chu.drawnsend.pages.subPage.SubPageEmptyFragment;
 import ichen.chu.drawnsend.util.MLog;
 import okhttp3.MediaType;
@@ -145,8 +146,16 @@ public class MainActivity extends AppCompatActivity {
         static final int PAGE_HOME = 500;
         static final int PAGE_LOGIN = 100;
         static final int PAGE_DASHBOARD = 200;
-        static final int PAGE_PLAY_BOARD = 0;
+        static final int PAGE_PLAY_BOARD = 600;
+        static final int PAGE_RESULTS = 0;
         static final int PAGE_SUB_PAGE = 400;
+
+//        static final int PAGE_HOME = 0;
+//        static final int PAGE_LOGIN = 1;
+//        static final int PAGE_DASHBOARD = 2;
+//        static final int PAGE_PLAY_BOARD = 3;
+//        static final int PAGE_RESULTS = 4;
+//        static final int PAGE_SUB_PAGE = 5;
 
         // Fields
         private final int[] PAGE_GROUP = new int[]{
@@ -154,6 +163,7 @@ public class MainActivity extends AppCompatActivity {
                 PAGE_LOGIN,
                 PAGE_DASHBOARD,
                 PAGE_PLAY_BOARD,
+                PAGE_RESULTS,
                 PAGE_SUB_PAGE
         };
         private final String[] PAGE_NAMES = new String[]{
@@ -161,6 +171,7 @@ public class MainActivity extends AppCompatActivity {
                 "PAGE_LOGIN",
                 "PAGE_DASHBOARD",
                 "PAGE_PLAY_BOARD",
+                "PAGE_RESULTS",
                 "PAGE_SUB_PAGE"
         };
         private final Fragment[] fragments = new Fragment[PAGE_GROUP.length];
@@ -212,6 +223,12 @@ public class MainActivity extends AppCompatActivity {
                 case PAGE_PLAY_BOARD: {
                     PlayBoardMainFragment playBoardMainFragment = PlayBoardMainFragment.newInstance();
                     fragment = playBoardMainFragment;
+                }
+                break;
+
+                case PAGE_RESULTS: {
+                    ResultsFragment resultsFragment = ResultsFragment.newInstance();
+                    fragment = resultsFragment;
                 }
                 break;
 

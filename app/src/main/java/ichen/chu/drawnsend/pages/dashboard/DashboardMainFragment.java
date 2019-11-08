@@ -593,18 +593,18 @@ public class DashboardMainFragment extends Fragment {
             final Handler mySADHandler = new Handler(new Handler.Callback() {
                 @Override
                 public boolean handleMessage(Message msg) {
-//                        Log.d(TAG, "msg.obj= " + msg.obj);
+                        Log.d(TAG, "msg.obj= " + msg.obj);
                     try {
                         JSONObject responseJ = (JSONObject) ((JSONArray) msg.obj).get(0);
 
                         JSONArray jsonArray = (JSONArray) responseJ.get("participants");
 
-                        mLog.d(TAG, "- participants= " + jsonArray.length());
+//                        mLog.d(TAG, "- participants= " + jsonArray.length());
 
                         if (jsonArray.length() > 1) {
                             playFBt.setEnabled(true);
                         } else {
-                            playFBt.setEnabled(false);
+                            playFBt.setEnabled(true);
                         }
 
                         List<PlayerItem> playerItemsListTemp = new ArrayList<>();
@@ -750,7 +750,7 @@ public class DashboardMainFragment extends Fragment {
                     mLog.d(TAG, "* onDismiss");
                     threadObject.setRunning(false);
                     DnsServerAgent.getInstance(getContext()).
-                            updatePlayRoomStatus(roomNumber.getCode(), 3);
+                            updatePlayRoomStatus(roomNumber.getCode(), 4);
                 }
             });
 
@@ -759,8 +759,11 @@ public class DashboardMainFragment extends Fragment {
                 public void onClick(View v) {
                     mLog.d(TAG, "- onClick playFBt");
                     threadObject.setRunning(false);
-                    mHomeFragmentListener.onStartToPlayGame();
-                    saDialog.dismissWithAnimation();
+
+                    DnsServerAgent.getInstance(getContext());
+
+//                    mHomeFragmentListener.onStartToPlayGame();
+//                    saDialog.dismissWithAnimation();
                 }
             });
         }

@@ -325,4 +325,56 @@ public class DnsServerAgent {
             mLog.e(TAG, "Other Error: " + e.getLocalizedMessage());
         }
     }
+
+    public void createGameChainFolder(final Handler SADHandler,
+                                      String joinNumber) {
+        try {
+            final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+
+            GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(mContext);
+
+            JSONObject userObj = new JSONObject();
+            userObj.put("email", acct.getEmail());
+            userObj.put("displayName", acct.getDisplayName());
+            userObj.put("photoUrl", acct.getPhotoUrl());
+
+            JSONObject jsonObj = new JSONObject();
+            jsonObj.put("roomOwner", userObj);
+            jsonObj.put("joinNumber", joinNumber);
+
+            RequestBody requestBody = RequestBody.create(JSON, jsonObj.toString());
+
+            Request request = new Request.Builder()
+                    .url(SERVER_SITE + "/api/post_dns_create_game_room")
+//                        .url("https://dns.ichenprocin.dsmynas.com/api/get_dns_check_server_status")
+                    .post(requestBody)
+                    .build();
+
+            OkHttpClient client = new OkHttpClient();
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    e.printStackTrace();
+                }
+
+                @Override
+                public void onResponse(Call call, okhttp3.Response response) throws IOException {
+                    if (response.isSuccessful()) {
+                        try {
+                            JSONObject responseJ = new JSONObject(response.body().string());
+//                                mLog.d(TAG, "response= " + responseJ);
+                            mLog.d(TAG, "payload= " + responseJ.get("payload"));
+                            Message msg = new Message();
+                            msg.obj = responseJ.get("payload");
+                            SADHandler.sendMessage(msg);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            });
+        } catch (Exception e) {
+            mLog.e(TAG, "Other Error: " + e.getLocalizedMessage());
+        }
+    }
 }

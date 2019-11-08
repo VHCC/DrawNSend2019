@@ -1,4 +1,4 @@
-package ichen.chu.drawnsend.pages.dashboard.ListAdapter;
+package ichen.chu.drawnsend.pages.results.ListAdapter;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import org.json.JSONException;
 
@@ -21,12 +22,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
 import ichen.chu.drawnsend.R;
 import ichen.chu.drawnsend.model.PlayerItem;
+import ichen.chu.drawnsend.model.ResultItem;
 import ichen.chu.drawnsend.util.MLog;
 
 /**
  * Created by IChen.Chu on 2019/11/04
  */
-public class PlayerItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class ResultItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final MLog mLog = new MLog(false);
     private final String TAG = getClass().getSimpleName() + "@" + Integer.toHexString(hashCode());
@@ -34,9 +36,6 @@ public class PlayerItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     final int OWNER_TYPE = 0;
     final int PARTICIPANT_TYPE = 1;
     final int UNKNOWN_TYPE = 2;
-
-    final int RESULTS_OWNER_TYPE = 101;
-    final int RESULTS_PARTICIPANT_TYPE = 102;
 
     // Constants
     final int RESULT_MARGIN = 20;
@@ -47,17 +46,17 @@ public class PlayerItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     /**
      * it's used to major operate and display.
      */
-    private ArrayList<PlayerItem> mPlayerDataList = new ArrayList<PlayerItem>();
+    private ArrayList<ResultItem> mResultDataList = new ArrayList<ResultItem>();
 
     /**
      * it's stored from DashboardEventListDisplayFragment.
      */
-    private List<PlayerItem> playerDisplayResults;
+    private List<ResultItem> resultsDisplayDatas;
 
 
-    public PlayerItemAdapter(Context context, List<PlayerItem> playerDataList) {
+    public ResultItemAdapter(Context context, List<ResultItem> playerDataList) {
         mLog.d(TAG, "constructor");
-        playerDisplayResults = playerDataList;
+        resultsDisplayDatas = playerDataList;
         mLayoutInflater = LayoutInflater.from(context);
     }
 
@@ -65,8 +64,8 @@ public class PlayerItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         mLog.i(TAG, "onCreateViewHolder()" + ", viewType= " + viewType);
         RecyclerView.ViewHolder holder;
-        PlayerItemViewHolder uploadItemViewHolder = new PlayerItemViewHolder(
-                mLayoutInflater.inflate(R.layout.player_item_card, parent, false));
+        ResultItemViewHolder uploadItemViewHolder = new ResultItemViewHolder(
+                mLayoutInflater.inflate(R.layout.result_item_card, parent, false));
         uploadItemViewHolder.initView(viewType);
         holder = uploadItemViewHolder;
         return holder;
@@ -75,65 +74,66 @@ public class PlayerItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     @Override
     public int getItemViewType(int position) {
 
-        PlayerItem playerItem = mPlayerDataList.get(position);
-        mLog.i(TAG, "getItemViewType()" + ", position= " + position + ", type= " + playerItem.getPlayerType());
-
-        switch (playerItem.getPlayerType()) {
-            case OWNER: {
-                return OWNER_TYPE;
-            }
-            case PARTICIPANTS: {
-                return PARTICIPANT_TYPE;
-            }
-            case OWNER_RESULTS: {
-                return RESULTS_OWNER_TYPE;
-            }
-            case PARTICIPANTS_RESULTS: {
-                return RESULTS_PARTICIPANT_TYPE;
-            }
-            default:
-                return UNKNOWN_TYPE;
-
-        }
+        ResultItem resultItem = mResultDataList.get(position);
+        mLog.i(TAG, "getItemViewType()" + ", position= " + position);
+        return 0;
+//        switch (resultItem.getPlayerType()) {
+//            case OWNER: {
+//                return OWNER_TYPE;
+//            }
+//            case PARTICIPANTS: {
+//                return PARTICIPANT_TYPE;
+//            }
+//            case OWNER_RESULTS: {
+//                return RESULTS_OWNER_TYPE;
+//            }
+//            case PARTICIPANTS_RESULTS: {
+//                return RESULTS_PARTICIPANT_TYPE;
+//            }
+//            default:
+//                return UNKNOWN_TYPE;
+//        }
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         mLog.i(TAG, "onBindViewHolder()" + ", position= " + position);
-        if (holder instanceof PlayerItemViewHolder) {
-            PlayerItemViewHolder playerItemViewHolder = (PlayerItemViewHolder) holder;
-            PlayerItem playerItem = mPlayerDataList.get(position);
-            playerItemViewHolder.bindData(playerItem);
+        if (holder instanceof ResultItemViewHolder) {
+            ResultItemViewHolder resultItemViewHolder = (ResultItemViewHolder) holder;
+            ResultItem resultItem = mResultDataList.get(position);
+            resultItemViewHolder.bindData(resultItem, position);
         }
     }
 
     @Override
     public int getItemCount() {
-        return mPlayerDataList == null ? 0 : mPlayerDataList.size();
+        return mResultDataList == null ? 0 : mResultDataList.size();
     }
 
 
     // View Holder
-    public class PlayerItemViewHolder extends RecyclerView.ViewHolder {
+    public class ResultItemViewHolder extends RecyclerView.ViewHolder {
         final String TAG = getClass().getSimpleName() + "@" + Integer.toHexString(hashCode());
 
         // Data
-        PlayerItem mPlayerItem;
 
         /*View Block*/
         LinearLayout cardLayout;
         LinearLayout playerItemLinerLayout;
         CircleImageView playerAvatar;
+        ImageView resultView;
+        TextView resultIndex;
 
         /*Listener Block*/
-        PlayerItemClickListener playerItemClickListener = new PlayerItemClickListener();
+        ResultItemClickListener playerItemClickListener = new ResultItemClickListener();
 
-        public PlayerItemViewHolder(final View itemView) {
+        public ResultItemViewHolder(final View itemView) {
             super(itemView);
 
-            cardLayout = (LinearLayout) itemView.findViewById(R.id.cardLayout);
-            playerItemLinerLayout = (LinearLayout) itemView.findViewById(R.id.playerItemLinerLayout);
-            playerAvatar = (CircleImageView) itemView.findViewById(R.id.playerAvatar);
+            cardLayout = itemView.findViewById(R.id.cardLayout);
+            playerAvatar = itemView.findViewById(R.id.playerAvatar);
+            resultView = itemView.findViewById(R.id.resultView);
+            resultIndex = itemView.findViewById(R.id.resultIndex);
             itemView.setOnClickListener(playerItemClickListener);
             itemView.setOnLongClickListener(playerItemClickListener);
 
@@ -152,42 +152,30 @@ public class PlayerItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 //                    playerAvatar.setImageResource(R.drawable.ic3_btn_receive_feedback);
                 }
                 break;
-
-                case RESULTS_OWNER_TYPE:
-                case RESULTS_PARTICIPANT_TYPE: {
-                    ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) cardLayout.getLayoutParams();
-                    layoutParams.setMargins(RESULT_MARGIN,RESULT_MARGIN,RESULT_MARGIN,RESULT_MARGIN);
-                }
-                break;
             }
         }
 
-        public void bindData(PlayerItem item) {
+        public void bindData(ResultItem item, int position) {
             mLog.w(TAG, "item: " + item.toString());
-            mPlayerItem = item;
             try {
+                resultIndex.setText(String.valueOf(position + 1));
                 new DownloadImageTask(playerAvatar).execute((String) item.getUserInfo().get("photoUrl"));
+                new DownloadImageTask(resultView).execute((String) item.getResultsUrl());
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            switch (item.getPlayerType()) {
-                case OWNER:
-                    break;
-                case PARTICIPANTS:
-                    break;
-            }
+//            switch (item.getPlayerType()) {
+//                case OWNER:
+//                    break;
+//                case PARTICIPANTS:
+//                    break;
+//            }
         }
 
-        private class PlayerItemClickListener implements View.OnClickListener, View.OnLongClickListener {
+        private class ResultItemClickListener implements View.OnClickListener, View.OnLongClickListener {
             @Override
             public void onClick(View view) {
                 mLog.d(TAG, "onClick");
-                switch (mPlayerItem.getPlayerType()) {
-                    case OWNER_RESULTS:
-                    case PARTICIPANTS_RESULTS:
-                        mLog.d(TAG, "item= " + mPlayerItem.toString());
-                        break;
-                }
             }
 
             @Override
@@ -201,30 +189,23 @@ public class PlayerItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     // Feature
     public synchronized void refreshList() {
         mLog.i(TAG, "refreshList()");
-        mPlayerDataList.clear();
+        mResultDataList.clear();
 
-//        Collections.sort(playerDisplayResults, new Comparator<PlayerItem>() {
-//            @Override
-//            public int compare(PlayerItem playerItem1, PlayerItem playerItem2) {
-//                return ((int) (Long.valueOf(playerItem1.getUserInfo()) - Long.valueOf(playerItem2.getUserInfo())) * -1); // -1 降; 1 升
-//            }
-//        });
-
-        for (int index = 0; index < playerDisplayResults.size(); index++) {
-//            mLog.w(TAG, "sorted: " + playerDisplayResults.get(index).toString());
+        for (int index = 0; index < resultsDisplayDatas.size(); index++) {
+//            mLog.w(TAG, "sorted: " + resultsDisplayDatas.get(index).toString());
         }
 
-        for (int index = 0; index < playerDisplayResults.size(); index++) {
-            mPlayerDataList.add(playerDisplayResults.get(index));
+        for (int index = 0; index < resultsDisplayDatas.size(); index++) {
+            mResultDataList.add(resultsDisplayDatas.get(index));
             notifyItemInserted(index);
         }
     }
 
     public synchronized void clearAll() {
         mLog.i(TAG, "clearAll()");
-        while (mPlayerDataList.size() > 0) {
-            int itemIndex = mPlayerDataList.size() - 1;
-            mPlayerDataList.remove(itemIndex);
+        while (mResultDataList.size() > 0) {
+            int itemIndex = mResultDataList.size() - 1;
+            mResultDataList.remove(itemIndex);
             notifyItemRemoved(itemIndex);
         }
     }

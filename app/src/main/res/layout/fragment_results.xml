@@ -1,0 +1,55 @@
+<ru.noties.scrollable.ScrollableLayout
+    android:id="@+id/scrollable_layout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:scrollable_autoMaxScroll="true"
+    app:scrollable_defaultCloseUp="true">
+
+    <ichen.chu.drawnsend.customview.scrollable.SampleHeaderView
+        style="@style/HeaderStyle"
+        app:shv_title="@string/sample_title_fragment_pager"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?android:attr/listDivider" />
+
+    <ScrollView
+        android:background="@color/white"
+        android:id="@+id/playerTab"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/tabs_height">
+
+        <LinearLayout
+            android:layout_gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <androidx.recyclerview.widget.RecyclerView
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/recycleViewPlayerContainer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?android:attr/listDivider" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/recycleViewResultsContainer"
+        android:layout_marginTop="@dimen/tabs_height"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+
+
+</ru.noties.scrollable.ScrollableLayout>

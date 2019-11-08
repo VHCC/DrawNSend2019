@@ -27,8 +27,6 @@ import java.nio.file.Paths;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import ichen.chu.drawnsend.R;
 import ichen.chu.drawnsend.util.MLog;
 

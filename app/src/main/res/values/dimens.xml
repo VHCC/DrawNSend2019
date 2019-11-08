@@ -14,4 +14,9 @@
     <dimen name="adapter_list_sensor_name_padding">2dp</dimen>
     <dimen name="adapter_list_sensor_location_padding">2dp</dimen>
 
+    <!--  Scrollable  -->
+    <dimen name="header_height">80dip</dimen>
+    <dimen name="tabs_height">64dip</dimen>
+    <dimen name="header_title_height">64dip</dimen>
+
 </resources>

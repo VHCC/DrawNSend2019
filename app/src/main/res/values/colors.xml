@@ -38,4 +38,11 @@
     <color name="fbutton_color_asbestos">#7f8c8d</color>
 
     <color name="trail">#3BF5CF</color>
+
+    <color name="white_disabled">#9bffffff</color>
+
+    <color name="transparent">#00000000</color>
+    <color name="icon_enabled">#FFFFFFFF</color>
+    <color name="icon_disabled">#FF63727B</color>
+
 </resources>
