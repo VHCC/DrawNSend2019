@@ -37,6 +37,10 @@ public class Bus {
 
     static public final int EVENT_DASHBOARD_GET_PLAYER_ORDER = 5001;
 
+    static public final int EVENT_DASHBOARD_START_TO_PLAY_GAME = 6001;
+
+
+
 
     static public final HashMap<Integer, String> EVENT_MAP = new HashMap<>();
 
@@ -48,6 +52,7 @@ public class Bus {
         EVENT_MAP.put(EVENT_DRAWABLE_CHANGE_STROKE_SIZE_4, "change stroke size");
         EVENT_MAP.put(EVENT_DRAWABLE_CHANGE_STROKE_SIZE_5, "change stroke size");
         EVENT_MAP.put(EVENT_DASHBOARD_GET_PLAYER_ORDER, "api - get player order");
+        EVENT_MAP.put(EVENT_DASHBOARD_START_TO_PLAY_GAME, "start to play game");
     }
 
     private static final MLog mLog = new MLog(true);

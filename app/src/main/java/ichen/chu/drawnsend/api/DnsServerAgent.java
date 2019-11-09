@@ -7,6 +7,7 @@ import android.os.Message;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -21,8 +22,10 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 
 import static ichen.chu.drawnsend.App.SERVER_SITE;
+import static ichen.chu.drawnsend.api.APICode.API_CREATE_GAME_CHAIN;
 import static ichen.chu.drawnsend.api.APICode.API_FETCH_ROOM_INFO;
 import static ichen.chu.drawnsend.api.APICode.API_GET_FOLDER_ID;
+import static ichen.chu.drawnsend.api.APICode.API_GET_GAME_SUBJECT;
 import static ichen.chu.drawnsend.api.APICode.API_GET_PLAYER_ORDERS;
 
 /**
@@ -93,7 +96,7 @@ public class DnsServerAgent {
                         try {
                             JSONObject responseJ = new JSONObject(response.body().string());
 //                                mLog.d(TAG, "response= " + responseJ);
-                            mLog.d(TAG, "payload= " + responseJ.get("payload"));
+//                            mLog.d(TAG, "payload= " + responseJ.get("payload"));
                             Message msg = new Message();
                             msg.obj = responseJ.get("payload");
                             SADHandler.sendMessage(msg);
@@ -143,7 +146,7 @@ public class DnsServerAgent {
                         try {
                             responseJ = new JSONObject(response.body().string());
 //                                mLog.d(TAG, "response= " + responseJ);
-                            mLog.d(TAG, "payload= " + responseJ.get("payload"));
+//                            mLog.d(TAG, "payload= " + responseJ.get("payload"));
                             Message msg = new Message();
                             msg.obj = responseJ.get("payload");
                         } catch (JSONException e) {
@@ -407,6 +410,106 @@ public class DnsServerAgent {
                             mLog.d(TAG, "response= " + responseJ);
                             Message msg = new Message();
                             msg.arg1 = API_GET_PLAYER_ORDERS;
+                            msg.obj = responseJ.get("payload");
+                            SADHandler.sendMessage(msg);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            });
+        } catch (Exception e) {
+            mLog.e(TAG, "Other Error: " + e.getLocalizedMessage());
+        }
+    }
+
+    public void getSubject(final Handler SADHandler, int difficulty, boolean isAdult) {
+        try {
+            final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+
+            GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(mContext);
+
+            JSONObject jsonObj = new JSONObject();
+            jsonObj.put("difficulty", difficulty);
+            jsonObj.put("isAdult", isAdult);
+
+            RequestBody requestBody = RequestBody.create(JSON, jsonObj.toString());
+
+            Request request = new Request.Builder()
+                    .url(SERVER_SITE + "/api/post_dns_game_subject_get")
+//                        .url("https://dns.ichenprocin.dsmynas.com/api/get_dns_check_server_status")
+                    .post(requestBody)
+                    .build();
+
+            OkHttpClient client = new OkHttpClient();
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    e.printStackTrace();
+                }
+
+                @Override
+                public void onResponse(Call call, okhttp3.Response response) throws IOException {
+                    if (response.isSuccessful()) {
+                        try {
+                            JSONObject responseJ = new JSONObject(response.body().string());
+                            mLog.d(TAG, "response= " + responseJ);
+                            Message msg = new Message();
+                            msg.arg1 = API_GET_GAME_SUBJECT;
+                            msg.obj = responseJ.get("payload");
+                            SADHandler.sendMessage(msg);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            });
+        } catch (Exception e) {
+            mLog.e(TAG, "Other Error: " + e.getLocalizedMessage());
+        }
+    }
+
+    public void createGameChain(final Handler SADHandler,
+                                String joinNumber,
+                                String folderID,
+                                String subject,
+                                JSONArray playerOrders) {
+        try {
+            final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+
+            GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(mContext);
+
+            JSONObject jsonObj = new JSONObject();
+            jsonObj.put("chaineID", acct.getEmail()+joinNumber);
+            jsonObj.put("joinNumber", joinNumber);
+            jsonObj.put("folderID", folderID);
+            jsonObj.put("subject", subject);
+            jsonObj.put("creator", acct.getEmail());
+            jsonObj.put("playerChained", playerOrders);
+
+            RequestBody requestBody = RequestBody.create(JSON, jsonObj.toString());
+
+            Request request = new Request.Builder()
+                    .url(SERVER_SITE + "/api/post_dns_game_chain_create_game_chain")
+//                        .url("https://dns.ichenprocin.dsmynas.com/api/get_dns_check_server_status")
+                    .post(requestBody)
+                    .build();
+
+            OkHttpClient client = new OkHttpClient();
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    e.printStackTrace();
+                }
+
+                @Override
+                public void onResponse(Call call, okhttp3.Response response) throws IOException {
+                    if (response.isSuccessful()) {
+                        try {
+                            JSONObject responseJ = new JSONObject(response.body().string());
+                            mLog.d(TAG, "response= " + responseJ);
+                            Message msg = new Message();
+                            msg.arg1 = API_CREATE_GAME_CHAIN;
                             msg.obj = responseJ.get("payload");
                             SADHandler.sendMessage(msg);
                         } catch (JSONException e) {

@@ -47,10 +47,11 @@ import okhttp3.Response;
  */
 public class App extends Application {
 
-    private static final MLog mLog = new MLog(true);
+    private static final MLog mLog = new MLog(false);
     private final String TAG = getClass().getSimpleName() + "@" + Integer.toHexString(hashCode());
 
-    public static final String SERVER_SITE = "http://172.22.212.150:4009";
+//    public static final String SERVER_SITE = "http://172.22.212.150:4009";
+    public static final String SERVER_SITE = "http://192.168.1.105:4009";
 
     @Override
     public void onCreate() {

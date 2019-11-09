@@ -1,40 +1,17 @@
 package ichen.chu.drawnsend;
 
 import android.Manifest;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Point;
 import android.os.Bundle;
-import android.view.Display;
-import android.view.View;
-import android.widget.Button;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.SignInButton;
-import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.Task;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.UnknownHostException;
-import java.util.Random;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
-import de.greenrobot.event.EventBus;
-import ichen.chu.drawableviewlibs.DrawableView;
-import ichen.chu.drawableviewlibs.DrawableViewConfig;
+import ichen.chu.drawnsend.model.DnsPlayer;
 import ichen.chu.drawnsend.pages.dashboard.DashboardMainFragment;
 import ichen.chu.drawnsend.pages.home.HomeFragment;
 import ichen.chu.drawnsend.pages.login.LoginFragment;
@@ -43,12 +20,6 @@ import ichen.chu.drawnsend.pages.playboard.PlayBoardMainFragment;
 import ichen.chu.drawnsend.pages.results.ResultsFragment;
 import ichen.chu.drawnsend.pages.subPage.SubPageEmptyFragment;
 import ichen.chu.drawnsend.util.MLog;
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 import pub.devrel.easypermissions.EasyPermissions;
 
 import static ichen.chu.drawnsend.Bus.EVENT_LOGIN_SUCCESS;
@@ -291,6 +262,10 @@ public class MainActivity extends AppCompatActivity {
                 = new LoginFragment.OnFragmentInteractionListener() {
             @Override
             public void onLoginSuccess() {
+                GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
+
+                DnsPlayer.getInstance().setPlayerInfo(acct);
+
                 mViewPager.setCurrentItem(SectionsPagerAdapter.PAGE_DASHBOARD);
                 Bus.getInstance().post(new BusEvent(EVENT_MAP.get(EVENT_LOGIN_SUCCESS), EVENT_LOGIN_SUCCESS));
 //                MessageTools.showToast(mContext, "Login Succeed!");

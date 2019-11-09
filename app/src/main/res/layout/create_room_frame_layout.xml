@@ -89,13 +89,34 @@
 
     </LinearLayout>
 
-    <info.hoang8f.widget.FButton
-        android:text="PLAY"
-        android:layout_gravity="center_horizontal"
-        android:id="@+id/playFBt"
-        android:layout_marginTop="350dp"
-        android:layout_width="60dp"
-        android:layout_height="wrap_content"/>
+    <LinearLayout
+        android:layout_gravity="bottom|center_horizontal"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <info.hoang8f.widget.FButton
+            android:layout_margin="10dp"
+            android:text="READY"
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/readyFBt"
+            android:layout_marginTop="350dp"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"/>
+
+        <info.hoang8f.widget.FButton
+            android:layout_margin="10dp"
+            android:text="PLAY"
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/playFBt"
+            android:layout_marginTop="350dp"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
+
 
     <TextView
         android:layout_marginTop="400dp"

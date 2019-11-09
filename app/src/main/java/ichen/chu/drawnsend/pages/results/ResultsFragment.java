@@ -43,7 +43,7 @@ public class ResultsFragment extends Fragment {
     private SampleHeaderView header;
 
 
-    // RecycleView Player Tab
+    // RecycleView DnsPlayer Tab
     private RecyclerView recycleViewPlayerContainer;
     private PlayerItemAdapter playerItemAdapter;
     private LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
@@ -106,7 +106,7 @@ public class ResultsFragment extends Fragment {
         scrollableLayout = rootView.findViewById(R.id.scrollable_layout);
         header = rootView.findViewById(R.id.header);
 
-        // Player Recycler View
+        // DnsPlayer Recycler View
         recycleViewPlayerContainer = rootView.findViewById(R.id.recycleViewPlayerContainer);
 
         // Results Recycler View
