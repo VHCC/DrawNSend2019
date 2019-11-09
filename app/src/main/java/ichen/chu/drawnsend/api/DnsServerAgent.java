@@ -11,22 +11,33 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.UnknownHostException;
 
+import ichen.chu.drawnsend.Bus;
+import ichen.chu.drawnsend.BusEvent;
+import ichen.chu.drawnsend.model.DnsResult;
 import ichen.chu.drawnsend.util.MLog;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
+import okhttp3.Response;
 
 import static ichen.chu.drawnsend.App.SERVER_SITE;
+import static ichen.chu.drawnsend.Bus.EVENT_MAP;
+import static ichen.chu.drawnsend.Bus.EVENT_PLAY_BOARD_UPLOAD_FILE_DONE;
 import static ichen.chu.drawnsend.api.APICode.API_CREATE_GAME_CHAIN;
 import static ichen.chu.drawnsend.api.APICode.API_FETCH_ROOM_INFO;
 import static ichen.chu.drawnsend.api.APICode.API_GET_FOLDER_ID;
 import static ichen.chu.drawnsend.api.APICode.API_GET_GAME_SUBJECT;
 import static ichen.chu.drawnsend.api.APICode.API_GET_PLAYER_ORDERS;
+import static ichen.chu.drawnsend.api.APICode.API_UPDATE_ROOM_STATUS;
 
 /**
  * Created by IChen.Chu on 2019/11/5
@@ -111,8 +122,9 @@ public class DnsServerAgent {
         }
     }
 
-    public void updatePlayRoomStatus(final String roomNumberCode,
-                                      final int roomStatus) {
+    public void updatePlayRoomStatus(final Handler SADHandler,
+                                     final String roomNumberCode,
+                                     final int roomStatus) {
         try {
 
             final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
@@ -148,7 +160,9 @@ public class DnsServerAgent {
 //                                mLog.d(TAG, "response= " + responseJ);
 //                            mLog.d(TAG, "payload= " + responseJ.get("payload"));
                             Message msg = new Message();
-                            msg.obj = responseJ.get("payload");
+                            msg.obj = responseJ.getInt("payload");
+                            msg.arg1 = API_UPDATE_ROOM_STATUS;
+                            SADHandler.sendMessage(msg);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -362,7 +376,7 @@ public class DnsServerAgent {
                     if (response.isSuccessful()) {
                         try {
                             JSONObject responseJ = new JSONObject(response.body().string());
-                            mLog.d(TAG, "response= " + responseJ);
+                            mLog.d(TAG, "getGameChainFolderID, response= " + responseJ);
                             Message msg = new Message();
                             msg.arg1 = API_GET_FOLDER_ID;
                             msg.obj = responseJ.get("folderID");
@@ -453,7 +467,7 @@ public class DnsServerAgent {
                     if (response.isSuccessful()) {
                         try {
                             JSONObject responseJ = new JSONObject(response.body().string());
-                            mLog.d(TAG, "response= " + responseJ);
+                            mLog.d(TAG, "getSubject, response= " + responseJ);
                             Message msg = new Message();
                             msg.arg1 = API_GET_GAME_SUBJECT;
                             msg.obj = responseJ.get("payload");
@@ -480,7 +494,7 @@ public class DnsServerAgent {
             GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(mContext);
 
             JSONObject jsonObj = new JSONObject();
-            jsonObj.put("chaineID", acct.getEmail()+joinNumber);
+            jsonObj.put("chainID", acct.getEmail()+joinNumber);
             jsonObj.put("joinNumber", joinNumber);
             jsonObj.put("folderID", folderID);
             jsonObj.put("subject", subject);
@@ -507,11 +521,136 @@ public class DnsServerAgent {
                     if (response.isSuccessful()) {
                         try {
                             JSONObject responseJ = new JSONObject(response.body().string());
-                            mLog.d(TAG, "response= " + responseJ);
+                            mLog.d(TAG, "createGameChain, response= " + responseJ);
                             Message msg = new Message();
                             msg.arg1 = API_CREATE_GAME_CHAIN;
                             msg.obj = responseJ.get("payload");
                             SADHandler.sendMessage(msg);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            });
+        } catch (Exception e) {
+            mLog.e(TAG, "Other Error: " + e.getLocalizedMessage());
+        }
+    }
+
+    public void fetchGameChainInfo(final Handler SADHandler,
+                                String joinNumber) {
+        try {
+            final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+
+            GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(mContext);
+
+            JSONObject jsonObj = new JSONObject();
+            jsonObj.put("chainID", acct.getEmail() + joinNumber);
+
+            RequestBody requestBody = RequestBody.create(JSON, jsonObj.toString());
+
+            Request request = new Request.Builder()
+                    .url(SERVER_SITE + "/api/post_dns_game_chain_get_game_chain_info")
+//                        .url("https://dns.ichenprocin.dsmynas.com/api/get_dns_check_server_status")
+                    .post(requestBody)
+                    .build();
+
+            OkHttpClient client = new OkHttpClient();
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    e.printStackTrace();
+                }
+
+                @Override
+                public void onResponse(Call call, okhttp3.Response response) throws IOException {
+                    if (response.isSuccessful()) {
+                        try {
+                            JSONObject responseJ = new JSONObject(response.body().string());
+                            mLog.d(TAG, "fetchGameChainInfo, response= " + responseJ);
+                            Message msg = new Message();
+                            msg.arg1 = API_CREATE_GAME_CHAIN;
+                            msg.obj = responseJ.get("payload");
+                            SADHandler.sendMessage(msg);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            });
+        } catch (Exception e) {
+            mLog.e(TAG, "Other Error: " + e.getLocalizedMessage());
+        }
+    }
+
+
+    // *********** Play Board ***********
+    public void uploadFile(File file, String folderID) {
+        try {
+            try {
+                final MediaType MEDIA_TYPE_JPEG = MediaType.parse("image/jpeg");
+                mLog.d(TAG, "file.getName()= " + file.getName());
+                RequestBody req = new MultipartBody.Builder()
+                        .setType(MultipartBody.FORM)
+                        .addFormDataPart("name", file.getName())
+                        .addFormDataPart("folderID", folderID)
+                        .addFormDataPart("file", file.getName(), RequestBody.create(MEDIA_TYPE_JPEG, file)).build();
+
+                Request request = new Request.Builder()
+                        .url(SERVER_SITE + "/api/post_dns_google_drive_upload_file")
+                        .post(req)
+                        .build();
+
+                OkHttpClient client = new OkHttpClient();
+                Response response = client.newCall(request).execute();
+
+                DnsResult.getInstance().setResultID(response.body().string());
+
+                mLog.d(TAG, "uploadImage, fileID= " + DnsResult.getInstance().getResultID());
+
+                Bus.getInstance().post(new BusEvent(EVENT_MAP.get(EVENT_PLAY_BOARD_UPLOAD_FILE_DONE), EVENT_PLAY_BOARD_UPLOAD_FILE_DONE));
+            } catch (UnknownHostException | UnsupportedEncodingException e) {
+                mLog.e(TAG, "Error: " + e.getLocalizedMessage());
+            } catch (Exception e) {
+                mLog.e(TAG, "Other Error: " + e.getLocalizedMessage());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void updateGameChainResult(String chainID, String fileID, int resultIndex) {
+        try {
+            final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+
+            GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(mContext);
+
+            JSONObject jsonObj = new JSONObject();
+            jsonObj.put("chainID", chainID);
+            jsonObj.put("fileID", fileID);
+            jsonObj.put("resultIndex", resultIndex);
+
+            RequestBody requestBody = RequestBody.create(JSON, jsonObj.toString());
+
+            Request request = new Request.Builder()
+                    .url(SERVER_SITE + "/api/post_dns_game_chain_get_game_chain_info")
+//                        .url("https://dns.ichenprocin.dsmynas.com/api/get_dns_check_server_status")
+                    .post(requestBody)
+                    .build();
+
+            OkHttpClient client = new OkHttpClient();
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    e.printStackTrace();
+                }
+
+                @Override
+                public void onResponse(Call call, okhttp3.Response response) throws IOException {
+                    if (response.isSuccessful()) {
+                        try {
+                            JSONObject responseJ = new JSONObject(response.body().string());
+                            mLog.d(TAG, "response= " + responseJ);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }

@@ -120,8 +120,8 @@ public class MainActivity extends AppCompatActivity {
 //        static final int PAGE_HOME = 500;
 //        static final int PAGE_LOGIN = 100;
 //        static final int PAGE_DASHBOARD = 200;
-//        static final int PAGE_PLAY_BOARD = 600;
-//        static final int PAGE_RESULTS = 0;
+//        static final int PAGE_PLAY_BOARD = 0;
+//        static final int PAGE_RESULTS = 1000;
 //        static final int PAGE_SUB_PAGE = 400;
 
         static final int PAGE_HOME = 0;

@@ -10,6 +10,12 @@ public class DnsPlayRoom {
 
     private static DnsPlayRoom mDnsPlayRoom;
 
+    public static final int SETTING = 1;
+    public static final int READY_TO_PLAY = 2;
+    public static final int PLAYING = 3;
+    public static final int CLOSED = 4;
+    public static final int GAME_OVER = 5;
+
     private final String OWNER = "roomOwner";
     private final String PARTICIPANTS = "participants";
     private final String PLAYORDERS = "playOrders";

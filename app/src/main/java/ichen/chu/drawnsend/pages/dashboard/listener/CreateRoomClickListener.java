@@ -49,19 +49,23 @@ import static ichen.chu.drawnsend.api.APICode.API_FETCH_ROOM_INFO;
 import static ichen.chu.drawnsend.api.APICode.API_GET_FOLDER_ID;
 import static ichen.chu.drawnsend.api.APICode.API_GET_GAME_SUBJECT;
 import static ichen.chu.drawnsend.api.APICode.API_GET_PLAYER_ORDERS;
+import static ichen.chu.drawnsend.api.APICode.API_UPDATE_ROOM_STATUS;
+import static ichen.chu.drawnsend.model.DnsPlayRoom.CLOSED;
+import static ichen.chu.drawnsend.model.DnsPlayRoom.PLAYING;
+import static ichen.chu.drawnsend.model.DnsPlayRoom.READY_TO_PLAY;
 
-public class CreateRoomListener implements View.OnClickListener {
+public class CreateRoomClickListener implements View.OnClickListener {
 
     private static final MLog mLog = new MLog(true);
     private final String TAG = getClass().getSimpleName() + "@" + Integer.toHexString(hashCode());
 
     private Context mContext;
 
-    public CreateRoomListener(Context context) {
+    public CreateRoomClickListener(Context context) {
         this.mContext = context;
     }
 
-    Handler mySADHandler;
+    private Handler mySADHandler;
 
     // RecycleView
     private RecyclerView recycleViewPlayerListContainer;
@@ -179,10 +183,22 @@ public class CreateRoomListener implements View.OnClickListener {
             @Override
             public boolean handleMessage(Message msg) {
 //                mLog.d(TAG, "msg.obj= " + msg.obj);
-
                 try {
 //                    mLog.d(TAG, "msg.arg1= " + msg.arg1);
                     switch (msg.arg1) {
+                        case API_UPDATE_ROOM_STATUS:
+                            int roomStatus = (int) msg.obj;
+                            switch (roomStatus) {
+                                case READY_TO_PLAY:
+                                    break;
+                                case PLAYING:
+                                    DnsServerAgent.getInstance(mContext)
+                                            .getSubject(mySADHandler,
+                                                    DnsPlayRoom.getInstance().getDifficulty(),
+                                                    DnsPlayRoom.getInstance().isAdult());
+                                    break;
+                            }
+                            break;
                         case API_GET_FOLDER_ID:
                             readyFBt.setText("Re-Orders");
                             playFBt.setEnabled(true);
@@ -196,7 +212,8 @@ public class CreateRoomListener implements View.OnClickListener {
                                     .getRandomPlayers(mySADHandler, DnsPlayRoom.getInstance().getJoinNumber());
 
                             DnsServerAgent.getInstance(mContext).
-                                    updatePlayRoomStatus(roomNumber.getCode(), 2);
+                                    updatePlayRoomStatus(mySADHandler,
+                                            roomNumber.getCode(), READY_TO_PLAY);
 
                             break;
 
@@ -420,7 +437,8 @@ public class CreateRoomListener implements View.OnClickListener {
                 mLog.d(TAG, "* onDismiss");
                 threadObject.setRunning(false);
                 DnsServerAgent.getInstance(mContext).
-                        updatePlayRoomStatus(roomNumber.getCode(), 4);
+                        updatePlayRoomStatus(mySADHandler,
+                                roomNumber.getCode(), CLOSED);
             }
         });
 
@@ -432,7 +450,8 @@ public class CreateRoomListener implements View.OnClickListener {
                 threadObject.setRunning(false);
 
                 DnsServerAgent.getInstance(mContext)
-                        .getGameChainFolderID(mySADHandler, DnsPlayRoom.getInstance().getJoinNumber());
+                        .getGameChainFolderID(mySADHandler,
+                                DnsPlayRoom.getInstance().getJoinNumber());
 
             }
         });
@@ -440,10 +459,9 @@ public class CreateRoomListener implements View.OnClickListener {
         playFBt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DnsServerAgent.getInstance(mContext)
-                        .getSubject(mySADHandler,
-                                DnsPlayRoom.getInstance().getDifficulty(),
-                                DnsPlayRoom.getInstance().isAdult());
+                DnsServerAgent.getInstance(mContext).
+                        updatePlayRoomStatus(mySADHandler,
+                                roomNumber.getCode(), PLAYING);
             }
         });
 

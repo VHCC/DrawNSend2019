@@ -13,6 +13,8 @@ public class DnsResult {
     // field
     private String folderID;
     private String subject;
+    private String resultID;
+
 
     private DnsResult() {
     }
@@ -39,5 +41,13 @@ public class DnsResult {
 
     public void setSubject(String subject) {
         this.subject = subject;
+    }
+
+    public String getResultID() {
+        return resultID;
+    }
+
+    public void setResultID(String resultID) {
+        this.resultID = resultID;
     }
 }

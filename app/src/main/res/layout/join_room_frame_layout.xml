@@ -5,6 +5,8 @@
     android:layout_height="match_parent">
 
     <TextView
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
         android:id="@+id/joinTV"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
@@ -24,7 +26,7 @@
         />
 
     <LinearLayout
-        android:layout_marginTop="120dp"
+        android:layout_marginTop="150dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
@@ -39,7 +41,7 @@
     </LinearLayout>
 
     <TextView
-        android:layout_marginTop="210dp"
+        android:layout_marginTop="220dp"
         android:visibility="invisible"
         android:text="game difficulty:"
         android:layout_width="wrap_content"

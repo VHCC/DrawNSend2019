@@ -29,7 +29,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import ichen.chu.drawnsend.Bus;
 import ichen.chu.drawnsend.BusEvent;
 import ichen.chu.drawnsend.R;
-import ichen.chu.drawnsend.pages.dashboard.listener.CreateRoomListener;
+import ichen.chu.drawnsend.pages.dashboard.listener.CreateRoomClickListener;
 import ichen.chu.drawnsend.pages.dashboard.listener.JoinRoomClickListener;
 import ichen.chu.drawnsend.util.MLog;
 
@@ -175,7 +175,7 @@ public class DashboardMainFragment extends Fragment {
 
         // ******************** CREATE *************************
         createRoomFAB.setIcon(R.drawable.create_room);
-        createRoomFAB.setOnClickListener(new CreateRoomListener(getContext()));
+        createRoomFAB.setOnClickListener(new CreateRoomClickListener(getContext()));
     }
 
     @Override

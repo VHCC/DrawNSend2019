@@ -2,6 +2,8 @@ package ichen.chu.drawnsend.pages.playboard;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -17,15 +19,17 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.raycoarana.codeinputview.CodeInputView;
 import com.romainpiel.shimmer.Shimmer;
 import com.romainpiel.shimmer.ShimmerTextView;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -51,6 +55,8 @@ import ichen.chu.drawnsend.HoverMenu.theme.HoverTheme;
 import ichen.chu.drawnsend.HoverMenu.theme.HoverThemeManager;
 import ichen.chu.drawnsend.R;
 import ichen.chu.drawnsend.api.DnsServerAgent;
+import ichen.chu.drawnsend.model.DnsGameChain;
+import ichen.chu.drawnsend.model.DnsResult;
 import ichen.chu.drawnsend.util.MLog;
 import ichen.chu.hoverlibs.HoverMenu;
 import ichen.chu.hoverlibs.HoverView;
@@ -63,7 +69,15 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 import static ichen.chu.drawnsend.App.SERVER_SITE;
-import static ichen.chu.drawnsend.Bus.*;
+import static ichen.chu.drawnsend.Bus.EVENT_DRAWABLE_CHANGE_STROKE_SIZE_1;
+import static ichen.chu.drawnsend.Bus.EVENT_DRAWABLE_CHANGE_STROKE_SIZE_2;
+import static ichen.chu.drawnsend.Bus.EVENT_DRAWABLE_CHANGE_STROKE_SIZE_3;
+import static ichen.chu.drawnsend.Bus.EVENT_DRAWABLE_CHANGE_STROKE_SIZE_4;
+import static ichen.chu.drawnsend.Bus.EVENT_DRAWABLE_CHANGE_STROKE_SIZE_5;
+import static ichen.chu.drawnsend.Bus.EVENT_MAP;
+import static ichen.chu.drawnsend.Bus.EVENT_PLAY_BOARD_UPLOAD_FILE_DONE;
+import static ichen.chu.drawnsend.Bus.EVENT_PLAY_BOARD_UPLOAD_FILE_START;
+import static ichen.chu.drawnsend.api.APICode.API_CREATE_GAME_CHAIN;
 
 /**
  * Created by IChen.Chu on 2018/9/26
@@ -86,6 +100,15 @@ public class PlayBoardMainFragment extends Fragment {
 
     //View
     private ShimmerTextView shimmerTV;
+    private CountdownView countdownView;
+    private ValueAnimator valueAnimator;
+    private CircleImageView playerAvatar_pre;
+    private CircleImageView playerAvatar_next;
+    private TextView stageCountTV;
+    private SweetAlertDialog loadingDialog;
+
+    // Google
+    GoogleSignInAccount acct;
 
     // Listener
     private MainDrawableViewListener mainDrawableViewListener = new MainDrawableViewListener();
@@ -113,6 +136,32 @@ public class PlayBoardMainFragment extends Fragment {
         mLog.d(TAG, "onCreate()");
         super.onCreate(savedInstanceState);
         Bus.getInstance().register(this);
+        isViewInitiated = true;
+    }
+
+    protected boolean isViewInitiated;
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        if (getUserVisibleHint() && isViewInitiated) {
+            fetchGameChainData();
+        }
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        mLog.d(TAG, "setUserVisibleHint()=  " + isVisibleToUser);
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser && isViewInitiated) {
+            fetchGameChainData();
+        }
+    }
+
+
+    private void lazyLoad() {
+        GameConfigureView gameConfigureView = new GameConfigureView(getContext());
+        gameConfigureView.readyDialogShow();
     }
 
     @Override
@@ -125,6 +174,7 @@ public class PlayBoardMainFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_play_board_main, container, false);
+        acct = GoogleSignIn.getLastSignedInAccount(getContext());
         initUi(rootView);
         initHover(rootView);
         return rootView;
@@ -133,21 +183,18 @@ public class PlayBoardMainFragment extends Fragment {
     private void initUi(View rootView) {
         drawableView = (DrawableView) rootView.findViewById(R.id.paintView);
 
-        CountdownView countdownView = (CountdownView) rootView.findViewById(R.id.countdownView);
+        countdownView = (CountdownView) rootView.findViewById(R.id.countdownView);
         final SquareProgressBar sProgressBar = (SquareProgressBar) rootView.findViewById(R.id.sProgressBar);
         shimmerTV = (ShimmerTextView) rootView.findViewById(R.id.shimmerTV);
-        CircleImageView playerAvatar_pre = rootView.findViewById(R.id.playerAvatar_pre);
-        CircleImageView playerAvatar_next = rootView.findViewById(R.id.playerAvatar_next);
+        playerAvatar_pre = rootView.findViewById(R.id.playerAvatar_pre);
+        playerAvatar_next = rootView.findViewById(R.id.playerAvatar_next);
+        stageCountTV = rootView.findViewById(R.id.stageCountTV);
         playerAvatar_pre.setOnClickListener(mAvatarClickListener);
 
-        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getContext());
         mLog.d(TAG, "acct= " + acct);
         mLog.d(TAG, "acct.getEmail= " + acct.getEmail());
         mLog.d(TAG, "acct.getDisplayName= " + acct.getDisplayName());
         mLog.d(TAG, "acct.getPhotoUrl= " + acct.getPhotoUrl());
-
-        new DownloadImageTask(playerAvatar_pre).execute(acct.getPhotoUrl().toString());
-        new DownloadImageTask(playerAvatar_next).execute(acct.getPhotoUrl().toString());
 
         Display display = getActivity().getWindowManager().getDefaultDisplay();
         Point size = new Point();
@@ -159,7 +206,7 @@ public class PlayBoardMainFragment extends Fragment {
         config.setShowCanvasBounds(true);
         config.setStrokeWidth(10.0f);
         config.setMinZoom(1.0f);
-        config.setMaxZoom(2.0f);
+        config.setMaxZoom(1.0f);
         config.setCanvasHeight(height);
         config.setCanvasWidth(width);
         drawableView.setConfig(config);
@@ -175,13 +222,13 @@ public class PlayBoardMainFragment extends Fragment {
 
         drawableView.setSimpleFingerGesturesListener(mainDrawableViewListener);
 
-        countdownView.start(playTimeMs); // Millisecond
         countdownView.setOnCountdownEndListener(new CountdownView.OnCountdownEndListener() {
             @Override
             public void onEnd(CountdownView cv) {
                 drawableView.setDisabled(true);
-                Bus.getInstance().post(new BusEvent("send Pic", 12001));
+                Bus.getInstance().post(new BusEvent(EVENT_MAP.get(EVENT_PLAY_BOARD_UPLOAD_FILE_START), EVENT_PLAY_BOARD_UPLOAD_FILE_START));
                 mLog.d(TAG, "onEnd");
+//                loadingDialog.show();
             }
         });
 
@@ -204,14 +251,18 @@ public class PlayBoardMainFragment extends Fragment {
         sProgressBar.setImage(R.drawable.bg_white);
         sProgressBar.setColor("#3BF5CF");
 
-        ValueAnimator va = ValueAnimator.ofFloat(0f, 100f);
-        va.setDuration(playTimeMs);
-        va.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+        valueAnimator = ValueAnimator.ofFloat(0f, 100f);
+        valueAnimator.setDuration(playTimeMs);
+        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             public void onAnimationUpdate(ValueAnimator animation) {
                 sProgressBar.setProgress((float) animation.getAnimatedValue());
             }
         });
-        va.start();
+
+        loadingDialog = new SweetAlertDialog(getContext(), SweetAlertDialog.PROGRESS_TYPE);
+        loadingDialog.setCancelable(false);
+        loadingDialog.hideConfirmButton();
+
     }
 
     private void initHover(View rootView) {
@@ -230,36 +281,6 @@ public class PlayBoardMainFragment extends Fragment {
         }
     }
 
-    private void uploadFile(File file) {
-        try {
-            try {
-                final MediaType MEDIA_TYPE_JPEG = MediaType.parse("image/jpeg");
-                mLog.d(TAG, "file.getName()= " + file.getName());
-                RequestBody req = new MultipartBody.Builder()
-                        .setType(MultipartBody.FORM)
-                        .addFormDataPart("name", file.getName())
-                        .addFormDataPart("file", file.getName(), RequestBody.create(MEDIA_TYPE_JPEG, file)).build();
-
-                Request request = new Request.Builder()
-                        .url(SERVER_SITE + "/api/post_dns_google_drive_upload_file")
-                        .post(req)
-                        .build();
-
-                OkHttpClient client = new OkHttpClient();
-                Response response = client.newCall(request).execute();
-
-                mLog.d(TAG, "uploadImage: " + response.body().string());
-
-            } catch (UnknownHostException | UnsupportedEncodingException e) {
-                mLog.e(TAG, "Error: " + e.getLocalizedMessage());
-            } catch (Exception e) {
-                mLog.e(TAG, "Other Error: " + e.getLocalizedMessage());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     public void onEventMainThread(@NonNull HoverTheme newTheme) {
         config.setStrokeColor(newTheme.getAccentColor());
     }
@@ -267,7 +288,7 @@ public class PlayBoardMainFragment extends Fragment {
     public void onEventBackgroundThread(BusEvent event) {
         mLog.d(TAG, "event= " + event.getEventType());
         switch (event.getEventType()) {
-            case 12001:
+            case EVENT_PLAY_BOARD_UPLOAD_FILE_START:
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -278,7 +299,7 @@ public class PlayBoardMainFragment extends Fragment {
 
 //                        image.setImageBitmap(outB);
 
-                        String tmp = "/sdcard/test/" + System.currentTimeMillis() + ".jpeg";
+                        String tmp = "/sdcard/" + acct.getEmail() + "_" + System.currentTimeMillis() + ".jpeg";
                         File file = new File(tmp);
 
                         try {
@@ -287,14 +308,29 @@ public class PlayBoardMainFragment extends Fragment {
                                 out.flush();
                                 out.close();
                             }
-                            uploadFile(file);
+                            DnsServerAgent.getInstance(getContext())
+                                    .uploadFile(file, DnsGameChain.getInstance().getParentID());
                         } catch (FileNotFoundException e) {
                             e.printStackTrace();
                         } catch (IOException e) {
                             e.printStackTrace();
+                        } finally {
+                            file.delete();
                         }
                     }
                 }).start();
+                break;
+            case EVENT_PLAY_BOARD_UPLOAD_FILE_DONE:
+
+                try {
+                    String targetChainID = DnsGameChain.getInstance().getPlayerChained() .getJSONObject(currentStage).getString("email") +
+                            "145928";
+                    DnsServerAgent.getInstance(getContext())
+                            .updateGameChainResult(targetChainID, DnsResult.getInstance().getResultID(), currentStage);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
                 break;
         }
     }
@@ -377,6 +413,7 @@ public class PlayBoardMainFragment extends Fragment {
             switch (fingers) {
                 case 3:
                     drawableView.clear();
+                    drawableView.setConfig(config);
                     Bus.getInstance().post(new BusEvent("Clear All", 9002));
                     break;
             }
@@ -431,6 +468,8 @@ public class PlayBoardMainFragment extends Fragment {
 
     private class AvatarClickListener implements View.OnClickListener {
 
+        private Shimmer shimmerInner = new Shimmer();
+
         @Override
         public void onClick(View v) {
             mLog.d(TAG, "click preview Avatar");
@@ -439,19 +478,48 @@ public class PlayBoardMainFragment extends Fragment {
 
             // init UI
             final ImageView preview_results = frameLayout.findViewById(R.id.preview_results);
+            final ShimmerTextView subjectTV = frameLayout.findViewById(R.id.subjectTV);
+
             SweetAlertDialog saDialog = new SweetAlertDialog(getContext(), SweetAlertDialog.NORMAL_TYPE);
 
+            subjectTV.setText(DnsGameChain.getInstance().getSubject());
 
-            saDialog.setTitleText("Pre Stage")
+            boolean isFirstStage = DnsGameChain.getInstance().getResultsChained().length() == 0;
+
+            String title = isFirstStage ? "Your Subject" : "Pre Stage";
+
+            saDialog.setTitleText(title)
                     .setCustomView(frameLayout)
-                    .setConfirmText("OK")
-                    .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                        @Override
-                        public void onClick(final SweetAlertDialog sDialog) {
-                            sDialog.dismissWithAnimation();
-                        }
-                    })
+                    .hideConfirmButton()
                     .show();
+
+            shimmerInner.start(subjectTV);
+
+            shimmerInner.setRepeatCount(5)
+                    .setDuration(2000)
+                    .setStartDelay(0)
+                    .setDirection(Shimmer.ANIMATION_DIRECTION_LTR)
+                    .setAnimatorListener(new Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(Animator animation) {
+//                                mLog.d(TAG, "onAnimationStart()");
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+//                                mLog.d(TAG, "onAnimationEnd()");
+                        }
+
+                        @Override
+                        public void onAnimationCancel(Animator animation) {
+//                                mLog.d(TAG, "onAnimationCancel()");
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animator animation) {
+//                                mLog.d(TAG, "onAnimationRepeat()");
+                        }
+                    });
         }
     }
 
@@ -480,5 +548,141 @@ public class PlayBoardMainFragment extends Fragment {
             bmImage.setImageBitmap(result);
         }
     }
+
+    private class GameConfigureView {
+
+        private Context mContext;
+        private LayoutInflater inflater;
+
+        private long readyViewTime = 10L;
+        private long readyViewTimeMs = readyViewTime * 1000L;
+
+        public GameConfigureView(Context context) {
+            mContext = context;
+
+            initUI();
+            initFeature();
+        }
+
+        // VIEW
+        private FrameLayout frameLayoutInner;
+        private ShimmerTextView subjectTV;
+        private CountdownView countdownViewInner;
+        private SweetAlertDialog saDialog;
+        private Shimmer shimmerInner = new Shimmer();
+
+        private void initUI() {
+            inflater = LayoutInflater.from(mContext);
+            frameLayoutInner = (FrameLayout) inflater.inflate(R.layout.room_configure_view_frame_layout,null);
+            subjectTV = frameLayoutInner.findViewById(R.id.subjectTV);
+            countdownViewInner = frameLayoutInner.findViewById(R.id.countdownViewInner);
+            saDialog = new SweetAlertDialog(mContext, SweetAlertDialog.NORMAL_TYPE);
+
+        }
+
+        private void initFeature() {
+            subjectTV.setText(DnsGameChain.getInstance().getSubject());
+
+            countdownViewInner.setOnCountdownEndListener(new CountdownView.OnCountdownEndListener() {
+                @Override
+                public void onEnd(CountdownView cv) {
+                    mLog.d(TAG, "** config view onEnd");
+                    saDialog.dismissWithAnimation();
+                    countdownView.setVisibility(View.VISIBLE);
+                    countdownView.start(playTimeMs); // Millisecond
+                    valueAnimator.start();
+                }
+            });
+
+
+            saDialog.setCancelable(false);
+            saDialog.hideConfirmButton();
+
+            saDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                @Override
+                public void onDismiss(DialogInterface dialog) {
+                    mLog.d(TAG, "** config view onDismiss");
+                }
+            });
+
+            shimmerInner.setRepeatCount(5)
+                    .setDuration(2000)
+                    .setStartDelay(0)
+                    .setDirection(Shimmer.ANIMATION_DIRECTION_LTR)
+                    .setAnimatorListener(new Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(Animator animation) {
+//                                mLog.d(TAG, "onAnimationStart()");
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+//                                mLog.d(TAG, "onAnimationEnd()");
+                        }
+
+                        @Override
+                        public void onAnimationCancel(Animator animation) {
+//                                mLog.d(TAG, "onAnimationCancel()");
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animator animation) {
+//                                mLog.d(TAG, "onAnimationRepeat()");
+                        }
+                    });
+
+
+        }
+
+        public void readyDialogShow() {
+            saDialog.setTitleText("Getting ready")
+                    .setCustomView(frameLayoutInner)
+                    .show();
+            countdownViewInner.start(readyViewTimeMs); // Millisecond
+            shimmerInner.start(subjectTV);
+        }
+    }
+
+    private Handler playBoardHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            mLog.d(TAG, "msg.obj= " + msg.obj);
+            switch (msg.arg1) {
+                case API_CREATE_GAME_CHAIN:
+                    DnsGameChain.getInstance().setGameChainInfo((JSONObject) msg.obj);
+                    mLog.d(TAG, DnsGameChain.getInstance().toString());
+
+                    boolean isFirstStage = DnsGameChain.getInstance().getResultsChained().length() == 0;
+                    new DownloadImageTask(playerAvatar_pre).execute(acct.getPhotoUrl().toString());
+                    try {
+                        mLog.d(TAG, ((JSONObject)DnsGameChain.getInstance().getPlayerChained().get(1)).getString("photoUrl"));
+                        new DownloadImageTask(playerAvatar_next).execute(((JSONObject)DnsGameChain.getInstance().getPlayerChained().get(1)).getString("photoUrl"));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    currentStage = DnsGameChain.getInstance().getResultsChained().length() + 1;
+
+                    stageCountTV.setText("Stage: " +
+                            currentStage + " / " +
+                            DnsGameChain.getInstance().getPlayerChained().length());
+                    lazyLoad();
+                    break;
+            }
+
+        }
+    };
+
+    private int currentStage = 0;
+
+
+    private void fetchGameChainData() {
+        DnsServerAgent.getInstance(getContext())
+                .fetchGameChainInfo(playBoardHandler,
+                        "145928");
+    }
+
+
 
 }

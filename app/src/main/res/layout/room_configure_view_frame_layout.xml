@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fbutton="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <cn.iwgang.countdownview.CountdownView
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="5dp"
+        android:id="@+id/countdownViewInner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:isHideTimeBackground="true"
+        app:isShowDay="false"
+        app:isShowHour="false"
+        app:isShowMinute="false"
+        app:isShowSecond="true"
+        app:isShowMillisecond="true"
+        app:timeTextColor="#000000"
+        app:timeTextSize="22sp"
+        app:isTimeTextBold="true"
+        app:suffixGravity="center"
+        app:suffixTextColor="#000000"
+        app:suffixTextSize="12sp"
+        app:suffixSecond="s"
+        app:suffixMillisecond="ms" />
+
+    <TextView
+        android:layout_margin="30dp"
+        android:gravity="center"
+        android:text="draw the subject below"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <com.romainpiel.shimmer.ShimmerTextView
+        android:id="@+id/subjectTV"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="50dp"
+        android:fontFamily="cursive"
+        android:text="周杰倫"
+        android:textColor="#C6AC5C5C"
+        android:textSize="45sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:gravity="center"
+        android:layout_marginTop="110dp"
+        android:text="try not use any character or number, it will be more funny~"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+
+</FrameLayout>

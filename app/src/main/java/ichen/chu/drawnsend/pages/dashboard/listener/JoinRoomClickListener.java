@@ -9,6 +9,8 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.raycoarana.codeinputview.CodeInputView;
 import com.raycoarana.codeinputview.OnCodeCompleteListener;
 
@@ -22,12 +24,28 @@ import java.util.List;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import cn.pedant.SweetAlert.SweetAlertDialog;
+import ichen.chu.drawnsend.Bus;
+import ichen.chu.drawnsend.BusEvent;
 import ichen.chu.drawnsend.R;
 import ichen.chu.drawnsend.api.DnsServerAgent;
+import ichen.chu.drawnsend.model.DnsPlayRoom;
+import ichen.chu.drawnsend.model.DnsPlayer;
+import ichen.chu.drawnsend.model.DnsResult;
 import ichen.chu.drawnsend.model.PlayerItem;
 import ichen.chu.drawnsend.pages.dashboard.ListAdapter.PlayerItemAdapter;
 import ichen.chu.drawnsend.pages.dashboard.ThreadObject;
 import ichen.chu.drawnsend.util.MLog;
+
+import static ichen.chu.drawnsend.Bus.EVENT_DASHBOARD_START_TO_PLAY_GAME;
+import static ichen.chu.drawnsend.Bus.EVENT_MAP;
+import static ichen.chu.drawnsend.api.APICode.API_CREATE_GAME_CHAIN;
+import static ichen.chu.drawnsend.api.APICode.API_FETCH_ROOM_INFO;
+import static ichen.chu.drawnsend.api.APICode.API_GET_FOLDER_ID;
+import static ichen.chu.drawnsend.api.APICode.API_GET_GAME_SUBJECT;
+import static ichen.chu.drawnsend.model.DnsPlayRoom.CLOSED;
+import static ichen.chu.drawnsend.model.DnsPlayRoom.PLAYING;
+import static ichen.chu.drawnsend.model.DnsPlayRoom.READY_TO_PLAY;
+import static ichen.chu.drawnsend.model.DnsPlayRoom.SETTING;
 
 public class JoinRoomClickListener implements View.OnClickListener {
 
@@ -39,6 +57,8 @@ public class JoinRoomClickListener implements View.OnClickListener {
     public JoinRoomClickListener(Context mContext) {
         this.mContext = mContext;
     }
+
+    private Handler mySADHandler;
 
     // RecycleView
     private RecyclerView recycleViewPlayerListContainer;
@@ -55,19 +75,14 @@ public class JoinRoomClickListener implements View.OnClickListener {
     public void onClick(View v) {
         mLog.d(TAG, "click joinRoomFAB");
 
+        final GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(mContext);
+
         final ThreadObject threadObject = new ThreadObject();
         threadObject.setRunning(false);
 
         LayoutInflater inflater = LayoutInflater.from(mContext);
         FrameLayout frameLayout = (FrameLayout) inflater.inflate(R.layout.join_room_frame_layout,null);
         final CodeInputView codeInputView = frameLayout.findViewById(R.id.roomCodeInput);
-
-        codeInputView.addOnCompleteListener(new OnCodeCompleteListener() {
-            @Override
-            public void onCompleted(String code) {
-                mLog.d(TAG, "code= " + code);
-            }
-        });
 
         final TextView joinTV = frameLayout.findViewById(R.id.joinTV);
 
@@ -80,55 +95,158 @@ public class JoinRoomClickListener implements View.OnClickListener {
         recycleViewPlayerListContainer.setLayoutManager(gridLayoutManager);
         recycleViewPlayerListContainer.setNestedScrollingEnabled(false);
 
-        final Handler mySADHandler = new Handler(new Handler.Callback() {
+        final SweetAlertDialog saDialog = new SweetAlertDialog(mContext, SweetAlertDialog.NORMAL_TYPE);
+
+        mySADHandler = new Handler(new Handler.Callback() {
             @Override
             public boolean handleMessage(Message msg) {
-//                        Log.d(TAG, "msg.obj= " + msg.obj);
                 try {
-                    JSONObject responseJ = (JSONObject) ((JSONArray) msg.obj).get(0);
+                    switch (msg.arg1) {
+                        case API_GET_FOLDER_ID:
 
-                    int roomStatus = (int) responseJ.get("roomStatus");
+                            String gameRoomFolderID = (String) msg.obj;
 
-                    switch (roomStatus) {
-                        case 2:
-                            joinTV.setText("遊戲中");
+                            DnsResult.getInstance().setFolderID(gameRoomFolderID);
+
+                            mLog.d(TAG, "- gameRoomFolderID= " + DnsResult.getInstance().getFolderID());
+
                             break;
-                        case 3:
-                            joinTV.setText("房間已經關閉");
+
+                        case API_GET_GAME_SUBJECT:
+                            mLog.d(TAG, "msg.obj= " + msg.obj);
+                            String gameSubject = ((JSONObject)((JSONArray) msg.obj).get(0)).getString("content");
+                            DnsResult.getInstance().setSubject(gameSubject);
+
+                            DnsServerAgent.getInstance(mContext)
+                                    .createGameChain(mySADHandler,
+                                            DnsPlayRoom.getInstance().getJoinNumber(),
+                                            DnsResult.getInstance().getFolderID(),
+                                            DnsResult.getInstance().getSubject(),
+                                            DnsPlayer.getInstance().getPlayerOrders());
+
                             break;
-                    }
+                        case API_CREATE_GAME_CHAIN:
+                            mLog.d(TAG, "msg.obj= " + msg.obj);
+                            Bus.getInstance().post(new BusEvent(EVENT_MAP.get(EVENT_DASHBOARD_START_TO_PLAY_GAME), EVENT_DASHBOARD_START_TO_PLAY_GAME));
+                            saDialog.dismissWithAnimation();
+                            break;
+                        case API_FETCH_ROOM_INFO:
 
-                    JSONArray jsonArray = (JSONArray) responseJ.get("participants");
+                            mLog.d(TAG, "msg.obj= " + msg.obj);
+                            JSONObject responseJ = (JSONObject) ((JSONArray) msg.obj).get(0);
+                            DnsPlayRoom.getInstance().setRoomInfo(responseJ);
 
-                    mLog.d(TAG, "- participants= " + jsonArray.length());
+                            mLog.d(TAG, "room status= " +
+                                    DnsPlayRoom.getInstance().getRoomStatus());
+                            switch (DnsPlayRoom.getInstance().getRoomStatus()) {
+                                case SETTING:
+                                    joinTV.setText("等待中");
+                                    mLog.d(TAG, "- participants= " +
+                                            DnsPlayRoom.getInstance().getParticipants().length());
 
-                    List<PlayerItem> playerItemsListTemp = new ArrayList<>();
+                                    List<PlayerItem> playerItemsListTemp = new ArrayList<>();
 
 
-                    for (int index = 0; index < jsonArray.length(); index ++) {
-                        PlayerItem item = new PlayerItem(
-                                PlayerItem.TYPE.PARTICIPANTS,
-                                (JSONObject) jsonArray.get(index)
-                        );
-                        playerItemsListTemp.add(item);
-                    }
+                                    for (int index = 0; index < DnsPlayRoom.getInstance()
+                                            .getParticipants().length(); index ++) {
+                                        PlayerItem item = new PlayerItem(
+                                                PlayerItem.TYPE.PARTICIPANTS,
+                                                (JSONObject) DnsPlayRoom.getInstance()
+                                                        .getParticipants().get(index)
+                                        );
+                                        playerItemsListTemp.add(item);
+                                    }
 
 //                        mLog.d(TAG, "playerItemsList.containsAll(playerItemsListTemp)= " + playerItemsList.contains(playerItemsListTemp));
 
-                    if (!playerItemsList.contains(playerItemsListTemp)) {
-                        playerItemsList.clear();
+                                    if (!playerItemsList.contains(playerItemsListTemp)) {
+                                        playerItemsList.clear();
 
-                        for (int index = 0; index < jsonArray.length(); index ++) {
-                            PlayerItem item = new PlayerItem(
-                                    PlayerItem.TYPE.PARTICIPANTS,
-                                    (JSONObject) jsonArray.get(index)
-                            );
-                            playerItemsList.add(item);
-                        }
+                                        for (int index = 0; index < DnsPlayRoom.getInstance()
+                                                .getParticipants().length(); index ++) {
+                                            PlayerItem item = new PlayerItem(
+                                                    PlayerItem.TYPE.PARTICIPANTS,
+                                                    (JSONObject) DnsPlayRoom.getInstance()
+                                                            .getParticipants().get(index)
+                                            );
+                                            playerItemsList.add(item);
+                                        }
 
-                        playerItemAdapter.clearAll();
-                        playerItemAdapter.refreshList();
+                                        playerItemAdapter.clearAll();
+                                        playerItemAdapter.refreshList();
+                                    }
+
+                                    break;
+                                case READY_TO_PLAY:
+                                    saDialog.showCancelButton(false);
+                                    saDialog.changeAlertType(SweetAlertDialog.PROGRESS_TYPE);
+                                    joinTV.setText("準備開始");
+                                    mLog.d(TAG, "- game players= " + DnsPlayRoom.getInstance().getPlayOrders().length());
+
+                                    List<String> emailLst = new ArrayList<String>();
+
+                                    for (int index = 0; index < DnsPlayRoom.getInstance().getPlayOrders().length(); index ++) {
+                                        emailLst.add(((JSONObject) DnsPlayRoom.getInstance().getPlayOrders().get(index)).getString("email"));
+                                    }
+
+                                    mLog.d(TAG, "- play Index= " +
+                                            emailLst.indexOf(acct.getEmail()));
+
+                                    JSONArray playOrdersArrayA = new JSONArray();
+                                    JSONArray playOrdersArrayB = new JSONArray();
+
+                                    for (int index = 0; index < DnsPlayRoom.getInstance().getPlayOrders().length(); index ++) {
+                                        if (index >= emailLst.indexOf(acct.getEmail())) {
+                                            playOrdersArrayA.put(DnsPlayRoom.getInstance().getPlayOrders().get(index));
+                                        } else {
+                                            playOrdersArrayB.put(DnsPlayRoom.getInstance().getPlayOrders().get(index));
+                                        }
+                                    }
+
+                                    for (int index = 0; index < playOrdersArrayB.length(); index ++) {
+                                        playOrdersArrayA.put(playOrdersArrayB.get(index));
+                                    }
+
+//                            mLog.d(TAG, playOrdersArrayA.toString());
+
+                                    DnsPlayer.getInstance().setOrders(playOrdersArrayA);
+
+                                    playerItemsList.clear();
+                                    for (int index = 0; index < DnsPlayer.getInstance().getPlayerOrders().length(); index ++) {
+                                        PlayerItem item = new PlayerItem(
+                                                PlayerItem.TYPE.PARTICIPANTS,
+                                                (JSONObject) DnsPlayer.getInstance().getPlayerOrders().get(index)
+                                        );
+                                        playerItemsList.add(item);
+                                    }
+
+                                    playerItemAdapter.clearAll();
+                                    playerItemAdapter.refreshList();
+
+                                    DnsServerAgent.getInstance(mContext)
+                                            .getGameChainFolderID(mySADHandler,
+                                                    DnsPlayRoom.getInstance().getJoinNumber());
+
+                                    break;
+                                case PLAYING:
+                                    threadObject.setRunning(false);
+                                    joinTV.setText("遊戲中");
+                                    DnsServerAgent.getInstance(mContext)
+                                            .getSubject(mySADHandler,
+                                                    DnsPlayRoom.getInstance().getDifficulty(),
+                                                    DnsPlayRoom.getInstance().isAdult());
+
+                                    break;
+                                case CLOSED:
+                                    joinTV.setText("房間已經關閉");
+                                    break;
+                            }
+                            break;
                     }
+
+
+
+
 
 
                 } catch (JSONException e) {
@@ -145,8 +263,7 @@ public class JoinRoomClickListener implements View.OnClickListener {
             @Override
             public void run() {
                 long tick_count = 0;
-                mLog.d(TAG, "task_minimum_tick_time_msec= " + (task_minimum_tick_time_msec));
-                mLog.d(TAG, "threadObject.isRunning()= " + threadObject.isRunning());
+//                mLog.d(TAG, "task_minimum_tick_time_msec= " + (task_minimum_tick_time_msec));
 
                 while (threadObject.isRunning()) {
                     try {
@@ -155,7 +272,7 @@ public class JoinRoomClickListener implements View.OnClickListener {
                         // real-time task
 
                         if (tick_count % 5 == 1) {
-                            mLog.d(TAG, "* fetchPlayRoomInfo");
+                            mLog.d(TAG, "api * fetchPlayRoomInfo (5s)");
                             DnsServerAgent.getInstance(mContext)
                                     .fetchPlayRoomInfo(mySADHandler, codeInputView.getCode());
                         }
@@ -175,11 +292,9 @@ public class JoinRoomClickListener implements View.OnClickListener {
             }
         });
 
-        SweetAlertDialog saDialog = new SweetAlertDialog(mContext, SweetAlertDialog.NORMAL_TYPE);
-
         saDialog.setCancelable(false);
 
-        saDialog.setTitleText("Join a Room")
+        saDialog.setTitleText("Ready to play")
                 .setConfirmText("Join")
                 .setCancelText("Quit")
                 .setCustomView(frameLayout)
