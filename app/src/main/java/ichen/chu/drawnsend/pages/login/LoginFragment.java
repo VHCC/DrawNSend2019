@@ -172,17 +172,17 @@ public class LoginFragment extends Fragment {
             mLog.d(TAG, "- getEmail= " + account.getEmail());
             mLog.d(TAG, "- getPhotoUrl= " + account.getPhotoUrl());
 
-            if (null == account.getPhotoUrl()) {
-                mGoogleSignInClient.signOut()
-                        .addOnCompleteListener(getActivity(), new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                mLog.d(TAG, "signOut Complete");
-                            }
-                        });
-            } else {
+//            if (null == account.getPhotoUrl()) {
+//                mGoogleSignInClient.signOut()
+//                        .addOnCompleteListener(getActivity(), new OnCompleteListener<Void>() {
+//                            @Override
+//                            public void onComplete(@NonNull Task<Void> task) {
+//                                mLog.d(TAG, "signOut Complete");
+//                            }
+//                        });
+//            } else {
                 onFragmentInteractionListener.onLoginSuccess();
-            }
+//            }
 
 
 //            signInButton.setEnabled(false);

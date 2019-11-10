@@ -2,6 +2,7 @@ package ichen.chu.drawnsend.pages.dashboard.listener;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -12,6 +13,7 @@ import android.widget.FrameLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.github.glomadrian.codeinputlib.CodeInput;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.raycoarana.codeinputview.CodeInputView;
@@ -79,6 +81,8 @@ public class CreateRoomClickListener implements View.OnClickListener {
      */
     private final List<PlayerItem> playerItemsList = new ArrayList<>();
 
+    // View
+    private View roomNumber;
 
     @Override
     public void onClick(final View v) {
@@ -163,7 +167,13 @@ public class CreateRoomClickListener implements View.OnClickListener {
         readyFBt.setVisibility(View.GONE);
 
         // Join Number
-        final CodeInputView roomNumber = frameLayout.findViewById(R.id.roomNumber);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            roomNumber = (CodeInputView) frameLayout.findViewById(R.id.roomNumber);
+            roomNumber.setVisibility(View.VISIBLE);
+        } else {
+            roomNumber = (TextView) frameLayout.findViewById(R.id.roomNumber_old);
+            roomNumber.setVisibility(View.VISIBLE);
+        }
 
         // DnsPlayer Recycler View
         recycleViewPlayerListContainer = frameLayout.findViewById(R.id.recycleViewPlayerListContainer);
@@ -211,9 +221,15 @@ public class CreateRoomClickListener implements View.OnClickListener {
                             DnsServerAgent.getInstance(mContext)
                                     .getRandomPlayers(mySADHandler, DnsPlayRoom.getInstance().getJoinNumber());
 
-                            DnsServerAgent.getInstance(mContext).
-                                    updatePlayRoomStatus(mySADHandler,
-                                            roomNumber.getCode(), READY_TO_PLAY);
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                DnsServerAgent.getInstance(mContext).
+                                        updatePlayRoomStatus(mySADHandler,
+                                                ((CodeInputView)roomNumber).getCode(), READY_TO_PLAY);
+                            } else {
+                                DnsServerAgent.getInstance(mContext).
+                                        updatePlayRoomStatus(mySADHandler,
+                                                ((TextView)roomNumber).getText().toString(), READY_TO_PLAY);
+                            }
 
                             break;
 
@@ -351,8 +367,15 @@ public class CreateRoomClickListener implements View.OnClickListener {
 
                         if (tick_count % 5 == 1) {
                             mLog.d(TAG, "api * fetchPlayRoomInfo (5s)");
-                            DnsServerAgent.getInstance(mContext)
-                                    .fetchPlayRoomInfo(mySADHandler, roomNumber.getCode());
+
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                DnsServerAgent.getInstance(mContext)
+                                        .fetchPlayRoomInfo(mySADHandler, ((CodeInputView)roomNumber).getCode());
+                            } else {
+                                DnsServerAgent.getInstance(mContext)
+                                        .fetchPlayRoomInfo(mySADHandler, ((TextView) roomNumber).getText().toString());
+                            }
+
                         }
 
                         long end_time_tick = System.currentTimeMillis();
@@ -393,9 +416,14 @@ public class CreateRoomClickListener implements View.OnClickListener {
 
                                 mLog.d(TAG, DnsPlayRoom.getInstance().toString());
                                 mLog.d(TAG, "- Join Number= " + DnsPlayRoom.getInstance().getJoinNumber());
+
                                 roomNumber.setVisibility(View.VISIBLE);
-                                roomNumber.setCode(DnsPlayRoom.getInstance().getJoinNumber());
-                                roomNumber.setEditable(false);
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                    ((CodeInputView) roomNumber).setCode(DnsPlayRoom.getInstance().getJoinNumber());
+                                    ((CodeInputView) roomNumber).setEditable(false);
+                                } else {
+                                    ((TextView) roomNumber).setText(DnsPlayRoom.getInstance().getJoinNumber());
+                                }
 
                                 mLog.d(TAG, "- roomOwner= " + DnsPlayRoom.getInstance().getRoomOwner());
 
@@ -436,9 +464,22 @@ public class CreateRoomClickListener implements View.OnClickListener {
             public void onDismiss(DialogInterface dialog) {
                 mLog.d(TAG, "* onDismiss");
                 threadObject.setRunning(false);
-                DnsServerAgent.getInstance(mContext).
-                        updatePlayRoomStatus(mySADHandler,
-                                roomNumber.getCode(), CLOSED);
+
+                if (isPlay) {
+
+                } else {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        DnsServerAgent.getInstance(mContext).
+                                updatePlayRoomStatus(mySADHandler,
+                                        ((CodeInputView)roomNumber).getCode(), CLOSED);
+                    } else {
+                        DnsServerAgent.getInstance(mContext).
+                                updatePlayRoomStatus(mySADHandler,
+                                        ((TextView)roomNumber).getText().toString(), CLOSED);
+                    }
+                }
+
+
             }
         });
 
@@ -449,9 +490,14 @@ public class CreateRoomClickListener implements View.OnClickListener {
                 mLog.d(TAG, "- onClick readyFBt");
                 threadObject.setRunning(false);
 
-                DnsServerAgent.getInstance(mContext)
-                        .getGameChainFolderID(mySADHandler,
-                                DnsPlayRoom.getInstance().getJoinNumber());
+                try {
+                    DnsServerAgent.getInstance(mContext)
+                            .getGameChainFolderID(mySADHandler,
+                                    DnsPlayRoom.getInstance().getRoomOwner().getString("email") +
+                                            DnsPlayRoom.getInstance().getJoinNumber());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
 
             }
         });
@@ -459,11 +505,21 @@ public class CreateRoomClickListener implements View.OnClickListener {
         playFBt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DnsServerAgent.getInstance(mContext).
-                        updatePlayRoomStatus(mySADHandler,
-                                roomNumber.getCode(), PLAYING);
+
+                isPlay = true;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    DnsServerAgent.getInstance(mContext).
+                            updatePlayRoomStatus(mySADHandler,
+                                    ((CodeInputView)roomNumber).getCode(), PLAYING);
+                } else {
+                    DnsServerAgent.getInstance(mContext).
+                            updatePlayRoomStatus(mySADHandler,
+                                    ((TextView)roomNumber).getText().toString(), PLAYING);
+                }
             }
         });
 
     }
+
+    private boolean isPlay = false;
 }

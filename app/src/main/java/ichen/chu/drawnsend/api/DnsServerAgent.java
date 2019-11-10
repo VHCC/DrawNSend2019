@@ -32,8 +32,11 @@ import okhttp3.Response;
 import static ichen.chu.drawnsend.App.SERVER_SITE;
 import static ichen.chu.drawnsend.Bus.EVENT_MAP;
 import static ichen.chu.drawnsend.Bus.EVENT_PLAY_BOARD_UPLOAD_FILE_DONE;
+import static ichen.chu.drawnsend.Bus.EVENT_PLAY_BOARD_UPLOAD_GAME_CHAIN_RESULT_DONE;
 import static ichen.chu.drawnsend.api.APICode.API_CREATE_GAME_CHAIN;
+import static ichen.chu.drawnsend.api.APICode.API_FETCH_GAME_CHAIN_INFO;
 import static ichen.chu.drawnsend.api.APICode.API_FETCH_ROOM_INFO;
+import static ichen.chu.drawnsend.api.APICode.API_GET_FILE_THUMBNAIL_LINK;
 import static ichen.chu.drawnsend.api.APICode.API_GET_FOLDER_ID;
 import static ichen.chu.drawnsend.api.APICode.API_GET_GAME_SUBJECT;
 import static ichen.chu.drawnsend.api.APICode.API_GET_PLAYER_ORDERS;
@@ -351,10 +354,8 @@ public class DnsServerAgent {
         try {
             final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
-            GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(mContext);
-
             JSONObject jsonObj = new JSONObject();
-            jsonObj.put("folderName", acct.getEmail() + "_" + gameChainFolderName);
+            jsonObj.put("folderName", gameChainFolderName);
 
             RequestBody requestBody = RequestBody.create(JSON, jsonObj.toString());
 
@@ -538,14 +539,12 @@ public class DnsServerAgent {
     }
 
     public void fetchGameChainInfo(final Handler SADHandler,
-                                String joinNumber) {
+                                String chainID) {
         try {
             final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
-            GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(mContext);
-
             JSONObject jsonObj = new JSONObject();
-            jsonObj.put("chainID", acct.getEmail() + joinNumber);
+            jsonObj.put("chainID", chainID);
 
             RequestBody requestBody = RequestBody.create(JSON, jsonObj.toString());
 
@@ -569,7 +568,7 @@ public class DnsServerAgent {
                             JSONObject responseJ = new JSONObject(response.body().string());
                             mLog.d(TAG, "fetchGameChainInfo, response= " + responseJ);
                             Message msg = new Message();
-                            msg.arg1 = API_CREATE_GAME_CHAIN;
+                            msg.arg1 = API_FETCH_GAME_CHAIN_INFO;
                             msg.obj = responseJ.get("payload");
                             SADHandler.sendMessage(msg);
                         } catch (JSONException e) {
@@ -604,7 +603,10 @@ public class DnsServerAgent {
                 OkHttpClient client = new OkHttpClient();
                 Response response = client.newCall(request).execute();
 
-                DnsResult.getInstance().setResultID(response.body().string());
+                JSONObject responseJ = new JSONObject(response.body().string());
+                mLog.d(TAG, "uploadFile, response= " + responseJ);
+
+                DnsResult.getInstance().setResultID(responseJ.getString("payload"));
 
                 mLog.d(TAG, "uploadImage, fileID= " + DnsResult.getInstance().getResultID());
 
@@ -633,7 +635,7 @@ public class DnsServerAgent {
             RequestBody requestBody = RequestBody.create(JSON, jsonObj.toString());
 
             Request request = new Request.Builder()
-                    .url(SERVER_SITE + "/api/post_dns_game_chain_get_game_chain_info")
+                    .url(SERVER_SITE + "/api/post_dns_game_chain_update_game_chain")
 //                        .url("https://dns.ichenprocin.dsmynas.com/api/get_dns_check_server_status")
                     .post(requestBody)
                     .build();
@@ -650,7 +652,56 @@ public class DnsServerAgent {
                     if (response.isSuccessful()) {
                         try {
                             JSONObject responseJ = new JSONObject(response.body().string());
-                            mLog.d(TAG, "response= " + responseJ);
+                            mLog.d(TAG, "updateGameChainResult, response= " + responseJ);
+                            Bus.getInstance().post(new BusEvent(
+                                    EVENT_MAP.get(EVENT_PLAY_BOARD_UPLOAD_GAME_CHAIN_RESULT_DONE),
+                                    EVENT_PLAY_BOARD_UPLOAD_GAME_CHAIN_RESULT_DONE));
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            });
+        } catch (Exception e) {
+            mLog.e(TAG, "Other Error: " + e.getLocalizedMessage());
+        }
+    }
+
+    //
+    public void fetchFileThumbnailLinkByFileID(final Handler SADHandler,
+                                   String fileID) {
+        try {
+            final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+
+            JSONObject jsonObj = new JSONObject();
+            jsonObj.put("fileID", fileID);
+
+            RequestBody requestBody = RequestBody.create(JSON, jsonObj.toString());
+
+            Request request = new Request.Builder()
+                    .url(SERVER_SITE + "/api/post_dns_google_drive_get_file")
+//                        .url("https://dns.ichenprocin.dsmynas.com/api/get_dns_check_server_status")
+                    .post(requestBody)
+                    .build();
+
+            OkHttpClient client = new OkHttpClient();
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    e.printStackTrace();
+                }
+
+                @Override
+                public void onResponse(Call call, okhttp3.Response response) throws IOException {
+                    if (response.isSuccessful()) {
+                        try {
+                            JSONObject responseJ = new JSONObject(response.body().string());
+                            mLog.d(TAG, "fetchFileThumbnailLinkByFileID, response= " + responseJ);
+                            Message msg = new Message();
+                            msg.arg1 = API_GET_FILE_THUMBNAIL_LINK;
+                            msg.obj = responseJ.get("fileUrl");
+                            SADHandler.sendMessage(msg);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }

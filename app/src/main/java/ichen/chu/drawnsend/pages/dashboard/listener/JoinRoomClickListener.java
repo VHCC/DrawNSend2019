@@ -1,6 +1,7 @@
 package ichen.chu.drawnsend.pages.dashboard.listener;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -9,6 +10,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import com.github.glomadrian.codeinputlib.CodeInput;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.raycoarana.codeinputview.CodeInputView;
@@ -19,6 +21,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -71,6 +74,9 @@ public class JoinRoomClickListener implements View.OnClickListener {
      */
     private final List<PlayerItem> playerItemsList = new ArrayList<>();
 
+    // View
+    private View codeInputView;
+
     @Override
     public void onClick(View v) {
         mLog.d(TAG, "click joinRoomFAB");
@@ -82,7 +88,13 @@ public class JoinRoomClickListener implements View.OnClickListener {
 
         LayoutInflater inflater = LayoutInflater.from(mContext);
         FrameLayout frameLayout = (FrameLayout) inflater.inflate(R.layout.join_room_frame_layout,null);
-        final CodeInputView codeInputView = frameLayout.findViewById(R.id.roomCodeInput);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            codeInputView = (CodeInputView) frameLayout.findViewById(R.id.roomCodeInput);
+            codeInputView.setVisibility(View.VISIBLE);
+        } else {
+            codeInputView = (CodeInput) frameLayout.findViewById(R.id.roomCodeInput_old);
+            codeInputView.setVisibility(View.VISIBLE);
+        }
 
         final TextView joinTV = frameLayout.findViewById(R.id.joinTV);
 
@@ -145,7 +157,6 @@ public class JoinRoomClickListener implements View.OnClickListener {
                                             DnsPlayRoom.getInstance().getParticipants().length());
 
                                     List<PlayerItem> playerItemsListTemp = new ArrayList<>();
-
 
                                     for (int index = 0; index < DnsPlayRoom.getInstance()
                                             .getParticipants().length(); index ++) {
@@ -225,6 +236,7 @@ public class JoinRoomClickListener implements View.OnClickListener {
 
                                     DnsServerAgent.getInstance(mContext)
                                             .getGameChainFolderID(mySADHandler,
+                                                    DnsPlayRoom.getInstance().getRoomOwner().getString("email") +
                                                     DnsPlayRoom.getInstance().getJoinNumber());
 
                                     break;
@@ -273,8 +285,19 @@ public class JoinRoomClickListener implements View.OnClickListener {
 
                         if (tick_count % 5 == 1) {
                             mLog.d(TAG, "api * fetchPlayRoomInfo (5s)");
-                            DnsServerAgent.getInstance(mContext)
-                                    .fetchPlayRoomInfo(mySADHandler, codeInputView.getCode());
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                DnsServerAgent.getInstance(mContext)
+                                        .fetchPlayRoomInfo(mySADHandler, ((CodeInputView)codeInputView).getCode());
+                            } else {
+                                StringBuilder builder = new StringBuilder();
+                                for(char s : ((CodeInput)codeInputView).getCode()) {
+                                    builder.append(s);
+                                }
+                                DnsServerAgent.getInstance(mContext)
+                                        .fetchPlayRoomInfo(mySADHandler, builder.toString());
+                            }
+
+
                         }
 
                         long end_time_tick = System.currentTimeMillis();
@@ -302,7 +325,17 @@ public class JoinRoomClickListener implements View.OnClickListener {
                 .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                     @Override
                     public void onClick(final SweetAlertDialog sDialog) {
-                        mLog.d(TAG, "code= " + codeInputView.getCode());
+
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            mLog.d(TAG, "code= " + ((CodeInputView)codeInputView).getCode());
+                        } else {
+                            StringBuilder builder = new StringBuilder();
+                            for(char s : ((CodeInput)codeInputView).getCode()) {
+                                builder.append(s);
+                            }
+                            String str = builder.toString();
+                            mLog.d(TAG, "code= " + str);
+                        }
                         threadObject.setRunning(true);
 
                         final Handler SADHandler = new Handler(new Handler.Callback() {
@@ -328,8 +361,21 @@ public class JoinRoomClickListener implements View.OnClickListener {
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
-                                DnsServerAgent.getInstance(mContext)
-                                        .joinPlayRoom(SADHandler, codeInputView.getCode());
+
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                    DnsServerAgent.getInstance(mContext)
+                                            .joinPlayRoom(SADHandler, ((CodeInputView)codeInputView).getCode());
+                                } else {
+                                    StringBuilder builder = new StringBuilder();
+                                    for(char s : ((CodeInput)codeInputView).getCode()) {
+                                        builder.append(s);
+                                    }
+                                    DnsServerAgent.getInstance(mContext)
+                                            .joinPlayRoom(SADHandler, builder.toString());
+                                }
+
+//                                DnsServerAgent.getInstance(mContext)
+//                                        .joinPlayRoom(SADHandler, String.valueOf(codeInputView.getCode()));
                             }
                         }).start();
                     }
@@ -338,7 +384,18 @@ public class JoinRoomClickListener implements View.OnClickListener {
                     @Override
                     public void onClick(final SweetAlertDialog sDialog) {
                         threadObject.setRunning(false);
-                        if (codeInputView.getCode().length() == 6) {
+                        String inputCode;
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            inputCode = ((CodeInputView)codeInputView).getCode();
+                        } else {
+                            StringBuilder builder = new StringBuilder();
+                            for(char s : ((CodeInput)codeInputView).getCode()) {
+                                builder.append(s);
+                            }
+                            inputCode = builder.toString();
+                        }
+
+                        if (inputCode.length() == 6) {
 
                             final Handler SADHandler = new Handler(new Handler.Callback() {
                                 @Override
@@ -352,8 +409,21 @@ public class JoinRoomClickListener implements View.OnClickListener {
                             new Thread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    DnsServerAgent.getInstance(mContext)
-                                            .quitPlayRoom(SADHandler, codeInputView.getCode());
+
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                        DnsServerAgent.getInstance(mContext)
+                                                .quitPlayRoom(SADHandler, ((CodeInputView)codeInputView).getCode());
+                                    } else {
+                                        StringBuilder builder = new StringBuilder();
+                                        for(char s : ((CodeInput)codeInputView).getCode()) {
+                                            builder.append(s);
+                                        }
+                                        DnsServerAgent.getInstance(mContext)
+                                                .quitPlayRoom(SADHandler, builder.toString());
+                                    }
+
+//                                    DnsServerAgent.getInstance(mContext)
+//                                            .quitPlayRoom(SADHandler, String.valueOf(codeInputView.getCode()));
                                 }
                             }).start();
 

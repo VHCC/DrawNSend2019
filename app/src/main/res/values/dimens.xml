@@ -9,6 +9,10 @@
     <!-- Divide Line -->
     <dimen name="common_divide_line_size">1px</dimen>
 
+    <!--  Avatar View  -->
+    <dimen name="avatar_view_size_dashboard">96dp</dimen>
+    <dimen name="avatar_view_size_play_board">36dp</dimen>
+
     <!-- Adapter Common -->
     <dimen name="adapter_list_image_padding">15dp</dimen>
     <dimen name="adapter_list_sensor_name_padding">2dp</dimen>

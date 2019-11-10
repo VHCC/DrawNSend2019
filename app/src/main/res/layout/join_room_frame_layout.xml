@@ -13,6 +13,7 @@
 
     <com.raycoarana.codeinputview.CodeInputView
         android:layout_gravity="center"
+        android:visibility="gone"
         android:id="@+id/roomCodeInput"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -23,6 +24,20 @@
         app:error_color="#77ce9d"
         app:input_type="numeric"
         app:length_of_code="6"
+        />
+
+    <com.github.glomadrian.codeinputlib.CodeInput
+        android:layout_gravity="center"
+        android:visibility="gone"
+        android:id="@+id/roomCodeInput_old"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:underline_color="#457ad1"
+        app:underline_selected_color="#9e1ace"
+        app:text_color="#b12eff"
+        app:input_type="text"
+        app:hint_color="#77ce9d"
+        app:codes="6"
         />
 
     <LinearLayout

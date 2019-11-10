@@ -43,6 +43,8 @@ public class Bus {
     static public final int EVENT_PLAY_BOARD_UPLOAD_FILE_START = 12001;
     static public final int EVENT_PLAY_BOARD_UPLOAD_FILE_DONE = 12002;
 
+    static public final int EVENT_PLAY_BOARD_UPLOAD_GAME_CHAIN_RESULT_DONE = 15001;
+
 
 
 
@@ -59,6 +61,8 @@ public class Bus {
         EVENT_MAP.put(EVENT_DASHBOARD_START_TO_PLAY_GAME, "start to play game");
         EVENT_MAP.put(EVENT_PLAY_BOARD_UPLOAD_FILE_START, "start upload pic to cloud");
         EVENT_MAP.put(EVENT_PLAY_BOARD_UPLOAD_FILE_DONE, "upload pic to cloud done");
+
+        EVENT_MAP.put(EVENT_PLAY_BOARD_UPLOAD_GAME_CHAIN_RESULT_DONE, "update game chain result done");
     }
 
     private static final MLog mLog = new MLog(true);

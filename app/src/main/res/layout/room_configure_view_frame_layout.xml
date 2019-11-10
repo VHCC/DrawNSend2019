@@ -5,6 +5,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <ImageView
+        android:visibility="gone"
+        android:id="@+id/preview_results"
+        android:layout_width="match_parent"
+        android:layout_height="400dp"/>
+
     <cn.iwgang.countdownview.CountdownView
         android:layout_gravity="center_horizontal"
         android:layout_margin="5dp"
@@ -27,6 +33,7 @@
         app:suffixMillisecond="ms" />
 
     <TextView
+        android:id="@+id/tv1"
         android:layout_margin="30dp"
         android:gravity="center"
         android:text="draw the subject below"
@@ -47,6 +54,7 @@
         android:textStyle="bold" />
 
     <TextView
+        android:id="@+id/tv2"
         android:gravity="center"
         android:layout_marginTop="110dp"
         android:text="try not use any character or number, it will be more funny~"

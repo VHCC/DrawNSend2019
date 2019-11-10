@@ -25,6 +25,7 @@ import java.io.InputStream;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import cn.carbs.android.avatarimageview.library.AvatarImageView;
 import de.hdodenhof.circleimageview.CircleImageView;
 import ichen.chu.drawnsend.Bus;
 import ichen.chu.drawnsend.BusEvent;
@@ -48,6 +49,7 @@ public class DashboardMainFragment extends Fragment {
     // View
     private Button googleSignOutBtn;
     private CircleImageView profile_image;
+    private AvatarImageView item_avatar;
     private TextView accountEmailTV;
     private FloatingActionButton signOutFAB;
     private FloatingActionButton joinRoomFAB;
@@ -106,6 +108,7 @@ public class DashboardMainFragment extends Fragment {
 
         // Build a GoogleSignInClient with the options specified by gso.
         mGoogleSignInClient = GoogleSignIn.getClient(getActivity(), gso);
+
     }
 
     @Nullable
@@ -122,6 +125,7 @@ public class DashboardMainFragment extends Fragment {
     private void initViewIDs(View rootView) {
         googleSignOutBtn = rootView.findViewById(R.id.googleSignOutBtn);
         profile_image = rootView.findViewById(R.id.profile_image);
+        item_avatar = rootView.findViewById(R.id.item_avatar);
         accountEmailTV = rootView.findViewById(R.id.accountEmailTV);
         signOutFAB = rootView.findViewById(R.id.signOutFAB);
         joinRoomFAB = rootView.findViewById(R.id.joinRoomFAB);
@@ -243,7 +247,13 @@ public class DashboardMainFragment extends Fragment {
         switch (event.getEventType()) {
             case EVENT_LOGIN_SUCCESS:
                 GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getContext());
-                new DownloadImageTask(profile_image).execute(acct.getPhotoUrl().toString());
+
+                if (null == acct.getPhotoUrl()) {
+                    item_avatar.setTextAndColorSeed(String.valueOf(acct.getDisplayName().charAt(0)), acct.getDisplayName().toString());
+                } else {
+                    new DownloadImageTask(item_avatar).execute(acct.getPhotoUrl().toString());
+                }
+
                 accountEmailTV.setText(acct.getEmail());
                 break;
             case EVENT_DASHBOARD_START_TO_PLAY_GAME:

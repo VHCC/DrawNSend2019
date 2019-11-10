@@ -5,6 +5,7 @@
     android:layout_height="match_parent">
 
     <de.hdodenhof.circleimageview.CircleImageView
+        android:visibility="gone"
         android:layout_marginTop="20dp"
         android:layout_gravity="center|top"
         xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -13,6 +14,18 @@
         android:layout_height="96dp"
         app:civ_border_width="2dp"
         app:civ_border_color="#FF000000"/>
+
+    <cn.carbs.android.avatarimageview.library.AvatarImageView
+        android:layout_gravity="center|top"
+        android:layout_marginTop="20dp"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/item_avatar"
+        android:layout_width="@dimen/avatar_view_size_dashboard"
+        android:layout_height="@dimen/avatar_view_size_dashboard"
+        app:aiv_BoarderWidth="2dp"
+        app:aiv_BoarderColor="#FF000000"
+        app:aiv_ShowBoarder="true"
+        app:aiv_TextSizeRatio="0.4"/>
 
     <TextView
         android:layout_marginTop="130dp"

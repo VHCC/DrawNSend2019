@@ -74,6 +74,15 @@
         app:length_of_code="6"
         />
 
+    <TextView
+        android:layout_gravity="center"
+        android:visibility="gone"
+        android:id="@+id/roomNumber_old"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#b12eff"
+        />
+
     <LinearLayout
         android:layout_marginTop="240dp"
         android:layout_width="match_parent"

@@ -140,7 +140,9 @@ public class ResultsFragment extends Fragment {
             try {
                 jObj.put("email", "A" + index);
                 jObj.put("displayName", acct.getDisplayName());
-                jObj.put("photoUrl", acct.getPhotoUrl().toString());
+                if (null != acct.getPhotoUrl()) {
+                    jObj.put("photoUrl", acct.getPhotoUrl().toString());
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -159,7 +161,9 @@ public class ResultsFragment extends Fragment {
             try {
                 jObj.put("email", "A" + index);
                 jObj.put("displayName", acct.getDisplayName());
-                jObj.put("photoUrl", acct.getPhotoUrl().toString());
+                if (null != acct.getPhotoUrl()) {
+                    jObj.put("photoUrl", acct.getPhotoUrl().toString());
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }

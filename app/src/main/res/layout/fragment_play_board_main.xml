@@ -146,6 +146,7 @@
                 android:layout_height="wrap_content">
 
                 <de.hdodenhof.circleimageview.CircleImageView
+                    android:visibility="gone"
                     android:layout_gravity="left|center_vertical"
                     xmlns:app="http://schemas.android.com/apk/res-auto"
                     android:id="@+id/playerAvatar_pre"
@@ -153,6 +154,17 @@
                     android:layout_height="36dp"
                     app:civ_border_width="1dp"
                     app:civ_border_color="#FF000000"/>
+
+                <cn.carbs.android.avatarimageview.library.AvatarImageView
+                    android:layout_gravity="left|center_vertical"
+                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/item_avatar_pre"
+                    android:layout_width="@dimen/avatar_view_size_play_board"
+                    android:layout_height="@dimen/avatar_view_size_play_board"
+                    app:aiv_BoarderWidth="1dp"
+                    app:aiv_BoarderColor="#FF000000"
+                    app:aiv_ShowBoarder="true"
+                    app:aiv_TextSizeRatio="0.4"/>
 
                 <TextView
                     android:layout_gravity="center"
@@ -199,6 +211,7 @@
                     />
 
                 <de.hdodenhof.circleimageview.CircleImageView
+                    android:visibility="gone"
                     android:layout_gravity="left|center_vertical"
                     xmlns:app="http://schemas.android.com/apk/res-auto"
                     android:id="@+id/playerAvatar_next"
@@ -206,6 +219,17 @@
                     android:layout_height="36dp"
                     app:civ_border_width="1dp"
                     app:civ_border_color="#FF000000"/>
+
+                <cn.carbs.android.avatarimageview.library.AvatarImageView
+                    android:layout_gravity="left|center_vertical"
+                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/item_avatar_next"
+                    android:layout_width="@dimen/avatar_view_size_play_board"
+                    android:layout_height="@dimen/avatar_view_size_play_board"
+                    app:aiv_BoarderWidth="1dp"
+                    app:aiv_BoarderColor="#FF000000"
+                    app:aiv_ShowBoarder="true"
+                    app:aiv_TextSizeRatio="0.4"/>
 
             </LinearLayout>
 

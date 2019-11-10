@@ -12,12 +12,14 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import androidx.recyclerview.widget.RecyclerView;
+import cn.carbs.android.avatarimageview.library.AvatarImageView;
 import de.hdodenhof.circleimageview.CircleImageView;
 import ichen.chu.drawnsend.R;
 import ichen.chu.drawnsend.model.PlayerItem;
@@ -124,6 +126,7 @@ public class PlayerItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         LinearLayout cardLayout;
         LinearLayout playerItemLinerLayout;
         CircleImageView playerAvatar;
+        AvatarImageView playerAvatar_new;
 
         /*Listener Block*/
         PlayerItemClickListener playerItemClickListener = new PlayerItemClickListener();
@@ -133,7 +136,8 @@ public class PlayerItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
             cardLayout = (LinearLayout) itemView.findViewById(R.id.cardLayout);
             playerItemLinerLayout = (LinearLayout) itemView.findViewById(R.id.playerItemLinerLayout);
-            playerAvatar = (CircleImageView) itemView.findViewById(R.id.playerAvatar);
+            playerAvatar = itemView.findViewById(R.id.playerAvatar);
+            playerAvatar_new = itemView.findViewById(R.id.playerAvatar_new);
             itemView.setOnClickListener(playerItemClickListener);
             itemView.setOnLongClickListener(playerItemClickListener);
 
@@ -163,10 +167,18 @@ public class PlayerItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
 
         public void bindData(PlayerItem item) {
-            mLog.w(TAG, "item: " + item.toString());
+            mLog.w(TAG, "* item: " + item.toString());
             mPlayerItem = item;
             try {
-                new DownloadImageTask(playerAvatar).execute((String) item.getUserInfo().get("photoUrl"));
+                mLog.d(TAG, "has photoUrl: " + ((JSONObject)item.getUserInfo()).has("photoUrl"));
+                if (!((JSONObject)item.getUserInfo()).has("photoUrl")) {
+                    playerAvatar_new.setTextAndColorSeed(
+                            String.valueOf(item.getUserInfo().getString("displayName").charAt(0)),
+                            item.getUserInfo().getString("displayName"));
+                } else {
+                    new DownloadImageTask(playerAvatar_new).execute((String) item.getUserInfo().get("photoUrl"));
+                }
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }
