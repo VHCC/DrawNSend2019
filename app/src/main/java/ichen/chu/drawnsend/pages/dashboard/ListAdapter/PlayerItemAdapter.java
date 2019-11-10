@@ -21,6 +21,7 @@ import java.util.List;
 import androidx.recyclerview.widget.RecyclerView;
 import cn.carbs.android.avatarimageview.library.AvatarImageView;
 import de.hdodenhof.circleimageview.CircleImageView;
+import ichen.chu.drawnsend.Bus;
 import ichen.chu.drawnsend.R;
 import ichen.chu.drawnsend.model.PlayerItem;
 import ichen.chu.drawnsend.util.MLog;
@@ -198,6 +199,7 @@ public class PlayerItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     case OWNER_RESULTS:
                     case PARTICIPANTS_RESULTS:
                         mLog.d(TAG, "item= " + mPlayerItem.toString());
+                        Bus.getInstance().post(mPlayerItem);
                         break;
                 }
             }

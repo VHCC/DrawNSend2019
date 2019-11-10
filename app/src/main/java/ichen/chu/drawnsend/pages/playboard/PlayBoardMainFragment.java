@@ -36,8 +36,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.UnknownHostException;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -59,19 +57,11 @@ import ichen.chu.drawnsend.api.DnsServerAgent;
 import ichen.chu.drawnsend.model.DnsGameChain;
 import ichen.chu.drawnsend.model.DnsPlayRoom;
 import ichen.chu.drawnsend.model.DnsResult;
-import ichen.chu.drawnsend.pages.dashboard.ListAdapter.PlayerItemAdapter;
 import ichen.chu.drawnsend.util.MLog;
 import ichen.chu.hoverlibs.HoverMenu;
 import ichen.chu.hoverlibs.HoverView;
 import ichen.chu.squareprogessbarlibs.SquareProgressBar;
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 
-import static ichen.chu.drawnsend.App.SERVER_SITE;
 import static ichen.chu.drawnsend.Bus.EVENT_DRAWABLE_CHANGE_STROKE_SIZE_1;
 import static ichen.chu.drawnsend.Bus.EVENT_DRAWABLE_CHANGE_STROKE_SIZE_2;
 import static ichen.chu.drawnsend.Bus.EVENT_DRAWABLE_CHANGE_STROKE_SIZE_3;
@@ -81,18 +71,15 @@ import static ichen.chu.drawnsend.Bus.EVENT_MAP;
 import static ichen.chu.drawnsend.Bus.EVENT_PLAY_BOARD_UPLOAD_FILE_DONE;
 import static ichen.chu.drawnsend.Bus.EVENT_PLAY_BOARD_UPLOAD_FILE_START;
 import static ichen.chu.drawnsend.Bus.EVENT_PLAY_BOARD_UPLOAD_GAME_CHAIN_RESULT_DONE;
-import static ichen.chu.drawnsend.api.APICode.API_CREATE_GAME_CHAIN;
 import static ichen.chu.drawnsend.api.APICode.API_FETCH_GAME_CHAIN_INFO;
 import static ichen.chu.drawnsend.api.APICode.API_GET_FILE_THUMBNAIL_LINK;
-import static ichen.chu.drawnsend.api.APICode.API_UPDATE_ROOM_STATUS;
-import static ichen.chu.drawnsend.model.DnsPlayRoom.READY_TO_PLAY;
 
 /**
  * Created by IChen.Chu on 2018/9/26
  */
 public class PlayBoardMainFragment extends Fragment {
 
-    private static final MLog mLog = new MLog(false);
+    private static final MLog mLog = new MLog(true);
     private final String TAG = getClass().getSimpleName() + "@" + Integer.toHexString(hashCode());
 
     // DrawableView
@@ -160,6 +147,7 @@ public class PlayBoardMainFragment extends Fragment {
         if (getUserVisibleHint() && isViewInitiated) {
             fetchGameChainData(acct.getEmail()+DnsPlayRoom.getInstance().getJoinNumber());
         }
+
     }
 
     @Override
@@ -346,7 +334,7 @@ public class PlayBoardMainFragment extends Fragment {
                 break;
             case EVENT_PLAY_BOARD_UPLOAD_GAME_CHAIN_RESULT_DONE:
                 try {
-                    int players = DnsPlayRoom.getInstance().getParticipants().length();
+                    int players = DnsPlayRoom.getInstance().getParticipants().length(); // 最後一個
                     String chainID = DnsGameChain.getInstance().getPlayerChained().getJSONObject(players-1).getString("email") +
                             DnsPlayRoom.getInstance().getJoinNumber();
                     fetchGameChainData(chainID);
@@ -727,6 +715,7 @@ public class PlayBoardMainFragment extends Fragment {
     }
 
     private boolean isFirstStage = false;
+    private boolean isNeedValidateStage = false;
 
     private Handler playBoardHandler = new Handler(){
         @Override
@@ -738,11 +727,27 @@ public class PlayBoardMainFragment extends Fragment {
                     DnsGameChain.getInstance().setGameChainInfo((JSONObject) msg.obj);
                     mLog.d(TAG, DnsGameChain.getInstance().toString());
 
+                    try {
+                        // Valid stage by
+                        if ((currentStage + 1) != DnsGameChain.getInstance().getResultsChained().length() && isNeedValidateStage) {
+                            String chainID = null;
 
+                            chainID = DnsGameChain.getInstance().getPlayerChained().getJSONObject(0).getString("email") +
+                                    DnsPlayRoom.getInstance().getJoinNumber();
+                            fetchGameChainData(chainID);
+                            Thread.sleep(500);
+                            break;
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
 
                     isFirstStage = (DnsGameChain.getInstance().getResultsChained().length() == 0);
                     mLog.d(TAG, "* isFirstStage= " + isFirstStage);
                     if (isFirstStage) {
+                        isNeedValidateStage = true;
                         try {
 
                             if (!(((JSONObject)DnsGameChain.getInstance().getPlayerChained().get(1))).has("photoUrl")) {
@@ -785,6 +790,8 @@ public class PlayBoardMainFragment extends Fragment {
                     mLog.d(TAG, "currentStage= " + currentStage);
 
                     if (currentStage >= DnsGameChain.getInstance().getPlayerChained().length()) {
+                        isNeedValidateStage = false;
+                        currentStage = 0;
                         loadingDialog.show();
                         onPlayBoardMainFragmentInteractionListener.onGameSet();
                         loadingDialog.dismissWithAnimation();
@@ -802,11 +809,10 @@ public class PlayBoardMainFragment extends Fragment {
 
     private int currentStage = 0;
 
-
     private void fetchGameChainData(String chainID) {
 
-//        playTime = Long.valueOf(DnsPlayRoom.getInstance().getPlayTime()) * 1L;
-        playTime = 10L;
+        playTime = Long.valueOf(DnsPlayRoom.getInstance().getPlayTime()) * 1L;
+//        playTime = 10L;
         playTimeMs = playTime * 1000L;
         valueAnimator.setDuration(playTimeMs);
 

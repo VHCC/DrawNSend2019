@@ -30,13 +30,26 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 
-            <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:visibility="gone"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/playerAvatar"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:layout_gravity="center"
                 app:civ_border_color="#FF000000"
                 app:civ_border_width="1dp" />
+
+            <cn.carbs.android.avatarimageview.library.AvatarImageView
+                android:layout_gravity="center"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/playerAvatar_new"
+                android:layout_width="@dimen/avatar_view_size_play_board"
+                android:layout_height="@dimen/avatar_view_size_play_board"
+                app:aiv_BoarderWidth="1dp"
+                app:aiv_BoarderColor="#FF000000"
+                app:aiv_ShowBoarder="true"
+                app:aiv_TextSizeRatio="0.4"/>
         </LinearLayout>
 
         <ImageView

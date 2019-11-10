@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -242,7 +243,7 @@ public class DashboardMainFragment extends Fragment {
     // Event Bus
     public void onEventMainThread(BusEvent event){
 //        event.getMessage();
-        mLog.d(TAG, "event= " + event.getMessage());
+        mLog.d(TAG, "* event, msg= " + event.getMessage());
 
         switch (event.getEventType()) {
             case EVENT_LOGIN_SUCCESS:

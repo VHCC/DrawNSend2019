@@ -4,6 +4,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,17 +15,21 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import androidx.recyclerview.widget.RecyclerView;
+import cn.carbs.android.avatarimageview.library.AvatarImageView;
 import de.hdodenhof.circleimageview.CircleImageView;
 import ichen.chu.drawnsend.R;
-import ichen.chu.drawnsend.model.PlayerItem;
+import ichen.chu.drawnsend.api.DnsServerAgent;
 import ichen.chu.drawnsend.model.ResultItem;
 import ichen.chu.drawnsend.util.MLog;
+
+import static ichen.chu.drawnsend.api.APICode.API_GET_FILE_THUMBNAIL_LINK;
 
 /**
  * Created by IChen.Chu on 2019/11/04
@@ -53,9 +59,12 @@ public class ResultItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
      */
     private List<ResultItem> resultsDisplayDatas;
 
+    private Context mContext;
+
 
     public ResultItemAdapter(Context context, List<ResultItem> playerDataList) {
         mLog.d(TAG, "constructor");
+        mContext = context;
         resultsDisplayDatas = playerDataList;
         mLayoutInflater = LayoutInflater.from(context);
     }
@@ -64,7 +73,7 @@ public class ResultItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         mLog.i(TAG, "onCreateViewHolder()" + ", viewType= " + viewType);
         RecyclerView.ViewHolder holder;
-        ResultItemViewHolder uploadItemViewHolder = new ResultItemViewHolder(
+        ResultItemViewHolder uploadItemViewHolder = new ResultItemViewHolder(mContext,
                 mLayoutInflater.inflate(R.layout.result_item_card, parent, false));
         uploadItemViewHolder.initView(viewType);
         holder = uploadItemViewHolder;
@@ -75,7 +84,7 @@ public class ResultItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     public int getItemViewType(int position) {
 
         ResultItem resultItem = mResultDataList.get(position);
-        mLog.i(TAG, "getItemViewType()" + ", position= " + position);
+//        mLog.i(TAG, "getItemViewType()" + ", position= " + position);
         return 0;
 //        switch (resultItem.getPlayerType()) {
 //            case OWNER: {
@@ -115,23 +124,29 @@ public class ResultItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     public class ResultItemViewHolder extends RecyclerView.ViewHolder {
         final String TAG = getClass().getSimpleName() + "@" + Integer.toHexString(hashCode());
 
+        //
+        Context sub_mContext;
+
         // Data
 
         /*View Block*/
         LinearLayout cardLayout;
         LinearLayout playerItemLinerLayout;
         CircleImageView playerAvatar;
+        AvatarImageView playerAvatar_new;
         ImageView resultView;
         TextView resultIndex;
 
         /*Listener Block*/
         ResultItemClickListener playerItemClickListener = new ResultItemClickListener();
 
-        public ResultItemViewHolder(final View itemView) {
+        public ResultItemViewHolder(final Context context, final View itemView) {
             super(itemView);
 
+            sub_mContext = context;
             cardLayout = itemView.findViewById(R.id.cardLayout);
             playerAvatar = itemView.findViewById(R.id.playerAvatar);
+            playerAvatar_new = itemView.findViewById(R.id.playerAvatar_new);
             resultView = itemView.findViewById(R.id.resultView);
             resultIndex = itemView.findViewById(R.id.resultIndex);
             itemView.setOnClickListener(playerItemClickListener);
@@ -156,11 +171,22 @@ public class ResultItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
 
         public void bindData(ResultItem item, int position) {
-            mLog.w(TAG, "item: " + item.toString());
+            mLog.w(TAG, "* item: " + item.toString());
             try {
                 resultIndex.setText(String.valueOf(position + 1));
-                new DownloadImageTask(playerAvatar).execute((String) item.getUserInfo().get("photoUrl"));
-                new DownloadImageTask(resultView).execute((String) item.getResultsUrl());
+//                new DownloadImageTask(playerAvatar).execute((String) item.getUserInfo().get("photoUrl"));
+                if (!((JSONObject)item.getUserInfo()).has("photoUrl")) {
+                    playerAvatar_new.setTextAndColorSeed(
+                            String.valueOf(item.getUserInfo().getString("displayName").charAt(0)),
+                            item.getUserInfo().getString("displayName"));
+                } else {
+                    new DownloadImageTask(playerAvatar_new).execute((String) item.getUserInfo().get("photoUrl"));
+                }
+//                new DownloadImageTask(resultView).execute((String) item.getResultID());
+
+                DnsServerAgent.getInstance(sub_mContext)
+                        .fetchFileThumbnailLinkByFileID(resultItemHandler, item.getResultID());
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -171,6 +197,19 @@ public class ResultItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 //                    break;
 //            }
         }
+
+        private Handler resultItemHandler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+                switch (msg.arg1) {
+                    case API_GET_FILE_THUMBNAIL_LINK:
+                        String resultUrl = msg.obj.toString();
+                        new DownloadImageTask(resultView).execute(resultUrl);
+                        break;
+                }
+            }
+        };
 
         private class ResultItemClickListener implements View.OnClickListener, View.OnLongClickListener {
             @Override

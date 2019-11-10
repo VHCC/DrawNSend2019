@@ -58,7 +58,7 @@ import static ichen.chu.drawnsend.model.DnsPlayRoom.READY_TO_PLAY;
 
 public class CreateRoomClickListener implements View.OnClickListener {
 
-    private static final MLog mLog = new MLog(true);
+    private static final MLog mLog = new MLog(false);
     private final String TAG = getClass().getSimpleName() + "@" + Integer.toHexString(hashCode());
 
     private Context mContext;
@@ -278,7 +278,7 @@ public class CreateRoomClickListener implements View.OnClickListener {
 
                             playerItemAdapter.clearAll();
                             playerItemAdapter.refreshList();
-
+                            saDialog.changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
                             break;
                             // polling
                         case API_FETCH_ROOM_INFO:
@@ -338,8 +338,13 @@ public class CreateRoomClickListener implements View.OnClickListener {
                             break;
                         case API_CREATE_GAME_CHAIN:
                             mLog.d(TAG, "msg.obj= " + msg.obj);
-                            Bus.getInstance().post(new BusEvent(EVENT_MAP.get(EVENT_DASHBOARD_START_TO_PLAY_GAME), EVENT_DASHBOARD_START_TO_PLAY_GAME));
-                            saDialog.dismissWithAnimation();
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Bus.getInstance().post(new BusEvent(EVENT_MAP.get(EVENT_DASHBOARD_START_TO_PLAY_GAME), EVENT_DASHBOARD_START_TO_PLAY_GAME));
+                                    saDialog.dismissWithAnimation();
+                                }
+                            }, 2000);
                             break;
                     }
 
@@ -489,7 +494,7 @@ public class CreateRoomClickListener implements View.OnClickListener {
             public void onClick(View v) {
                 mLog.d(TAG, "- onClick readyFBt");
                 threadObject.setRunning(false);
-
+                saDialog.changeAlertType(SweetAlertDialog.PROGRESS_TYPE);
                 try {
                     DnsServerAgent.getInstance(mContext)
                             .getGameChainFolderID(mySADHandler,
@@ -505,7 +510,7 @@ public class CreateRoomClickListener implements View.OnClickListener {
         playFBt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                saDialog.changeAlertType(SweetAlertDialog.PROGRESS_TYPE);
                 isPlay = true;
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     DnsServerAgent.getInstance(mContext).

@@ -66,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
         mViewPager.setAdapter(mSectionsPagerAdapter);
         mViewPager.addOnPageChangeListener(mSectionsPagerAdapter);
         mViewPager.setPageTransformer(true, new ScaleInOutTransformer());
+        mViewPager.setOffscreenPageLimit(1);
     }
 
     private void checkPermission() {
@@ -117,19 +118,19 @@ public class MainActivity extends AppCompatActivity {
     public class SectionsPagerAdapter extends FragmentPagerAdapter implements ViewPager.OnPageChangeListener {
 
         // Constants
-        static final int PAGE_HOME = 500;
-        static final int PAGE_LOGIN = 100;
-        static final int PAGE_DASHBOARD = 200;
-        static final int PAGE_PLAY_BOARD = 1000;
-        static final int PAGE_RESULTS = 0;
-        static final int PAGE_SUB_PAGE = 400;
+//        static final int PAGE_HOME = 100;
+//        static final int PAGE_LOGIN = 200;
+//        static final int PAGE_DASHBOARD = 300;
+//        static final int PAGE_PLAY_BOARD = 400;
+//        static final int PAGE_RESULTS = 0;
+//        static final int PAGE_SUB_PAGE = 9999;
 
-//        static final int PAGE_HOME = 0;
-//        static final int PAGE_LOGIN = 1;
-//        static final int PAGE_DASHBOARD = 2;
-//        static final int PAGE_PLAY_BOARD = 3;
-//        static final int PAGE_RESULTS = 4;
-//        static final int PAGE_SUB_PAGE = 5;
+        static final int PAGE_HOME = 0;
+        static final int PAGE_LOGIN = 1;
+        static final int PAGE_DASHBOARD = 2;
+        static final int PAGE_PLAY_BOARD = 3;
+        static final int PAGE_RESULTS = 4;
+        static final int PAGE_SUB_PAGE = 99;
 
         // Fields
         private final int[] PAGE_GROUP = new int[]{
@@ -203,6 +204,7 @@ public class MainActivity extends AppCompatActivity {
 
                 case PAGE_RESULTS: {
                     ResultsFragment resultsFragment = ResultsFragment.newInstance();
+                    resultsFragment.setResultFragmentListener(resultFragmentInteractionListener);
                     fragment = resultsFragment;
                 }
                 break;
@@ -217,7 +219,7 @@ public class MainActivity extends AppCompatActivity {
                     fragment = subPagesMainFragment;
                     break;
             }
-            mLog.v(TAG, "getItem(): " + fragment.toString());
+            mLog.v(TAG, "getItem(): [" +position + "], "+ fragment.toString());
             fragments[position] = fragment;
             return fragment;
         }
@@ -239,7 +241,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onPageSelected(int position) {
-            mLog.d(TAG, "onPageSelected(): " + PAGE_NAMES[lastPosition] + " >> " + PAGE_NAMES[position]);
+            mLog.d(TAG, "* onPageSelected(): " + PAGE_NAMES[lastPosition] + " >> " + PAGE_NAMES[position]);
             switch (position) {
                 case PAGE_DASHBOARD:
                     ((DashboardMainFragment)fragments[PAGE_DASHBOARD]).userLoginSucceed();
@@ -293,7 +295,18 @@ public class MainActivity extends AppCompatActivity {
                 = new PlayBoardMainFragment.OnPlayBoardMainFragmentInteractionListener() {
             @Override
             public void onGameSet() {
+                mLog.d(TAG, "onGameSet");
                 mViewPager.setCurrentItem(SectionsPagerAdapter.PAGE_RESULTS);
+            }
+        };
+
+        private ResultsFragment.OnResultFragmentInteractionListener resultFragmentInteractionListener =
+                new ResultsFragment.OnResultFragmentInteractionListener() {
+            @Override
+            public void onClickBackToDashboard() {
+                mLog.d(TAG, "onClickBackToDashboard");
+                mViewPager.setCurrentItem(SectionsPagerAdapter.PAGE_DASHBOARD);
+                Bus.getInstance().post(new BusEvent(EVENT_MAP.get(EVENT_LOGIN_SUCCESS), EVENT_LOGIN_SUCCESS));
             }
         };
 

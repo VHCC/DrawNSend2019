@@ -329,12 +329,18 @@ public class JoinRoomClickListener implements View.OnClickListener {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                             mLog.d(TAG, "code= " + ((CodeInputView)codeInputView).getCode());
                         } else {
-                            StringBuilder builder = new StringBuilder();
-                            for(char s : ((CodeInput)codeInputView).getCode()) {
-                                builder.append(s);
+
+                            try {
+                                StringBuilder builder = new StringBuilder();
+                                for(char s : ((CodeInput)codeInputView).getCode()) {
+                                    builder.append(s);
+                                }
+                                String str = builder.toString();
+                                mLog.d(TAG, "code= " + str);
+                            } catch (Exception e) {
+                                e.printStackTrace();
                             }
-                            String str = builder.toString();
-                            mLog.d(TAG, "code= " + str);
+
                         }
                         threadObject.setRunning(true);
 
@@ -366,12 +372,19 @@ public class JoinRoomClickListener implements View.OnClickListener {
                                     DnsServerAgent.getInstance(mContext)
                                             .joinPlayRoom(SADHandler, ((CodeInputView)codeInputView).getCode());
                                 } else {
-                                    StringBuilder builder = new StringBuilder();
-                                    for(char s : ((CodeInput)codeInputView).getCode()) {
-                                        builder.append(s);
+
+                                    try {
+                                        StringBuilder builder = new StringBuilder();
+                                        for(char s : ((CodeInput)codeInputView).getCode()) {
+                                            builder.append(s);
+                                        }
+                                        DnsServerAgent.getInstance(mContext)
+                                                .joinPlayRoom(SADHandler, builder.toString());
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                        DnsServerAgent.getInstance(mContext)
+                                                .joinPlayRoom(SADHandler, "");
                                     }
-                                    DnsServerAgent.getInstance(mContext)
-                                            .joinPlayRoom(SADHandler, builder.toString());
                                 }
 
 //                                DnsServerAgent.getInstance(mContext)
@@ -384,15 +397,20 @@ public class JoinRoomClickListener implements View.OnClickListener {
                     @Override
                     public void onClick(final SweetAlertDialog sDialog) {
                         threadObject.setRunning(false);
-                        String inputCode;
+                        String inputCode = "";
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                             inputCode = ((CodeInputView)codeInputView).getCode();
                         } else {
-                            StringBuilder builder = new StringBuilder();
-                            for(char s : ((CodeInput)codeInputView).getCode()) {
-                                builder.append(s);
+                            try {
+                                StringBuilder builder = new StringBuilder();
+                                for(char s : ((CodeInput)codeInputView).getCode()) {
+                                    builder.append(s);
+                                }
+                                inputCode = builder.toString();
+                            } catch (Exception e) {
+                                e.printStackTrace();
                             }
-                            inputCode = builder.toString();
+
                         }
 
                         if (inputCode.length() == 6) {
@@ -422,8 +440,6 @@ public class JoinRoomClickListener implements View.OnClickListener {
                                                 .quitPlayRoom(SADHandler, builder.toString());
                                     }
 
-//                                    DnsServerAgent.getInstance(mContext)
-//                                            .quitPlayRoom(SADHandler, String.valueOf(codeInputView.getCode()));
                                 }
                             }).start();
 

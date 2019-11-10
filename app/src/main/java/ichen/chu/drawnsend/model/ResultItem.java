@@ -7,17 +7,17 @@ import org.json.JSONObject;
  */
 public class ResultItem {
 
-    String mResultsUrl;
+    String mResultID;
 
     JSONObject userInfo;
 
     public ResultItem(String resultsUrl, JSONObject user_Info) {
-        this.mResultsUrl = resultsUrl;
+        this.mResultID = resultsUrl;
         this.userInfo = user_Info;
     }
 
-    public String getResultsUrl() {
-        return mResultsUrl;
+    public String getResultID() {
+        return mResultID;
     }
 
     public JSONObject getUserInfo() {
@@ -26,10 +26,9 @@ public class ResultItem {
 
     // --------------------- category --------------
 
-
     @Override
     public String toString() {
-
-        return "result= " + mResultsUrl;
+        return "result, resultID= " + mResultID +
+                ", userInfo= " + userInfo;
     }
 }

@@ -58,4 +58,8 @@ public class SampleHeaderView extends FrameLayout {
     public int getExpandedColor() {
         return mExpandedColor;
     }
+
+    public void setSubject(String title) {
+        mTextView.setText(title);
+    }
 }
