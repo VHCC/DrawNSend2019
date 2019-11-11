@@ -9,7 +9,7 @@ import androidx.core.util.LogWriter;
  * Created by IChen on 2018/08/21.
  */
 public class NullHostNameVerifier implements HostnameVerifier {
-    private static final MLog Log = new MLog(true);
+    private static final MLog Log = new MLog(false);
     private final String TAG = getClass().getSimpleName() + "@" + Integer.toHexString(hashCode());
 
     @Override

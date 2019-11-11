@@ -323,11 +323,9 @@ public class PlayBoardMainFragment extends Fragment {
             case EVENT_PLAY_BOARD_UPLOAD_FILE_DONE:
                 try {
                     String targetChainID = DnsGameChain.getInstance().getPlayerChained().getJSONObject(0).getString("email") +
-                            DnsPlayRoom.getInstance()
-                                    .getJoinNumber();
+                            DnsPlayRoom.getInstance().getJoinNumber();
                     DnsServerAgent.getInstance(getContext())
-                            .updateGameChainResult(targetChainID,
-                                    DnsResult.getInstance().getResultID(), currentStage);
+                            .updateGameChainResult(targetChainID, DnsResult.getInstance().getResultID(), currentStage);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

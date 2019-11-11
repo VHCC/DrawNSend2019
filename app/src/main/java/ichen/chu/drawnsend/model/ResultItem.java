@@ -11,8 +11,8 @@ public class ResultItem {
 
     JSONObject userInfo;
 
-    public ResultItem(String resultsUrl, JSONObject user_Info) {
-        this.mResultID = resultsUrl;
+    public ResultItem(String resultsID, JSONObject user_Info) {
+        this.mResultID = resultsID;
         this.userInfo = user_Info;
     }
 
