@@ -56,13 +56,20 @@ public class FragmentUnitTest {
         });
 
         FragmentScenario<ResultsFragment> scenario3 = FragmentScenario.launch(ResultsFragment.class);
-        scenario3.onFragment(fragment -> {
-            assertTrue(fragment instanceof ResultsFragment);
+        scenario3.onFragment(new FragmentScenario.FragmentAction<ResultsFragment>() {
+            @Override
+            public void perform(@NonNull ResultsFragment fragment) {
+                assertTrue(fragment instanceof ResultsFragment);
+            }
         });
 
+
         FragmentScenario<DashboardMainFragment> scenario4 = FragmentScenario.launch(DashboardMainFragment.class);
-        scenario4.onFragment(fragment -> {
-            assertTrue(fragment instanceof DashboardMainFragment);
+        scenario4.onFragment(new FragmentScenario.FragmentAction<DashboardMainFragment>() {
+            @Override
+            public void perform(@NonNull DashboardMainFragment fragment) {
+                assertTrue(fragment instanceof DashboardMainFragment);
+            }
         });
 
     }
