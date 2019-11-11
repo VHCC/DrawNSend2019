@@ -19,6 +19,8 @@ package ichen.chu.drawnsend;
 import android.app.Activity;
 import android.os.Build;
 
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,14 +37,15 @@ import ichen.chu.drawnsend.pages.subPage.SubPageEmptyFragment;
 
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @RunWith(AndroidJUnit4.class)
 public class FragmentUnitTest {
 
-
+    GoogleSignInAccount acct;
     @Before
     public void initTest() {
-        final Activity activity = mock(Activity.class);
+        acct = mock(GoogleSignInAccount.class);
     }
 
     @Test
@@ -55,22 +58,6 @@ public class FragmentUnitTest {
             }
         });
 
-        FragmentScenario<ResultsFragment> scenario3 = FragmentScenario.launch(ResultsFragment.class);
-        scenario3.onFragment(new FragmentScenario.FragmentAction<ResultsFragment>() {
-            @Override
-            public void perform(@NonNull ResultsFragment fragment) {
-                assertTrue(fragment instanceof ResultsFragment);
-            }
-        });
-
-
-        FragmentScenario<DashboardMainFragment> scenario4 = FragmentScenario.launch(DashboardMainFragment.class);
-        scenario4.onFragment(new FragmentScenario.FragmentAction<DashboardMainFragment>() {
-            @Override
-            public void perform(@NonNull DashboardMainFragment fragment) {
-                assertTrue(fragment instanceof DashboardMainFragment);
-            }
-        });
 
     }
 

@@ -40,7 +40,7 @@ public class ActivityResourceUnitTest {
     public void testGetString() {
         final String resource = "DrawNSend";
         final int resourceId = R.string.app_name;
-        final Activity activity = mock(Activity.class);
+        final MainActivity activity = mock(MainActivity.class);
         when(activity.getString(resourceId)).thenReturn(resource);
         assertEquals(resource, activity.getString(R.string.app_name));
     }
