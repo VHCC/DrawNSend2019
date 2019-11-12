@@ -68,7 +68,48 @@ public class DnsServerAgent {
         return mDnsServerAgent;
     }
 
+    public interface aaaInterface {
+        void onResponse(int code);
+    }
+
+    public void getDNSServerStatus() {
+        getDNSServerStatus(null);
+    }
+
     // API
+    public void getDNSServerStatus(aaaInterface aaa) {
+        try {
+            Request request = new Request.Builder()
+                    .url(SERVER_SITE + "/api/get_dns_check_server_status")
+//                        .url("https://dns.ichenprocin.dsmynas.com/api/get_dns_check_server_status")
+//                        .post(req)
+                    .build();
+
+            OkHttpClient client = new OkHttpClient();
+            Response response = client.newCall(request).execute();
+
+//                mLog.d(TAG, "response= " + response.body().string());
+
+            if (null != aaa) {
+                aaa.onResponse(response.code());
+            }
+
+            JSONObject responseJ = new JSONObject(response.body().string());
+//                mLog.d(TAG, "response status= " + Integer.valueOf((Integer)responseJ.get("code")));
+            switch (Integer.valueOf((Integer)responseJ.get("code"))) {
+                case 200:
+                    mLog.i(TAG, " * server status: online * ");
+                    break;
+            }
+
+        } catch (UnknownHostException | UnsupportedEncodingException e) {
+            mLog.e(TAG, "Error: " + e.getLocalizedMessage());
+        } catch (Exception e) {
+            mLog.e(TAG, "Other Error: " + e.getLocalizedMessage());
+        }
+    }
+
+
     public void createPlayRoom(final Handler SADHandler,
                                 final int playTime,
                                 final int difficulty,

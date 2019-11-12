@@ -35,6 +35,7 @@ import androidx.core.content.ContextCompat;
 import ichen.chu.drawnsend.HoverMenu.appstate.AppStateTracker;
 import ichen.chu.drawnsend.HoverMenu.theme.HoverTheme;
 import ichen.chu.drawnsend.HoverMenu.theme.HoverThemeManager;
+import ichen.chu.drawnsend.api.DnsServerAgent;
 import ichen.chu.drawnsend.util.MLog;
 import ichen.chu.drawnsend.util.NullHostNameVerifier;
 import ichen.chu.drawnsend.util.NullX509TrustManager;
@@ -139,7 +140,7 @@ public class App extends Application {
                     }
 
                     if (tick_count % 60 == 6) {
-                        getDNSServerStatus();
+                        DnsServerAgent.getInstance(getApplicationContext()).getDNSServerStatus();
                     }
 
                     long end_time_tick = System.currentTimeMillis();
@@ -158,35 +159,5 @@ public class App extends Application {
     };
 
 
-    private void getDNSServerStatus() {
-        try {
-            try {
-                Request request = new Request.Builder()
-                        .url(SERVER_SITE + "/api/get_dns_check_server_status")
-//                        .url("https://dns.ichenprocin.dsmynas.com/api/get_dns_check_server_status")
-//                        .post(req)
-                        .build();
 
-                OkHttpClient client = new OkHttpClient();
-                Response response = client.newCall(request).execute();
-
-//                mLog.d(TAG, "response= " + response.body().string());
-
-                JSONObject responseJ = new JSONObject(response.body().string());
-//                mLog.d(TAG, "response status= " + Integer.valueOf((Integer)responseJ.get("code")));
-                switch (Integer.valueOf((Integer)responseJ.get("code"))) {
-                    case 200:
-                        mLog.i(TAG, "server status: online");
-                        break;
-                }
-
-            } catch (UnknownHostException | UnsupportedEncodingException e) {
-                mLog.e(TAG, "Error: " + e.getLocalizedMessage());
-            } catch (Exception e) {
-                mLog.e(TAG, "Other Error: " + e.getLocalizedMessage());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 }
