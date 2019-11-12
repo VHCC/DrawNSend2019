@@ -52,7 +52,8 @@ public class App extends Application {
     private final String TAG = getClass().getSimpleName() + "@" + Integer.toHexString(hashCode());
 
 //    public static final String SERVER_SITE = "http://172.22.212.150:4009";
-    public static final String SERVER_SITE = "http://192.168.1.105:4009";
+//    public static final String SERVER_SITE = "http://192.168.1.105:4009";
+    public static final String SERVER_SITE = "https://dns.ichenprocin.dsmynas.com";
 
     @Override
     public void onCreate() {
