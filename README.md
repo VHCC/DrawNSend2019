@@ -5,19 +5,30 @@
 In order to play board game [Telestration](https://boardgamegeek.com/boardgame/46213/telestrations) at online with friends.
 
 ### Play requirements
-
+---
 - Internet or wifi
 - grants storage permission
 - Google account
 
 ### Tutorial
-
+---
 - Create Room
 - Join Room
 
-#### dev Devices
-
+### Dev Devices
+---
 |NO.|Brand|OS|
 |---|-----|--|
 |01|Samsung Note3|Android 5.0 (API21)|
 |02|Vivo 1808|Android 8.1.0 (API27)|
+
+### Refer Repo
+---
+- [sweet-alert-dialog](https://github.com/F0RIS/sweet-alert-dialog)
+- [material-code-input](https://github.com/raycoarana/material-code-input)
+- [discreteSeekBar](https://github.com/AnderWeb/discreteSeekBar)
+- [AvatarImageView](https://github.com/Carbs0126/AvatarImageView)
+
+### Licence
+---
+MIT © [vhcc](https://github.com/vhcc)
