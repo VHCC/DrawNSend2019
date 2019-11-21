@@ -25,6 +25,8 @@ In order to play board game [Telestration](https://boardgamegeek.com/boardgame/4
 |---|-----|--|
 |01|Samsung Note3|Android 5.0 (API21)|
 |02|Vivo 1808|Android 8.1.0 (API27)|
+|03|Sony Xperia Z1|Android 5.1.1 (API22)|
+|04|HTC new one M7 801e|Android 5.0.2 (API21)|
 
 ### Refer Repo
 ---
