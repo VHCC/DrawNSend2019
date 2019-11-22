@@ -6,12 +6,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import org.w3c.dom.Text;
+
 import java.util.Random;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import ichen.chu.drawnsend.R;
 import ichen.chu.drawnsend.util.MLog;
+import pl.droidsonroids.gif.GifImageView;
 
 public class GuideRecyclerAdapter extends RecyclerView.Adapter<GuideRecyclerAdapter.GuideViewHolder> {
 
@@ -75,18 +78,41 @@ public class GuideRecyclerAdapter extends RecyclerView.Adapter<GuideRecyclerAdap
         final String TAG = getClass().getSimpleName() + "@" + Integer.toHexString(hashCode());
 
         // View
-
+        private TextView guildTv;
+        private GifImageView gifView;
 
         private GuideViewHolder(@NonNull View itemView) {
             super(itemView);
+
+            guildTv = itemView.findViewById(R.id.guildTv);
+            gifView = itemView.findViewById(R.id.gifView);
         }
 
         public void initView(int pagePosition) {
-            mLog.w(TAG, "* initView: " + pagePosition);
+            mLog.d(TAG, "* initView: " + pagePosition);
         }
 
         void bindData(int position) {
-            mLog.w(TAG, "* bindData: " + position);
+            mLog.d(TAG, "* bindData: " + position);
+
+            switch (position) {
+                case 0:
+                    guildTv.setText("Create game Room \n" +
+                            "and Start to Game");
+                    break;
+                case 1:
+                    guildTv.setText("Join a Room \n" +
+                            "and Ready to Play");
+                    break;
+                case 2:
+                    guildTv.setText("Canvas Undo \n" +
+                            "use 3 finger to Swipe Up");
+                    break;
+                case 3:
+                    guildTv.setText("Canvas Clear \n" +
+                            "use 3 fingers to Swipe Down");
+                    break;
+            }
         }
     }
 }

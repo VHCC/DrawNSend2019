@@ -73,10 +73,9 @@ public class GuideClickListener implements View.OnClickListener {
         indicator.setViewPager(viewpager);
 
         // CurrentItem
-        viewpager.setCurrentItem(2,false);
+        viewpager.setCurrentItem(0,false);
         // Observe Data Change
         mAdapter.registerAdapterDataObserver(indicator.getAdapterDataObserver());
-
 
 
 
