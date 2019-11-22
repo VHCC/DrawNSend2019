@@ -55,10 +55,11 @@ import static ichen.chu.drawnsend.api.APICode.API_UPDATE_ROOM_STATUS;
 import static ichen.chu.drawnsend.model.DnsPlayRoom.CLOSED;
 import static ichen.chu.drawnsend.model.DnsPlayRoom.PLAYING;
 import static ichen.chu.drawnsend.model.DnsPlayRoom.READY_TO_PLAY;
+import static ichen.chu.drawnsend.model.DnsPlayRoom.SETTING;
 
 public class CreateRoomClickListener implements View.OnClickListener {
 
-    private static final MLog mLog = new MLog(false);
+    private static final MLog mLog = new MLog(true);
     private final String TAG = getClass().getSimpleName() + "@" + Integer.toHexString(hashCode());
 
     private Context mContext;
@@ -200,6 +201,17 @@ public class CreateRoomClickListener implements View.OnClickListener {
                             int roomStatus = (int) msg.obj;
                             switch (roomStatus) {
                                 case READY_TO_PLAY:
+                                    playFBt.setEnabled(false);
+                                    playFBt.setVisibility(View.VISIBLE);
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                        DnsServerAgent.getInstance(mContext).
+                                                readyPlayRoom(mySADHandler,
+                                                        ((CodeInputView)roomNumber).getCode());
+                                    } else {
+                                        DnsServerAgent.getInstance(mContext).
+                                                readyPlayRoom(mySADHandler,
+                                                        ((TextView)roomNumber).getText().toString());
+                                    }
                                     break;
                                 case PLAYING:
                                     DnsServerAgent.getInstance(mContext)
@@ -211,8 +223,8 @@ public class CreateRoomClickListener implements View.OnClickListener {
                             break;
                         case API_GET_FOLDER_ID:
                             readyFBt.setText("Re-Orders");
-                            playFBt.setEnabled(true);
-                            playFBt.setVisibility(View.VISIBLE);
+//                            playFBt.setEnabled(true);
+//                            playFBt.setVisibility(View.VISIBLE);
                             String gameRoomFolderID = (String) msg.obj;
 
                             DnsResult.getInstance().setFolderID(gameRoomFolderID);
@@ -289,39 +301,60 @@ public class CreateRoomClickListener implements View.OnClickListener {
 
 //                        mLog.d(TAG, "- participants= " + jsonArray.length());
 
-                            readyFBt.setText("Ready");
-                            readyFBt.setVisibility(View.VISIBLE);
-                            if (DnsPlayRoom.getInstance().getParticipants().length() > 1) {
-                                readyFBt.setEnabled(true);
-                            } else {
-                                readyFBt.setEnabled(false);
-                            }
+                            switch (DnsPlayRoom.getInstance().getRoomStatus()) {
+                                case SETTING:
+                                    readyFBt.setVisibility(View.VISIBLE);
+                                    if (DnsPlayRoom.getInstance().getParticipants().length() > 1) {
+                                        readyFBt.setEnabled(true);
+                                    } else {
+                                        readyFBt.setEnabled(false);
+                                    }
 
-                            playerItemsListTemp = new ArrayList<>();
+                                    playerItemsListTemp = new ArrayList<>();
 
-                            for (int index = 0; index < DnsPlayRoom.getInstance().getParticipants().length(); index ++) {
-                                PlayerItem item = new PlayerItem(
-                                        PlayerItem.TYPE.PARTICIPANTS,
-                                        (JSONObject) DnsPlayRoom.getInstance().getParticipants().get(index)
-                                );
-                                playerItemsListTemp.add(item);
-                            }
+                                    for (int index = 0; index < DnsPlayRoom.getInstance().getParticipants().length(); index ++) {
+                                        PlayerItem item = new PlayerItem(
+                                                PlayerItem.TYPE.PARTICIPANTS,
+                                                (JSONObject) DnsPlayRoom.getInstance().getParticipants().get(index)
+                                        );
+                                        playerItemsListTemp.add(item);
+                                    }
 
 //                        mLog.d(TAG, "playerItemsList.containsAll(playerItemsListTemp)= " + playerItemsList.contains(playerItemsListTemp));;
 
-                            if (!playerItemsList.contains(playerItemsListTemp)) {
-                                playerItemsList.clear();
+                                    if (!playerItemsList.contains(playerItemsListTemp)) {
+                                        playerItemsList.clear();
 
-                                for (int index = 0; index < DnsPlayRoom.getInstance().getParticipants().length(); index ++) {
-                                    PlayerItem item = new PlayerItem(
-                                            PlayerItem.TYPE.PARTICIPANTS,
-                                            (JSONObject) DnsPlayRoom.getInstance().getParticipants().get(index)
-                                    );
-                                    playerItemsList.add(item);
-                                }
-                                playerItemAdapter.clearAll();
-                                playerItemAdapter.refreshList();
+                                        for (int index = 0; index < DnsPlayRoom.getInstance().getParticipants().length(); index ++) {
+                                            PlayerItem item = new PlayerItem(
+                                                    PlayerItem.TYPE.PARTICIPANTS,
+                                                    (JSONObject) DnsPlayRoom.getInstance().getParticipants().get(index)
+                                            );
+                                            playerItemsList.add(item);
+                                        }
+                                        playerItemAdapter.clearAll();
+                                        playerItemAdapter.refreshList();
+                                    }
+                                    break;
+                                case READY_TO_PLAY:
+                                    mLog.d(TAG, "- getParticipants= " + DnsPlayRoom.getInstance().getParticipants());
+
+                                    boolean isAllReady = true;
+                                    for (int index = 0; index < DnsPlayRoom.getInstance().getParticipants().length(); index ++) {
+                                        JSONObject participant = DnsPlayRoom.getInstance().getParticipants().getJSONObject(index);
+                                        if (participant.getInt("status") == 1) {
+                                            isAllReady = false;
+                                        }
+                                    }
+
+                                    if (isAllReady) {
+                                        playFBt.setEnabled(true);
+                                    }
+                                    break;
                             }
+
+//                            readyFBt.setText("Ready");
+
                             break;
                         case API_GET_GAME_SUBJECT:
                             mLog.d(TAG, "msg.obj= " + msg.obj);
@@ -493,7 +526,7 @@ public class CreateRoomClickListener implements View.OnClickListener {
             @Override
             public void onClick(View v) {
                 mLog.d(TAG, "- onClick readyFBt");
-                threadObject.setRunning(false);
+//                threadObject.setRunning(false);
                 saDialog.changeAlertType(SweetAlertDialog.PROGRESS_TYPE);
                 try {
                     DnsServerAgent.getInstance(mContext)

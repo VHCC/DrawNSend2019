@@ -1,6 +1,8 @@
 package ichen.chu.drawnsend.pages.dashboard.listener;
 
+import android.app.Activity;
 import android.content.Context;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
@@ -10,6 +12,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import com.github.florent37.viewtooltip.ViewTooltip;
 import com.github.glomadrian.codeinputlib.CodeInput;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -69,6 +72,9 @@ public class JoinRoomClickListener implements View.OnClickListener {
 
     /*data Block*/
 
+    // Font Family
+    Typeface mCustomFont = null;
+
     /**
      * storage the result of event search.
      */
@@ -80,6 +86,8 @@ public class JoinRoomClickListener implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         mLog.d(TAG, "click joinRoomFAB");
+
+        mCustomFont = Typeface.createFromAsset(mContext.getAssets(), "Pacifico-Regular.ttf");
 
         final GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(mContext);
 
@@ -239,6 +247,25 @@ public class JoinRoomClickListener implements View.OnClickListener {
                                                     DnsPlayRoom.getInstance().getRoomOwner().getString("email") +
                                                     DnsPlayRoom.getInstance().getJoinNumber());
 
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                        DnsServerAgent.getInstance(mContext)
+                                                .readyPlayRoom(mySADHandler, ((CodeInputView)codeInputView).getCode());
+                                    } else {
+
+                                        try {
+                                            StringBuilder builder = new StringBuilder();
+                                            for(char s : ((CodeInput)codeInputView).getCode()) {
+                                                builder.append(s);
+                                            }
+                                            DnsServerAgent.getInstance(mContext)
+                                                    .readyPlayRoom(mySADHandler, builder.toString());
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                            DnsServerAgent.getInstance(mContext)
+                                                    .readyPlayRoom(mySADHandler, "");
+                                        }
+                                    }
+
                                     break;
                                 case PLAYING:
                                     threadObject.setRunning(false);
@@ -251,6 +278,7 @@ public class JoinRoomClickListener implements View.OnClickListener {
                                     break;
                                 case CLOSED:
                                     joinTV.setText("房間已經關閉");
+                                    saDialog.dismissWithAnimation();
                                     break;
                             }
                             break;

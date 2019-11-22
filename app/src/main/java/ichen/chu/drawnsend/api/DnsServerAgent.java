@@ -269,6 +269,72 @@ public class DnsServerAgent {
         }
     }
 
+    public void readyPlayRoom(final Handler SADHandler,
+                              final String roomNumberCode) {
+        try {
+
+            final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+
+            GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(mContext);
+
+            JSONObject userObj = new JSONObject();
+            userObj.put("email", acct.getEmail());
+            userObj.put("displayName", acct.getDisplayName());
+            userObj.put("photoUrl", acct.getPhotoUrl());
+            userObj.put("status", 1);
+
+            JSONObject jsonObj = new JSONObject();
+            jsonObj.put("player", userObj);
+            jsonObj.put("joinNumber", roomNumberCode);
+
+            RequestBody requestBody = RequestBody.create(JSON, jsonObj.toString());
+            Request request = new Request.Builder()
+                    .url(SERVER_SITE + "/api/post_dns_ready_game_room")
+                    .post(requestBody)
+                    .build();
+
+            OkHttpClient client = new OkHttpClient();
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    e.printStackTrace();
+                }
+
+                @Override
+                public void onResponse(Call call, okhttp3.Response response) throws IOException {
+                    if (response.isSuccessful()) {
+                        try {
+                            JSONObject responseJ = new JSONObject(response.body().string());
+                            mLog.d(TAG, "payload= " + responseJ.get("payload"));
+                            JSONObject responsePayload = new JSONObject(String.valueOf(responseJ.get("payload")));
+                            mLog.d(TAG, "nModified= " + responsePayload.get("nModified"));
+
+                            int modifiedStatus = (int) responsePayload.get("nModified");
+                            Message msg;
+                            switch(modifiedStatus) {
+                                case 0:
+                                    msg = new Message();
+                                    msg.what = 0;
+                                    SADHandler.sendMessage(msg);
+                                    break;
+                                case 1:
+                                    msg = new Message();
+                                    msg.what = 1;
+                                    SADHandler.sendMessage(msg);
+                                    break;
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            });
+
+        } catch (Exception e) {
+            mLog.e(TAG, "Other Error: " + e.getLocalizedMessage());
+        }
+    }
+
     public void joinPlayRoom(final Handler SADHandler,
                               final String roomNumberCode) {
         try {
@@ -281,6 +347,7 @@ public class DnsServerAgent {
             userObj.put("email", acct.getEmail());
             userObj.put("displayName", acct.getDisplayName());
             userObj.put("photoUrl", acct.getPhotoUrl());
+            userObj.put("status", 1);
 
             JSONObject jsonObj = new JSONObject();
             jsonObj.put("player", userObj);
