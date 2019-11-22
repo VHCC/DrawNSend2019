@@ -37,6 +37,9 @@ In order to play board game [Telestration](https://boardgamegeek.com/boardgame/4
 - [DrawableView](https://github.com/PaNaVTEC/DrawableView)
 - [CountdownView](https://github.com/iwgang/CountdownView)
 - [android-floating-action-button](https://github.com/futuresimple/android-floating-action-button)
+- [ViewTooltip](https://github.com/florent37/ViewTooltip)
+- [hover](https://github.com/google/hover)
+- [CircleIndicator](https://github.com/ongakuer/CircleIndicator)
 
 ### Licence
 ---
