@@ -202,7 +202,7 @@ public class ResultsFragment extends Fragment {
         recycleViewResultsContainer.setLayoutManager(linearLayoutManager_result);
         recycleViewResultsContainer.setNestedScrollingEnabled(false);
 
-        backDashboardFAB.setIcon(R.drawable.dashboard_home);
+        backDashboardFAB.setIcon(R.drawable.return_arrow);
         backDashboardFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

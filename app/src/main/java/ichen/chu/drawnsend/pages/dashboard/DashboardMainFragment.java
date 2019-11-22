@@ -56,6 +56,8 @@ public class DashboardMainFragment extends Fragment {
     private FloatingActionButton joinRoomFAB;
     private FloatingActionButton createRoomFAB;
 
+    private TextView brandTxt;
+
     // Constants
 
     // Handler
@@ -132,6 +134,8 @@ public class DashboardMainFragment extends Fragment {
         joinRoomFAB = rootView.findViewById(R.id.joinRoomFAB);
         createRoomFAB = rootView.findViewById(R.id.createRoomFAB);
 
+        brandTxt = rootView.findViewById(R.id.brandTxt);
+
     }
 
 
@@ -181,6 +185,11 @@ public class DashboardMainFragment extends Fragment {
         // ******************** CREATE *************************
         createRoomFAB.setIcon(R.drawable.create_room);
         createRoomFAB.setOnClickListener(new CreateRoomClickListener(getContext()));
+
+        String deviceName = android.os.Build.MODEL;
+        String deviceMan = android.os.Build.MANUFACTURER;
+
+        brandTxt.setText(deviceName + ", " + deviceMan);
     }
 
     @Override

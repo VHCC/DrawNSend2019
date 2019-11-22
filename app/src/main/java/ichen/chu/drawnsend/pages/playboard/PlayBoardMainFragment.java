@@ -131,12 +131,24 @@ public class PlayBoardMainFragment extends Fragment {
         return fragment;
     }
 
+    boolean isSupportAnimation = true;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         mLog.d(TAG, "onCreate()");
         super.onCreate(savedInstanceState);
         Bus.getInstance().register(this);
         isViewInitiated = true;
+
+        switch (android.os.Build.MANUFACTURER) {
+            case "HTC": {
+                isSupportAnimation = false;
+            }
+            break;
+            default:
+                break;
+        }
+
     }
 
     protected boolean isViewInitiated;
@@ -248,21 +260,24 @@ public class PlayBoardMainFragment extends Fragment {
 //            }
 //        });
 
-        sProgressBar.setWidth(8);
-        sProgressBar.setOpacity(false, false);
-        sProgressBar.showProgress(false);
-        sProgressBar.setImageScaleType(ImageView.ScaleType.CENTER_CROP);
-        sProgressBar.setImage(R.drawable.bg_white);
-        sProgressBar.setColor("#3BF5CF");
 
-        valueAnimator = ValueAnimator.ofFloat(0f, 100f);
+        if (isSupportAnimation) {
+            sProgressBar.setOpacity(false, false);
+            sProgressBar.showProgress(false);
+            sProgressBar.setImageScaleType(ImageView.ScaleType.CENTER_CROP);
+            sProgressBar.setImage(R.drawable.bg_white);
+            sProgressBar.setWidth(8);
+            sProgressBar.setColor("#3BF5CF");
+            valueAnimator = ValueAnimator.ofFloat(0f, 100f);
 //        valueAnimator.setDuration(playTimeMs);
-        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            public void onAnimationUpdate(ValueAnimator animation) {
-                sProgressBar.setProgress((float) animation.getAnimatedValue());
-            }
-        });
-
+            valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                public void onAnimationUpdate(ValueAnimator animation) {
+                    sProgressBar.setProgress((float) animation.getAnimatedValue());
+                }
+            });
+        } else {
+            sProgressBar.setVisibility(View.GONE);
+        }
     }
 
     private void initHover(View rootView) {
@@ -640,7 +655,9 @@ public class PlayBoardMainFragment extends Fragment {
                     saDialog.dismissWithAnimation();
                     countdownView.setVisibility(View.VISIBLE);
                     countdownView.start(playTimeMs); // Millisecond
-                    valueAnimator.start();
+                    if (isSupportAnimation) {
+                        valueAnimator.start();
+                    }
                 }
             });
 
@@ -812,7 +829,9 @@ public class PlayBoardMainFragment extends Fragment {
         playTime = Long.valueOf(DnsPlayRoom.getInstance().getPlayTime()) * 1L;
 //        playTime = 10L;
         playTimeMs = playTime * 1000L;
-        valueAnimator.setDuration(playTimeMs);
+        if (isSupportAnimation) {
+            valueAnimator.setDuration(playTimeMs);
+        }
 
         countdownView.setOnCountdownIntervalListener(playTime, new CountdownView.OnCountdownIntervalListener() {
             @Override

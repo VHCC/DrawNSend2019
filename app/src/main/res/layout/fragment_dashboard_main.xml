@@ -74,13 +74,31 @@
 
     </com.getbase.floatingactionbutton.FloatingActionsMenu>
 
+    <ImageView
+        android:layout_margin="40dp"
+        android:paddingBottom="100dp"
+        android:layout_gravity="center_horizontal|center_vertical"
+        android:src="@drawable/dns_logo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
     <TextView
+        android:visibility="gone"
         android:id="@+id/testText"
         android:layout_gravity="center_horizontal|center_vertical"
         android:gravity="center_horizontal|center_vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Dashboard Page"/>
+
+    <TextView
+        android:id="@+id/brandTxt"
+        android:layout_marginTop="40dp"
+        android:layout_gravity="center_horizontal|center_vertical"
+        android:gravity="center_horizontal|center_vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text=""/>
 
     <Button
         android:layout_gravity="center_horizontal|center_vertical"
