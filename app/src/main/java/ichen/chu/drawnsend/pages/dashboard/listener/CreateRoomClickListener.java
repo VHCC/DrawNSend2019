@@ -223,7 +223,7 @@ public class CreateRoomClickListener implements View.OnClickListener {
                             break;
                         case API_GET_FOLDER_ID:
                             readyFBt.setText("Re-Orders");
-//                            playFBt.setEnabled(true);
+                            readyFBt.setEnabled(true);
 //                            playFBt.setVisibility(View.VISIBLE);
                             String gameRoomFolderID = (String) msg.obj;
 
@@ -526,6 +526,7 @@ public class CreateRoomClickListener implements View.OnClickListener {
             @Override
             public void onClick(View v) {
                 mLog.d(TAG, "- onClick readyFBt");
+                readyFBt.setEnabled(false);
 //                threadObject.setRunning(false);
                 saDialog.changeAlertType(SweetAlertDialog.PROGRESS_TYPE);
                 try {
@@ -543,6 +544,9 @@ public class CreateRoomClickListener implements View.OnClickListener {
         playFBt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                playFBt.setEnabled(false);
+                readyFBt.setEnabled(false);
+
                 saDialog.changeAlertType(SweetAlertDialog.PROGRESS_TYPE);
                 isPlay = true;
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

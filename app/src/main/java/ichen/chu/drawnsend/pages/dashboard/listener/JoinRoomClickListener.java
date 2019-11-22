@@ -278,7 +278,8 @@ public class JoinRoomClickListener implements View.OnClickListener {
                                     break;
                                 case CLOSED:
                                     joinTV.setText("房間已經關閉");
-                                    saDialog.dismissWithAnimation();
+                                    threadObject.setRunning(false);
+                                    saDialog.setCancelable(true);
                                     break;
                             }
                             break;
