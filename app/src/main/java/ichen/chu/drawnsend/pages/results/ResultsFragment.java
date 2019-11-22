@@ -44,6 +44,7 @@ import ru.noties.scrollable.OnScrollChangedListener;
 import ru.noties.scrollable.ScrollableLayout;
 
 import static ichen.chu.drawnsend.Bus.EVENT_MAP;
+import static ichen.chu.drawnsend.MainActivity.CUSTOM_FONT;
 import static ichen.chu.drawnsend.api.APICode.API_FETCH_GAME_CHAIN_INFO;
 
 /**
@@ -66,9 +67,6 @@ public class ResultsFragment extends Fragment {
 
     // Flag
     private boolean isTutorialShow = false;
-
-    // Font Family
-    Typeface mCustomFont = null;
 
     // RecycleView DnsPlayer Tab
     private RecyclerView recycleViewPlayerContainer;
@@ -186,7 +184,6 @@ public class ResultsFragment extends Fragment {
         // Results Recycler View
         recycleViewResultsContainer = rootView.findViewById(R.id.recycleViewResultsContainer);
 
-        mCustomFont = Typeface.createFromAsset(getContext().getAssets(), "Pacifico-Regular.ttf");
     }
 
 
@@ -303,7 +300,7 @@ public class ResultsFragment extends Fragment {
                     .corner(30)
                     .position(ViewTooltip.Position.BOTTOM)
                     .text("Click to Check User Results")
-                    .textTypeFace(mCustomFont)
+                    .textTypeFace(CUSTOM_FONT)
                     .onHide(new ViewTooltip.ListenerHide() {
                         @Override
                         public void onHide(View view) {
@@ -313,7 +310,7 @@ public class ResultsFragment extends Fragment {
                                     .corner(30)
                                     .position(ViewTooltip.Position.BOTTOM)
                                     .text("User's Subject")
-                                    .textTypeFace(mCustomFont)
+                                    .textTypeFace(CUSTOM_FONT)
                                     .show();
                         }
                     })

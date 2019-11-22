@@ -1,11 +1,14 @@
 package ichen.chu.drawnsend.pages.dashboard.listener;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.os.Handler;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -17,6 +20,8 @@ import ichen.chu.drawnsend.pages.dashboard.ThreadObject;
 import ichen.chu.drawnsend.util.MLog;
 import me.relex.circleindicator.CircleIndicator3;
 import me.relex.circleindicator.Config;
+
+import static ichen.chu.drawnsend.MainActivity.CUSTOM_FONT;
 
 public class GuideClickListener implements View.OnClickListener {
 
@@ -48,7 +53,7 @@ public class GuideClickListener implements View.OnClickListener {
         LayoutInflater inflater = LayoutInflater.from(mContext);
         FrameLayout frameLayout = (FrameLayout) inflater.inflate(R.layout.guide_frame_layout,null);
 
-        GuideRecyclerAdapter mAdapter = new GuideRecyclerAdapter(mContext,4);
+        GuideRecyclerAdapter mAdapter = new GuideRecyclerAdapter(mContext,5);
         ViewPager2 viewpager = frameLayout.findViewById(R.id.viewpager);
         viewpager.setAdapter(mAdapter);
 
@@ -88,5 +93,7 @@ public class GuideClickListener implements View.OnClickListener {
                 .setCustomView(frameLayout)
                 .hideConfirmButton()
                 .show();
+
+        ((TextView)saDialog.findViewById(R.id.title_text)).setTypeface(CUSTOM_FONT);
     }
 }

@@ -54,12 +54,13 @@
 
         <!-- CopyRight-->
         <TextView
+            android:id="@+id/authTv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/common_edit_text_margin_bottom_top"
             android:gravity="center_horizontal|center_vertical"
-            android:text="Author Vhcc. r99521320@gmail.com"
-            android:textColor="#bbc4d1" />
+            android:text="Author VHCC \n r99521320@gmail.com"
+            android:textColor="#A3ACB8" />
 
     </LinearLayout>
 

@@ -1,6 +1,7 @@
 package ichen.chu.drawnsend.pages.login;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -30,6 +31,8 @@ import androidx.fragment.app.Fragment;
 import ichen.chu.drawnsend.R;
 import ichen.chu.drawnsend.util.MLog;
 
+import static ichen.chu.drawnsend.MainActivity.CUSTOM_FONT;
+
 /**
  * Created by IChen.Chu on 2018/9/25
  * A fragment to show home page.
@@ -44,6 +47,7 @@ public class LoginFragment extends Fragment {
 
     // View
     private TextView appVersion;
+    private TextView authTv;
     private SignInButton signInButton;
     private Button googleSignOutBtn;
 
@@ -76,6 +80,7 @@ public class LoginFragment extends Fragment {
         }
 
         initGoogleAPI();
+
     }
 
     private void initGoogleAPI() {
@@ -102,6 +107,7 @@ public class LoginFragment extends Fragment {
 
     private void initViewIDs(View rootView) {
         appVersion = rootView.findViewById(R.id.appVersion);
+        authTv = rootView.findViewById(R.id.authTv);
         googleSignOutBtn = rootView.findViewById(R.id.googleSignOutBtn);
 
         // Set the dimensions of the sign-in button.
@@ -112,6 +118,8 @@ public class LoginFragment extends Fragment {
 
     private void initViewsFeature() {
         appVersion.setText("v " + AppUtils.getAppVersionName());
+        appVersion.setTypeface(CUSTOM_FONT);
+        authTv.setTypeface(CUSTOM_FONT);
 
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override

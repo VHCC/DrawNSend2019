@@ -6,8 +6,10 @@
     android:layout_height="match_parent">
 
     <TextView
+        android:textSize="16dp"
+        android:fontFamily="cursive"
         android:id="@+id/gameTimeTV"
-        android:text="game period:"
+        android:text="Game Period:"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
@@ -22,9 +24,11 @@
         />
 
     <TextView
+        android:textSize="16dp"
+        android:fontFamily="cursive"
         android:layout_marginTop="60dp"
         android:id="@+id/difficultyTV"
-        android:text="game difficulty:"
+        android:text="Game Level:"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
@@ -39,9 +43,13 @@
         />
 
     <TextView
+        android:textSize="16dp"
+        android:textColor="@color/md_red_500"
+        android:fontFamily="cursive"
+        android:textFontWeight="bold"
         android:layout_marginTop="120dp"
         android:id="@+id/isAdultTV"
-        android:text="game difficulty:"
+        android:text="Game Difficulty:"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
@@ -52,6 +60,8 @@
         android:layout_height="wrap_content"/>
 
     <TextView
+        android:textSize="16dp"
+        android:fontFamily="cursive"
         android:layout_marginTop="200dp"
         android:visibility="invisible"
         android:text="game difficulty:"
@@ -108,6 +118,7 @@
         <info.hoang8f.widget.FButton
             android:layout_margin="10dp"
             android:text="READY"
+            android:fontFamily="cursive"
             android:layout_gravity="center_horizontal"
             android:id="@+id/readyFBt"
             android:layout_marginTop="350dp"
@@ -117,6 +128,7 @@
         <info.hoang8f.widget.FButton
             android:layout_margin="10dp"
             android:text="PLAY"
+            android:fontFamily="cursive"
             android:layout_gravity="center_horizontal"
             android:id="@+id/playFBt"
             android:layout_marginTop="350dp"
@@ -124,8 +136,6 @@
             android:layout_height="wrap_content"/>
 
     </LinearLayout>
-
-
 
     <TextView
         android:layout_marginTop="400dp"

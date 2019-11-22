@@ -28,6 +28,8 @@
         app:aiv_TextSizeRatio="0.4"/>
 
     <TextView
+        android:fontFamily="cursive"
+        android:textSize="16dp"
         android:layout_marginTop="130dp"
         android:layout_gravity="center_horizontal|top"
         android:gravity="center_horizontal"
@@ -115,5 +117,36 @@
         android:id="@+id/googleSignOutBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
+
+    <LinearLayout
+        android:gravity="bottom"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!-- App Edition -->
+        <TextView
+            android:id="@+id/appVersion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/common_edit_text_margin_left_right_double"
+            android:layout_marginLeft="@dimen/common_edit_text_margin_left_right_double"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="@dimen/common_edit_text_margin_left_right_double"
+            android:layout_marginRight="@dimen/common_edit_text_margin_left_right_double"
+            android:gravity="center_horizontal|center_vertical"
+            android:textColor="#bbc4d1" />
+
+        <!-- CopyRight-->
+        <TextView
+            android:id="@+id/authTv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/common_edit_text_margin_bottom_top"
+            android:gravity="center_horizontal|center_vertical"
+            android:text="Author VHCC \n r99521320@gmail.com"
+            android:textColor="#A3ACB8" />
+
+    </LinearLayout>
 
 </FrameLayout>

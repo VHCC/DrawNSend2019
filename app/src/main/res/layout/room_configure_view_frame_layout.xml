@@ -6,6 +6,7 @@
     android:layout_height="match_parent">
 
     <ImageView
+        android:paddingTop="20dp"
         android:visibility="gone"
         android:id="@+id/preview_results"
         android:layout_width="match_parent"
@@ -34,6 +35,8 @@
 
     <TextView
         android:id="@+id/tv1"
+        android:textSize="16dp"
+        android:fontFamily="cursive"
         android:layout_margin="30dp"
         android:gravity="center"
         android:text="draw the subject below"
@@ -55,9 +58,25 @@
 
     <TextView
         android:id="@+id/tv2"
+        android:textSize="16dp"
+        android:fontFamily="cursive"
         android:gravity="center"
         android:layout_marginTop="110dp"
         android:text="try not use any character or number, it will be more funny~"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:layout_gravity="bottom"
+        android:id="@+id/tv3"
+        android:textSize="16dp"
+        android:visibility="gone"
+        android:fontFamily="cursive"
+        android:gravity="left"
+        android:paddingTop="430dp"
+        android:paddingLeft="5dp"
+        android:paddingBottom="5dp"
+        android:text="1. if pre stage is Pic, you guess the meaning and write it out.\n2. if pre stage is words, draw it out."
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 

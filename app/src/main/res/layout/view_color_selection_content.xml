@@ -45,8 +45,10 @@
         android:layout_height="wrap_content">
 
         <TextView
+            android:fontFamily="cursive"
             android:text="Stroke width: "
-            android:textColor="#CDDFCD"
+            android:textSize="18dp"
+            android:textColor="#323532"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
@@ -71,12 +73,13 @@
         />
 
     <TextView
+        android:fontFamily="cursive"
         android:id="@+id/textview_attribution"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="24dp"
         android:gravity="center"
-        android:textSize="12sp"
+        android:textSize="24sp"
         android:textStyle="bold"
         android:textColor="@color/hover_accent"
         android:text="Change your paint color and stroke width"

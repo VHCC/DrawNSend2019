@@ -2,6 +2,7 @@ package ichen.chu.drawnsend.pages.dashboard;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -13,6 +14,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.blankj.utilcode.util.AppUtils;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -38,6 +40,7 @@ import ichen.chu.drawnsend.util.MLog;
 
 import static ichen.chu.drawnsend.Bus.EVENT_DASHBOARD_START_TO_PLAY_GAME;
 import static ichen.chu.drawnsend.Bus.EVENT_LOGIN_SUCCESS;
+import static ichen.chu.drawnsend.MainActivity.CUSTOM_FONT;
 
 /**
  * Created by IChen.Chu on 2018/9/25
@@ -59,6 +62,9 @@ public class DashboardMainFragment extends Fragment {
     private FloatingActionButton createRoomFAB;
 
     private TextView brandTxt;
+
+    private TextView appVersion;
+    private TextView authTv;
 
     // Constants
 
@@ -96,6 +102,7 @@ public class DashboardMainFragment extends Fragment {
         Bus.getInstance().registerSticky(this);
 
         initGoogleAPI();
+
     }
 
     @Override
@@ -139,10 +146,17 @@ public class DashboardMainFragment extends Fragment {
 
         brandTxt = rootView.findViewById(R.id.brandTxt);
 
+        appVersion = rootView.findViewById(R.id.appVersion);
+        authTv = rootView.findViewById(R.id.authTv);
+
     }
 
 
     private void initViewsFeature() {
+        appVersion.setText("v " + AppUtils.getAppVersionName());
+        appVersion.setTypeface(CUSTOM_FONT);
+        authTv.setTypeface(CUSTOM_FONT);
+
 
         googleSignOutBtn.setOnClickListener(new View.OnClickListener() {
             @Override

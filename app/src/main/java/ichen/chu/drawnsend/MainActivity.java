@@ -1,6 +1,7 @@
 package ichen.chu.drawnsend;
 
 import android.Manifest;
+import android.graphics.Typeface;
 import android.os.Bundle;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -32,6 +33,9 @@ public class MainActivity extends AppCompatActivity {
 
     private final int RC_PERMISSIONS = 9001;
 
+    // Font Family
+    public static Typeface CUSTOM_FONT = null;
+    
     /**
      * The {@link ViewPager} will host the section contents.
      */
@@ -67,6 +71,8 @@ public class MainActivity extends AppCompatActivity {
         mViewPager.addOnPageChangeListener(mSectionsPagerAdapter);
         mViewPager.setPageTransformer(true, new ScaleInOutTransformer());
         mViewPager.setOffscreenPageLimit(1);
+
+        CUSTOM_FONT = Typeface.createFromAsset(getAssets(), "Pacifico-Regular.ttf");
     }
 
     private void checkPermission() {

@@ -9,6 +9,7 @@ import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -44,6 +45,7 @@ import ichen.chu.drawnsend.util.MLog;
 
 import static ichen.chu.drawnsend.Bus.EVENT_DASHBOARD_START_TO_PLAY_GAME;
 import static ichen.chu.drawnsend.Bus.EVENT_MAP;
+import static ichen.chu.drawnsend.MainActivity.CUSTOM_FONT;
 import static ichen.chu.drawnsend.api.APICode.API_CREATE_GAME_CHAIN;
 import static ichen.chu.drawnsend.api.APICode.API_FETCH_ROOM_INFO;
 import static ichen.chu.drawnsend.api.APICode.API_GET_FOLDER_ID;
@@ -72,9 +74,6 @@ public class JoinRoomClickListener implements View.OnClickListener {
 
     /*data Block*/
 
-    // Font Family
-    Typeface mCustomFont = null;
-
     /**
      * storage the result of event search.
      */
@@ -86,8 +85,6 @@ public class JoinRoomClickListener implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         mLog.d(TAG, "click joinRoomFAB");
-
-        mCustomFont = Typeface.createFromAsset(mContext.getAssets(), "Pacifico-Regular.ttf");
 
         final GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(mContext);
 
@@ -346,7 +343,7 @@ public class JoinRoomClickListener implements View.OnClickListener {
 
         saDialog.setCancelable(false);
 
-        saDialog.setTitleText("Ready to play")
+        saDialog.setTitleText("Set Room Number")
                 .setConfirmText("Join")
                 .setCancelText("Quit")
                 .setCustomView(frameLayout)
@@ -478,5 +475,9 @@ public class JoinRoomClickListener implements View.OnClickListener {
                     }
                 })
                 .show();
+
+        ((TextView)saDialog.findViewById(R.id.title_text)).setTypeface(CUSTOM_FONT);
+        ((Button)saDialog.findViewById(R.id.confirm_button)).setTypeface(CUSTOM_FONT);
+        ((Button)saDialog.findViewById(R.id.cancel_button)).setTypeface(CUSTOM_FONT);
     }
 }

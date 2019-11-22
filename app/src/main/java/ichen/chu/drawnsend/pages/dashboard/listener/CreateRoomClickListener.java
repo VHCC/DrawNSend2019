@@ -2,12 +2,14 @@ package ichen.chu.drawnsend.pages.dashboard.listener;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.Switch;
@@ -46,6 +48,7 @@ import info.hoang8f.widget.FButton;
 import static ichen.chu.drawnsend.Bus.EVENT_DASHBOARD_START_TO_PLAY_GAME;
 import static ichen.chu.drawnsend.Bus.EVENT_LOGIN_SUCCESS;
 import static ichen.chu.drawnsend.Bus.EVENT_MAP;
+import static ichen.chu.drawnsend.MainActivity.CUSTOM_FONT;
 import static ichen.chu.drawnsend.api.APICode.API_CREATE_GAME_CHAIN;
 import static ichen.chu.drawnsend.api.APICode.API_FETCH_ROOM_INFO;
 import static ichen.chu.drawnsend.api.APICode.API_GET_FOLDER_ID;
@@ -76,7 +79,6 @@ public class CreateRoomClickListener implements View.OnClickListener {
 
     /*data Block*/
 
-
     /**
      * storage the result of event search.
      */
@@ -99,12 +101,12 @@ public class CreateRoomClickListener implements View.OnClickListener {
         FrameLayout frameLayout = (FrameLayout) inflater.inflate(R.layout.create_room_frame_layout,null);
         final DiscreteSeekBar playTimeSeekBar = frameLayout.findViewById(R.id.playTimeSettingBar);
         final TextView gameTimeTV = frameLayout.findViewById(R.id.gameTimeTV);
-        gameTimeTV.setText("game period: " + playTimeSeekBar.getProgress() + " s");
+        gameTimeTV.setText("Game Period: " + playTimeSeekBar.getProgress() + " s");
 
         playTimeSeekBar.setOnProgressChangeListener(new DiscreteSeekBar.OnProgressChangeListener() {
             @Override
             public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
-                gameTimeTV.setText("game period: " + playTimeSeekBar.getProgress() + " s");
+                gameTimeTV.setText("Game Period: " + playTimeSeekBar.getProgress() + " s");
             }
 
             @Override
@@ -120,12 +122,12 @@ public class CreateRoomClickListener implements View.OnClickListener {
 
         final DiscreteSeekBar difficultySeekBar = frameLayout.findViewById(R.id.difficultySeekBar);
         final TextView difficultyTV = frameLayout.findViewById(R.id.difficultyTV);
-        difficultyTV.setText("game level: " + difficultySeekBar.getProgress());
+        difficultyTV.setText("Game Level: " + difficultySeekBar.getProgress());
 
         difficultySeekBar.setOnProgressChangeListener(new DiscreteSeekBar.OnProgressChangeListener() {
             @Override
             public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
-                difficultyTV.setText("game level: " + difficultySeekBar.getProgress());
+                difficultyTV.setText("Game Level: " + difficultySeekBar.getProgress());
             }
 
             @Override
@@ -141,12 +143,12 @@ public class CreateRoomClickListener implements View.OnClickListener {
 
         final Switch isAdultSwitch = frameLayout.findViewById(R.id.isAdultSwitch);
         final TextView isAdultTV = frameLayout.findViewById(R.id.isAdultTV);
-        isAdultTV.setText("isAdult: " + isAdultSwitch.isChecked());
+        isAdultTV.setText("Is Adult Game: " + isAdultSwitch.isChecked());
 
         isAdultSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                isAdultTV.setText("isAdult: " + isChecked);
+                isAdultTV.setText("Is Adult Game: " + isChecked);
             }
         });
 
@@ -496,6 +498,10 @@ public class CreateRoomClickListener implements View.OnClickListener {
 
                 })
                 .show();
+
+        ((TextView)saDialog.findViewById(R.id.title_text)).setTypeface(CUSTOM_FONT);
+        ((Button)saDialog.findViewById(R.id.confirm_button)).setTypeface(CUSTOM_FONT);
+        ((Button)saDialog.findViewById(R.id.cancel_button)).setTypeface(CUSTOM_FONT);
 
         saDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override

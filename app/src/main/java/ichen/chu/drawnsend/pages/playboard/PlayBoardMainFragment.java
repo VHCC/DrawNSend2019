@@ -20,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -73,6 +74,7 @@ import static ichen.chu.drawnsend.Bus.EVENT_MAP;
 import static ichen.chu.drawnsend.Bus.EVENT_PLAY_BOARD_UPLOAD_FILE_DONE;
 import static ichen.chu.drawnsend.Bus.EVENT_PLAY_BOARD_UPLOAD_FILE_START;
 import static ichen.chu.drawnsend.Bus.EVENT_PLAY_BOARD_UPLOAD_GAME_CHAIN_RESULT_DONE;
+import static ichen.chu.drawnsend.MainActivity.CUSTOM_FONT;
 import static ichen.chu.drawnsend.api.APICode.API_FETCH_GAME_CHAIN_INFO;
 import static ichen.chu.drawnsend.api.APICode.API_GET_FILE_THUMBNAIL_LINK;
 
@@ -106,9 +108,6 @@ public class PlayBoardMainFragment extends Fragment {
     private TextView stageCountTV;
     private SweetAlertDialog loadingDialog;
     private SquareProgressBar sProgressBar;
-
-    // Font Family
-    Typeface mCustomFont = null;
 
     // Google
     private GoogleSignInAccount acct;
@@ -211,8 +210,6 @@ public class PlayBoardMainFragment extends Fragment {
         stageCountTV = rootView.findViewById(R.id.stageCountTV);
         playerAvatar_pre.setOnClickListener(mAvatarClickListener);
         item_avatar_pre.setOnClickListener(mAvatarClickListener);
-
-        mCustomFont = Typeface.createFromAsset(getContext().getAssets(), "Pacifico-Regular.ttf");
 
         mLog.d(TAG, "acct= " + acct);
         mLog.d(TAG, "acct.getEmail= " + acct.getEmail());
@@ -531,6 +528,8 @@ public class PlayBoardMainFragment extends Fragment {
                     .hideConfirmButton()
                     .show();
 
+            ((TextView)saDialog_avatar.findViewById(R.id.title_text)).setTypeface(CUSTOM_FONT);
+
             shimmerInner.setRepeatCount(5)
                     .setDuration(2000)
                     .setStartDelay(0)
@@ -645,6 +644,7 @@ public class PlayBoardMainFragment extends Fragment {
         private ImageView preview_results;
         private TextView tv1;
         private TextView tv2;
+        private TextView tv3;
         private Shimmer shimmerInner = new Shimmer();
 
         private void initUI() {
@@ -655,6 +655,7 @@ public class PlayBoardMainFragment extends Fragment {
             preview_results = frameLayoutInner.findViewById(R.id.preview_results);
             tv1 = frameLayoutInner.findViewById(R.id.tv1);
             tv2 = frameLayoutInner.findViewById(R.id.tv2);
+            tv3 = frameLayoutInner.findViewById(R.id.tv3);
             saDialog = new SweetAlertDialog(mContext, SweetAlertDialog.NORMAL_TYPE);
 
         }
@@ -676,7 +677,7 @@ public class PlayBoardMainFragment extends Fragment {
                             .corner(30)
                             .position(ViewTooltip.Position.TOP)
                             .text("Your Subject")
-                            .textTypeFace(mCustomFont)
+                            .textTypeFace(CUSTOM_FONT)
                             .show();
                     if (isSupportAnimation) {
                         valueAnimator.start();
@@ -729,8 +730,12 @@ public class PlayBoardMainFragment extends Fragment {
             saDialog.setTitleText("Getting ready")
                     .setCustomView(frameLayoutInner)
                     .show();
-            countdownViewInner.start(readyViewTimeMs); // Millisecond
 
+            ((TextView)saDialog.findViewById(R.id.title_text)).setTypeface(CUSTOM_FONT);
+            ((Button)saDialog.findViewById(R.id.confirm_button)).setTypeface(CUSTOM_FONT);
+            ((Button)saDialog.findViewById(R.id.cancel_button)).setTypeface(CUSTOM_FONT);
+
+            countdownViewInner.start(readyViewTimeMs); // Millisecond
 
             mLog.d(TAG, "readyDialogShow, isFirstStage= " + isFirstStage);
             if (isFirstStage) {
@@ -740,6 +745,7 @@ public class PlayBoardMainFragment extends Fragment {
                 preview_results.setVisibility(View.VISIBLE);
                 tv1.setVisibility(View.GONE);
                 tv2.setVisibility(View.GONE);
+                tv3.setVisibility(View.VISIBLE);
                 try {
                     String pre_results = DnsGameChain.getInstance().getResultsChained().get(currentStage-1).toString();
                     mLog.d(TAG, "pre_results= " + pre_results);

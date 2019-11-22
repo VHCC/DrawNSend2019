@@ -116,6 +116,11 @@ public class GuideRecyclerAdapter extends RecyclerView.Adapter<GuideRecyclerAdap
                             "use 3 fingers to Swipe Down");
                     gifView.setImageResource(R.mipmap.clear);
                     break;
+                case 4:
+                    guildTv.setText("Change Color \n" +
+                            "and stroke width");
+                    gifView.setImageResource(R.mipmap.change_color_stroke_width);
+                    break;
             }
         }
     }
