@@ -28,7 +28,7 @@ public class DnsPlayRoom {
     // field
     private JSONObject roomOwner;
     private int playTime;
-    private String joinNumber;
+    private String joinNumber = "test";
     private JSONArray participants;
     private JSONArray playOrders;
     private int difficulty;
@@ -94,6 +94,10 @@ public class DnsPlayRoom {
 
     public int getRoomStatus() {
         return roomStatus;
+    }
+
+    public boolean isTestMode() {
+        return "test" == joinNumber;
     }
 
     @NonNull

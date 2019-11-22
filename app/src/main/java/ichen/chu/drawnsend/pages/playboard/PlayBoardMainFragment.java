@@ -9,6 +9,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -23,6 +24,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.github.florent37.viewtooltip.ViewTooltip;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.romainpiel.shimmer.Shimmer;
@@ -105,6 +107,9 @@ public class PlayBoardMainFragment extends Fragment {
     private SweetAlertDialog loadingDialog;
     private SquareProgressBar sProgressBar;
 
+    // Font Family
+    Typeface mCustomFont = null;
+
     // Google
     private GoogleSignInAccount acct;
 
@@ -157,7 +162,7 @@ public class PlayBoardMainFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         if (getUserVisibleHint() && isViewInitiated) {
-            fetchGameChainData(acct.getEmail()+DnsPlayRoom.getInstance().getJoinNumber());
+            fetchGameChainData(acct.getEmail() + DnsPlayRoom.getInstance().getJoinNumber());
         }
 
     }
@@ -167,7 +172,7 @@ public class PlayBoardMainFragment extends Fragment {
         mLog.d(TAG, "setUserVisibleHint()=  " + isVisibleToUser);
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser && isViewInitiated) {
-            fetchGameChainData(acct.getEmail()+DnsPlayRoom.getInstance().getJoinNumber());
+            fetchGameChainData(acct.getEmail() + DnsPlayRoom.getInstance().getJoinNumber());
         }
     }
 
@@ -206,6 +211,8 @@ public class PlayBoardMainFragment extends Fragment {
         stageCountTV = rootView.findViewById(R.id.stageCountTV);
         playerAvatar_pre.setOnClickListener(mAvatarClickListener);
         item_avatar_pre.setOnClickListener(mAvatarClickListener);
+
+        mCustomFont = Typeface.createFromAsset(getContext().getAssets(), "Pacifico-Regular.ttf");
 
         mLog.d(TAG, "acct= " + acct);
         mLog.d(TAG, "acct.getEmail= " + acct.getEmail());
@@ -422,6 +429,10 @@ public class PlayBoardMainFragment extends Fragment {
         public boolean onSwipeUp(int fingers, long gestureDuration, double gestureDistance) {
 //            mLog.d(TAG, "swiped " + fingers + " up");
             switch (fingers) {
+                case 1:
+                    break;
+                case 2:
+                    break;
                 case 3:
                     drawableView.undo();
                     Bus.getInstance().post(new BusEvent("Undo", 9002));
@@ -434,6 +445,10 @@ public class PlayBoardMainFragment extends Fragment {
         public boolean onSwipeDown(int fingers, long gestureDuration, double gestureDistance) {
 //            mLog.d(TAG, "swiped " + fingers + " down");
             switch (fingers) {
+                case 1:
+                    break;
+                case 2:
+                    break;
                 case 3:
                     drawableView.clear();
                     drawableView.setConfig(config);
@@ -655,6 +670,14 @@ public class PlayBoardMainFragment extends Fragment {
                     saDialog.dismissWithAnimation();
                     countdownView.setVisibility(View.VISIBLE);
                     countdownView.start(playTimeMs); // Millisecond
+                    ViewTooltip
+                            .on(getActivity(), item_avatar_pre)
+                            .autoHide(true, 3000)
+                            .corner(30)
+                            .position(ViewTooltip.Position.TOP)
+                            .text("Your Subject")
+                            .textTypeFace(mCustomFont)
+                            .show();
                     if (isSupportAnimation) {
                         valueAnimator.start();
                     }
@@ -739,84 +762,89 @@ public class PlayBoardMainFragment extends Fragment {
 //            mLog.d(TAG, "msg.obj= " + msg.obj);
             switch (msg.arg1) {
                 case API_FETCH_GAME_CHAIN_INFO:
-                    DnsGameChain.getInstance().setGameChainInfo((JSONObject) msg.obj);
-                    mLog.d(TAG, DnsGameChain.getInstance().toString());
 
-                    try {
-                        // Valid stage by
-                        if ((currentStage + 1) != DnsGameChain.getInstance().getResultsChained().length() && isNeedValidateStage) {
-                            String chainID = null;
+                    if (!DnsPlayRoom.getInstance().isTestMode()) {
+                        DnsGameChain.getInstance().setGameChainInfo((JSONObject) msg.obj);
+                        mLog.d(TAG, DnsGameChain.getInstance().toString());
 
-                            chainID = DnsGameChain.getInstance().getPlayerChained().getJSONObject(0).getString("email") +
-                                    DnsPlayRoom.getInstance().getJoinNumber();
-                            fetchGameChainData(chainID);
-                            Thread.sleep(500);
-                            break;
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-
-                    isFirstStage = (DnsGameChain.getInstance().getResultsChained().length() == 0);
-                    mLog.d(TAG, "* isFirstStage= " + isFirstStage);
-                    if (isFirstStage) {
-                        isNeedValidateStage = true;
                         try {
+                            // Valid stage by
+                            if ((currentStage + 1) != DnsGameChain.getInstance().getResultsChained().length() && isNeedValidateStage) {
+                                String chainID = null;
 
-                            if (!(((JSONObject)DnsGameChain.getInstance().getPlayerChained().get(1))).has("photoUrl")) {
-                                item_avatar_next.setTextAndColorSeed(
-                                        String.valueOf(((JSONObject)DnsGameChain.getInstance().getPlayerChained().get(1)).getString("displayName").charAt(0)),
-                                        ((JSONObject)DnsGameChain.getInstance().getPlayerChained().get(1)).getString("displayName"));
-                            } else {
-                                new DownloadImageTask(item_avatar_next).execute((String) ((JSONObject)DnsGameChain.getInstance().getPlayerChained().get(1)).get("photoUrl"));
+                                chainID = DnsGameChain.getInstance().getPlayerChained().getJSONObject(0).getString("email") +
+                                        DnsPlayRoom.getInstance().getJoinNumber();
+                                fetchGameChainData(chainID);
+                                Thread.sleep(500);
+                                break;
                             }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+
+                        isFirstStage = (DnsGameChain.getInstance().getResultsChained().length() == 0);
+                        mLog.d(TAG, "* isFirstStage= " + isFirstStage);
+                        if (isFirstStage) {
+                            isNeedValidateStage = true;
+                            try {
+
+                                if (!(((JSONObject)DnsGameChain.getInstance().getPlayerChained().get(1))).has("photoUrl")) {
+                                    item_avatar_next.setTextAndColorSeed(
+                                            String.valueOf(((JSONObject)DnsGameChain.getInstance().getPlayerChained().get(1)).getString("displayName").charAt(0)),
+                                            ((JSONObject)DnsGameChain.getInstance().getPlayerChained().get(1)).getString("displayName"));
+                                } else {
+                                    new DownloadImageTask(item_avatar_next).execute((String) ((JSONObject)DnsGameChain.getInstance().getPlayerChained().get(1)).get("photoUrl"));
+                                }
 //                            String nextUrl = ((JSONObject)DnsGameChain.getInstance().getPlayerChained().get(1)).getString("photoUrl");
 //                            mLog.d(TAG, "nextUrl= " + nextUrl);
 //                            new DownloadImageTask(playerAvatar_next).execute(nextUrl);
 
-                            if (!(((JSONObject)DnsGameChain.getInstance().getPlayerChained().get(DnsGameChain.getInstance().getPlayerChained().length()-1))).has("photoUrl")) {
-                                item_avatar_pre.setTextAndColorSeed(
-                                        String.valueOf(((JSONObject)DnsGameChain.getInstance().getPlayerChained().get(DnsGameChain.getInstance().getPlayerChained().length()-1)).getString("displayName").charAt(0)),
-                                        ((JSONObject)DnsGameChain.getInstance().getPlayerChained().get(DnsGameChain.getInstance().getPlayerChained().length()-1)).getString("displayName"));
-                            } else {
-                                new DownloadImageTask(item_avatar_pre).execute((String) ((JSONObject)DnsGameChain.getInstance().getPlayerChained().get(1)).get("photoUrl"));
-                            }
+                                if (!(((JSONObject)DnsGameChain.getInstance().getPlayerChained().get(DnsGameChain.getInstance().getPlayerChained().length()-1))).has("photoUrl")) {
+                                    item_avatar_pre.setTextAndColorSeed(
+                                            String.valueOf(((JSONObject)DnsGameChain.getInstance().getPlayerChained().get(DnsGameChain.getInstance().getPlayerChained().length()-1)).getString("displayName").charAt(0)),
+                                            ((JSONObject)DnsGameChain.getInstance().getPlayerChained().get(DnsGameChain.getInstance().getPlayerChained().length()-1)).getString("displayName"));
+                                } else {
+                                    new DownloadImageTask(item_avatar_pre).execute((String) ((JSONObject)DnsGameChain.getInstance().getPlayerChained().get(1)).get("photoUrl"));
+                                }
 //                            String preUrl = ((JSONObject)DnsGameChain.getInstance().getPlayerChained().get(DnsGameChain.getInstance().getPlayerChained().length()-1)).getString("photoUrl");
 //                            mLog.d(TAG, "preUrl= " + preUrl);
 //                            new DownloadImageTask(playerAvatar_pre).execute(preUrl);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
                         }
+
+                        if (null != loadingDialog && loadingDialog.isShowing()) {
+                            loadingDialog.setCancelable(true);
+                            loadingDialog.dismissWithAnimation();
+                        }
+
+                        loadingDialog = new SweetAlertDialog(getContext(), SweetAlertDialog.PROGRESS_TYPE);
+                        loadingDialog.setCancelable(false);
+                        loadingDialog.hideConfirmButton();
+
+                        currentStage = DnsGameChain.getInstance().getResultsChained().length();
+
+                        mLog.d(TAG, "currentStage= " + currentStage);
+
+                        if (currentStage >= DnsGameChain.getInstance().getPlayerChained().length()) {
+                            isNeedValidateStage = false;
+                            currentStage = 0;
+                            loadingDialog.show();
+                            onPlayBoardMainFragmentInteractionListener.onGameSet();
+                            loadingDialog.dismissWithAnimation();
+                        } else {
+                            stageCountTV.setText("Stage: " +
+                                    (currentStage + 1 )+ " / " +
+                                    DnsGameChain.getInstance().getPlayerChained().length());
+                            lazyLoad();
+                        }
+                        break;
                     }
 
-                    if (null != loadingDialog && loadingDialog.isShowing()) {
-                        loadingDialog.setCancelable(true);
-                        loadingDialog.dismissWithAnimation();
-                    }
-
-                    loadingDialog = new SweetAlertDialog(getContext(), SweetAlertDialog.PROGRESS_TYPE);
-                    loadingDialog.setCancelable(false);
-                    loadingDialog.hideConfirmButton();
-
-                    currentStage = DnsGameChain.getInstance().getResultsChained().length();
-
-                    mLog.d(TAG, "currentStage= " + currentStage);
-
-                    if (currentStage >= DnsGameChain.getInstance().getPlayerChained().length()) {
-                        isNeedValidateStage = false;
-                        currentStage = 0;
-                        loadingDialog.show();
-                        onPlayBoardMainFragmentInteractionListener.onGameSet();
-                        loadingDialog.dismissWithAnimation();
-                    } else {
-                        stageCountTV.setText("Stage: " +
-                                (currentStage + 1 )+ " / " +
-                                DnsGameChain.getInstance().getPlayerChained().length());
-                        lazyLoad();
-                    }
-                    break;
             }
 
         }
@@ -841,6 +869,8 @@ public class PlayBoardMainFragment extends Fragment {
 //                mLog.d(TAG, "totalTime= " + totalTime + ", remainTime= " + remainTime + ", remainPercents= " + remainPercents);
                 if (remainPercents < 0.50) {
                     sProgressBar.setColor("#FF0000");
+                } else {
+                    sProgressBar.setColor("#3BF5CF");
                 }
             }
         });

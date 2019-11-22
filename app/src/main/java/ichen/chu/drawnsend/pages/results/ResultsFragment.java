@@ -1,5 +1,6 @@
 package ichen.chu.drawnsend.pages.results;
 
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -8,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.github.florent37.viewtooltip.ViewTooltip;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -49,7 +51,7 @@ import static ichen.chu.drawnsend.api.APICode.API_FETCH_GAME_CHAIN_INFO;
  */
 public class ResultsFragment extends Fragment {
 
-    private static final MLog mLog = new MLog(false);
+    private static final MLog mLog = new MLog(true);
     private final String TAG = getClass().getSimpleName() + "@" + Integer.toHexString(hashCode());
 
     // Field
@@ -62,6 +64,11 @@ public class ResultsFragment extends Fragment {
     private ScrollableLayout scrollableLayout;
     private SampleHeaderView subjectHeader;
 
+    // Flag
+    private boolean isTutorialShow = false;
+
+    // Font Family
+    Typeface mCustomFont = null;
 
     // RecycleView DnsPlayer Tab
     private RecyclerView recycleViewPlayerContainer;
@@ -122,7 +129,6 @@ public class ResultsFragment extends Fragment {
         mLog.d(TAG, "- onViewCreated()");
         if (getUserVisibleHint() && isViewInitiated) {
             fetchGameChainData(acct.getEmail() + DnsPlayRoom.getInstance().getJoinNumber());
-//            fetchGameChainData(acct.getEmail() + "299860");
 
         }
     }
@@ -133,7 +139,6 @@ public class ResultsFragment extends Fragment {
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser && isViewInitiated) {
             fetchGameChainData(acct.getEmail() + DnsPlayRoom.getInstance().getJoinNumber());
-//            fetchGameChainData(acct.getEmail() + "299860");
         }
     }
 
@@ -151,7 +156,6 @@ public class ResultsFragment extends Fragment {
            if (targetEmail.equals(DnsGameChain.getInstance().getCreator())) {
 
            } else {
-//               fetchGameChainData(targetEmail + "299860");
                fetchGameChainData(targetEmail + DnsPlayRoom.getInstance().getJoinNumber());
            }
         } catch (JSONException e) {
@@ -181,13 +185,14 @@ public class ResultsFragment extends Fragment {
 
         // Results Recycler View
         recycleViewResultsContainer = rootView.findViewById(R.id.recycleViewResultsContainer);
+
+        mCustomFont = Typeface.createFromAsset(getContext().getAssets(), "Pacifico-Regular.ttf");
     }
 
 
     private void initViewsFeature() {
         mAnimator = CCFAnimator.rgb(subjectHeader.getExpandedColor(), subjectHeader.getCollapsedColor());
         scrollableLayout.addOnScrollChangedListener(mResultViewOnScrollChangedListener);
-
 
         linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         playerItemAdapter = new PlayerItemAdapter(getContext(), playerItemsList);
@@ -210,7 +215,8 @@ public class ResultsFragment extends Fragment {
             }
 
             private void backToDashboard() {
-                    mResultFragmentListener.onClickBackToDashboard();
+                isTutorialShow = false;
+                mResultFragmentListener.onClickBackToDashboard();
             }
         });
     }
@@ -289,6 +295,33 @@ public class ResultsFragment extends Fragment {
             } catch (JSONException e) {
             e.printStackTrace();
         }
+
+        if (!isTutorialShow) {
+            ViewTooltip
+                    .on(getActivity(), recycleViewPlayerContainer)
+                    .autoHide(true, 3000)
+                    .corner(30)
+                    .position(ViewTooltip.Position.BOTTOM)
+                    .text("Click to Check User Results")
+                    .textTypeFace(mCustomFont)
+                    .onHide(new ViewTooltip.ListenerHide() {
+                        @Override
+                        public void onHide(View view) {
+                            ViewTooltip
+                                    .on(getActivity(), subjectHeader)
+                                    .autoHide(true, 3000)
+                                    .corner(30)
+                                    .position(ViewTooltip.Position.BOTTOM)
+                                    .text("User's Subject")
+                                    .textTypeFace(mCustomFont)
+                                    .show();
+                        }
+                    })
+                    .show();
+            isTutorialShow = true;
+        }
+
+
     }
 
     @Override

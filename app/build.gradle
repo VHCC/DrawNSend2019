@@ -113,6 +113,7 @@ dependencies {
     implementation 'ru.noties:ccf:1.0.0'
     implementation 'cn.carbs.android:AvatarImageView:1.0.4'
     implementation 'com.github.glomadrian:CodeInput:1.1@aar'
+    implementation 'com.github.florent37:viewtooltip:1.2.2'
 
 //    implementation 'in.championswimmer:SimpleFingerGestures_Android_Library:1.2'
 }

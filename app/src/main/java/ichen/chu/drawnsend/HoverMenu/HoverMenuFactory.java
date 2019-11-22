@@ -25,7 +25,6 @@ import androidx.annotation.NonNull;
 import de.greenrobot.event.EventBus;
 import ichen.chu.drawnsend.Bus;
 import ichen.chu.drawnsend.HoverMenu.colorselection.ColorSelectionContent;
-import ichen.chu.drawnsend.HoverMenu.intro.HoverIntroductionContent;
 import ichen.chu.drawnsend.HoverMenu.theme.HoverThemeManager;
 import ichen.chu.drawnsend.util.MLog;
 import ichen.chu.hoverlibs.Content;
@@ -61,11 +60,11 @@ public class HoverMenuFactory {
 //        toolbarNavigator.pushContent(drillDownMenuNavigatorContent);
 
         Map<String, Content> menuStack = new LinkedHashMap<>();
-        menuStack.put(MyHoverMenu.M_1, new HoverIntroductionContent(context, Bus.getInstance()));
+//        menuStack.put(MyHoverMenu.M_1, new HoverIntroductionContent(context, Bus.getInstance()));
         menuStack.put(MyHoverMenu.SELECT_COLOR_ID, new ColorSelectionContent(context, Bus.getInstance(), HoverThemeManager.getInstance(), HoverThemeManager.getInstance().getTheme()));
 
 
-        return new MyHoverMenu(context, "ichenTab", menuStack, HoverThemeManager.getInstance().getTheme());
+        return new MyHoverMenu(context, "DNSTab", menuStack, HoverThemeManager.getInstance().getTheme());
     }
 
 }

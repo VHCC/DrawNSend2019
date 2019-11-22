@@ -78,7 +78,8 @@ public class MyHoverMenu extends HoverMenu {
 //                return createTabView(R.drawable.ic_orange_circle, mTheme.getAccentColor(), mTheme.getBaseColor());
                 return createTabView(R.drawable.setting, mTheme.getAccentColor(), mTheme.getBaseColor());
             case SELECT_COLOR_ID:
-                return createTabView(R.drawable.ic_paintbrush, mTheme.getAccentColor(), mTheme.getBaseColor());
+//                return createTabView(R.drawable.ic_paintbrush, mTheme.getAccentColor(), mTheme.getBaseColor());
+                return createTabView(R.drawable.color_palette, mTheme.getAccentColor(), mTheme.getBaseColor());
             default:
                 throw new RuntimeException("Unknown tab selected: " + tabID);
         }

@@ -4,8 +4,8 @@
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
 
-    <color name="hover_accent">#9CF39C12</color>
-    <color name="hover_base">#6BF5F5F5</color>
+    <color name="hover_accent">#FF00BF</color>
+    <color name="hover_base">#00000000</color>
     <color name="text_subheader">#7c7c7c</color>
     <color name="text_body">#7c7c7c</color>
     <color name="background_dark">#212121</color>
@@ -13,7 +13,7 @@
     <color name="white">#fafafa</color>
     <color name="white_pressed">#f1f1f1</color>
     <color name="half_black">#808080</color>
-    <color name="black_semi_transparent">#B2000000</color>
+    <color name="black_semi_transparent">#4B000000</color>
 
 <!--    //Color Swatches provided by http://designmodo.github.io/Flat-UI/-->
     <color name="fbutton_color_turquoise">#1abc9c</color>

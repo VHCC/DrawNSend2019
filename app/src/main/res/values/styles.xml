@@ -56,4 +56,10 @@
         <item name="shv_expandedColor">@color/md_teal_300</item>
         <item name="shv_collapsedColor">@color/md_teal_500</item>
     </style>
+
+    <style name="TooltipTextAppearance">
+        <item name="android:textColor">@color/md_teal_300</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
 </resources>
