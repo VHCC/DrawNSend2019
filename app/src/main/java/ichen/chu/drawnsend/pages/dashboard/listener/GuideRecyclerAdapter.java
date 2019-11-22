@@ -99,18 +99,22 @@ public class GuideRecyclerAdapter extends RecyclerView.Adapter<GuideRecyclerAdap
                 case 0:
                     guildTv.setText("Create game Room \n" +
                             "and Start to Game");
+                    gifView.setImageResource(R.mipmap.create_and_start_game);
                     break;
                 case 1:
                     guildTv.setText("Join a Room \n" +
                             "and Ready to Play");
+                    gifView.setImageResource(R.mipmap.join_room);
                     break;
                 case 2:
                     guildTv.setText("Canvas Undo \n" +
                             "use 3 finger to Swipe Up");
+                    gifView.setImageResource(R.mipmap.undo);
                     break;
                 case 3:
                     guildTv.setText("Canvas Clear \n" +
                             "use 3 fingers to Swipe Down");
+                    gifView.setImageResource(R.mipmap.clear);
                     break;
             }
         }
