@@ -152,7 +152,7 @@ public class JoinRoomClickListener implements View.OnClickListener {
                                     DnsPlayRoom.getInstance().getRoomStatus());
                             switch (DnsPlayRoom.getInstance().getRoomStatus()) {
                                 case SETTING:
-                                    joinTV.setText("等待中");
+                                    joinTV.setText("wait to room creator start game.");
                                     mLog.d(TAG, "- participants= " +
                                             DnsPlayRoom.getInstance().getParticipants().length());
 
@@ -191,7 +191,7 @@ public class JoinRoomClickListener implements View.OnClickListener {
                                 case READY_TO_PLAY:
                                     saDialog.showCancelButton(false);
                                     saDialog.changeAlertType(SweetAlertDialog.PROGRESS_TYPE);
-                                    joinTV.setText("準備開始");
+                                    joinTV.setText("Ready to Game...");
                                     mLog.d(TAG, "- game players= " + DnsPlayRoom.getInstance().getPlayOrders().length());
 
                                     List<String> emailLst = new ArrayList<String>();

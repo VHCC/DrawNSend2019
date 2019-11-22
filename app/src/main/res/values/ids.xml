@@ -3,4 +3,7 @@
 
     <item name="header" type="id"/>
 
+    <item type="id" name="viewpager"/>
+    <item type="id" name="indicator"/>
+
 </resources>

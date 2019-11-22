@@ -32,6 +32,7 @@ import ichen.chu.drawnsend.Bus;
 import ichen.chu.drawnsend.BusEvent;
 import ichen.chu.drawnsend.R;
 import ichen.chu.drawnsend.pages.dashboard.listener.CreateRoomClickListener;
+import ichen.chu.drawnsend.pages.dashboard.listener.GuideClickListener;
 import ichen.chu.drawnsend.pages.dashboard.listener.JoinRoomClickListener;
 import ichen.chu.drawnsend.util.MLog;
 
@@ -53,6 +54,7 @@ public class DashboardMainFragment extends Fragment {
     private AvatarImageView item_avatar;
     private TextView accountEmailTV;
     private FloatingActionButton signOutFAB;
+    private FloatingActionButton guideFAB;
     private FloatingActionButton joinRoomFAB;
     private FloatingActionButton createRoomFAB;
 
@@ -131,6 +133,7 @@ public class DashboardMainFragment extends Fragment {
         item_avatar = rootView.findViewById(R.id.item_avatar);
         accountEmailTV = rootView.findViewById(R.id.accountEmailTV);
         signOutFAB = rootView.findViewById(R.id.signOutFAB);
+        guideFAB = rootView.findViewById(R.id.guideFAB);
         joinRoomFAB = rootView.findViewById(R.id.joinRoomFAB);
         createRoomFAB = rootView.findViewById(R.id.createRoomFAB);
 
@@ -178,6 +181,10 @@ public class DashboardMainFragment extends Fragment {
             }
         });
 
+        // ******************** GUIDE *************************
+        guideFAB.setIcon(R.drawable.direction_board);
+        guideFAB.setOnClickListener(new GuideClickListener(getContext()));
+
         // ******************** JOIN *************************
         joinRoomFAB.setIcon(R.drawable.join_room);
         joinRoomFAB.setOnClickListener(new JoinRoomClickListener(getContext()));
@@ -186,10 +193,10 @@ public class DashboardMainFragment extends Fragment {
         createRoomFAB.setIcon(R.drawable.create_room);
         createRoomFAB.setOnClickListener(new CreateRoomClickListener(getContext()));
 
-        String deviceName = android.os.Build.MODEL;
-        String deviceMan = android.os.Build.MANUFACTURER;
-
-        brandTxt.setText(deviceName + ", " + deviceMan);
+//        String deviceName = android.os.Build.MODEL;
+//        String deviceMan = android.os.Build.MANUFACTURER;
+//
+//        brandTxt.setText(deviceName + ", " + deviceMan);
     }
 
     @Override

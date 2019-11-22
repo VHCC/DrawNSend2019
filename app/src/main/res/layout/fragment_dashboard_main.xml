@@ -57,6 +57,14 @@
             fab:fab_colorPressed="@color/white_pressed"/>
 
         <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/guideFAB"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            fab:fab_colorNormal="@color/white"
+            fab:fab_title="Guide"
+            fab:fab_colorPressed="@color/white_pressed"/>
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/joinRoomFAB"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -76,7 +84,7 @@
 
     <ImageView
         android:layout_margin="40dp"
-        android:paddingBottom="100dp"
+        android:paddingBottom="160dp"
         android:layout_gravity="center_horizontal|center_vertical"
         android:src="@drawable/dns_logo"
         android:layout_width="match_parent"
