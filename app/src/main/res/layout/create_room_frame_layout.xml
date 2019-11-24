@@ -38,7 +38,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:dsb_min="0"
-        app:dsb_max="5"
+        app:dsb_max="2"
         app:dsb_value="-2"
         />
 

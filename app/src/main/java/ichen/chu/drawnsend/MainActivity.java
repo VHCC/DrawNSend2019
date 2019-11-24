@@ -77,8 +77,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void checkPermission() {
         String[] perms = {
-                Manifest.permission.CAMERA,
-                Manifest.permission.ACCESS_FINE_LOCATION,
+//                Manifest.permission.CAMERA,
+//                Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.INTERNET,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 Manifest.permission.READ_EXTERNAL_STORAGE,
