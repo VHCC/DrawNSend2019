@@ -87,6 +87,8 @@ public class LoginFragment extends Fragment {
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+//                .requestIdToken("540336740960-3j8mhr55q52k8qf1qsku5j51n7glm5ik.apps.googleusercontent.com")
+                .requestIdToken("540336740960-iv9p3n2msqjrff99ktbjd1n1s0281r53.apps.googleusercontent.com")
                 .requestEmail()
                 .build();
 
@@ -199,6 +201,7 @@ public class LoginFragment extends Fragment {
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.
             mLog.w(TAG, "signInResult:failed code=" + e.getStatusCode());
+            e.printStackTrace();
 //            updateUI(null);
         }
     }

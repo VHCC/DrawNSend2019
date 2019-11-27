@@ -27,8 +27,10 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
 import javax.net.ssl.X509TrustManager;
 
 import androidx.core.content.ContextCompat;
@@ -48,7 +50,7 @@ import okhttp3.Response;
  */
 public class App extends Application {
 
-    private static final MLog mLog = new MLog(false);
+    private static final MLog mLog = new MLog(true);
     private final String TAG = getClass().getSimpleName() + "@" + Integer.toHexString(hashCode());
 
 //    public static final String SERVER_SITE = "http://172.22.212.150:4009";
@@ -107,17 +109,33 @@ public class App extends Application {
      */
     private void trustHost() {
         mLog.i(TAG, "trustHost()");
-        HttpsURLConnection.setDefaultHostnameVerifier(new NullHostNameVerifier());
-        SSLContext context = null;
-        try {
-            context = SSLContext.getInstance("TLS");
-            context.init(null, new X509TrustManager[]{new NullX509TrustManager()}, new SecureRandom());
-            HttpsURLConnection.setDefaultSSLSocketFactory(context.getSocketFactory());
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (KeyManagementException e) {
-            e.printStackTrace();
-        }
+
+        HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
+            @Override
+            public boolean verify(String hostname, SSLSession session) {
+                mLog.i(TAG, "verify, hostname= " + hostname + ", session= " + session);
+                switch (hostname) {
+                    case "lh3.googleusercontent.com":
+                        return true;
+                    case "dns.ichenprocin.dsmynas.com":
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+        });
+
+//        HttpsURLConnection.setDefaultHostnameVerifier(new NullHostNameVerifier());
+//        SSLContext context = null;
+//        try {
+//            context = SSLContext.getInstance("TLS");
+//            context.init(null, new X509TrustManager[]{new NullX509TrustManager()}, new SecureRandom());
+//            HttpsURLConnection.setDefaultSSLSocketFactory(context.getSocketFactory());
+//        } catch (NoSuchAlgorithmException e) {
+//            e.printStackTrace();
+//        } catch (KeyManagementException e) {
+//            e.printStackTrace();
+//        }
     }
 
     // Thread
