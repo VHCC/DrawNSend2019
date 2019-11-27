@@ -13,19 +13,37 @@
 
 In order to play board game [Telestration](https://boardgamegeek.com/boardgame/46213/telestrations) at online with friends.
 
-### Play requirements
----
+## Play requirements
+
+
 - Internet or wifi
 - grants storage permission
 - Google account
 
-### Tutorial
----
-- Create Room
-- Join Room
+## Tutorial
 
-### Dev Devices
----
+#### Create Room and Start to game
+
+<img src="https://github.com/VHCC/DrawNSend2019/blob/master_new/app/src/main/res/mipmap-hdpi/create_and_start_game.gif" width="250">
+
+#### Join Room
+
+<img src="https://github.com/VHCC/DrawNSend2019/blob/master_new/app/src/main/res/mipmap-hdpi/join_room.gif" width="250">
+
+#### Changne paint color and storke width
+
+<img src="https://github.com/VHCC/DrawNSend2019/blob/master_new/app/src/main/res/mipmap-hdpi/change_color_stroke_width.gif" width="250">
+
+#### canvas Undo, use 3 fingers to swipe up
+
+<img src="https://github.com/VHCC/DrawNSend2019/blob/master_new/app/src/main/res/mipmap-hdpi/undo.gif" width="250">
+
+#### canvas Clear, use 3 fingers to swipe down
+
+<img src="https://github.com/VHCC/DrawNSend2019/blob/master_new/app/src/main/res/mipmap-hdpi/clear.gif" width="250">
+
+## Dev Devices
+
 |NO.|Brand|OS|
 |---|-----|--|
 |01|Samsung Note3|Android 5.0 (API21)|
@@ -33,8 +51,8 @@ In order to play board game [Telestration](https://boardgamegeek.com/boardgame/4
 |03|Sony Xperia Z1|Android 5.1.1 (API22)|
 |04|HTC new one M7 801e|Android 5.0.2 (API21)|
 
-### Refer Repo
----
+## Refer Repo
+
 - [sweet-alert-dialog](https://github.com/F0RIS/sweet-alert-dialog)
 - [material-code-input](https://github.com/raycoarana/material-code-input)
 - [discreteSeekBar](https://github.com/AnderWeb/discreteSeekBar)
@@ -46,6 +64,6 @@ In order to play board game [Telestration](https://boardgamegeek.com/boardgame/4
 - [hover](https://github.com/google/hover)
 - [CircleIndicator](https://github.com/ongakuer/CircleIndicator)
 
-### Licence
----
-MIT © [vhcc](https://github.com/vhcc)
+## Licence
+
+MIT © [Vhcc](https://github.com/vhcc)
